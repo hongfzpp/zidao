@@ -66,6 +66,8 @@ async function runStep (step, ctx) {
     }
     case 'setScale': scene.setScale(rec.id, step.value ?? 1); break;
     case 'lift':     scene.lift(rec.id, step.dy ?? -20); break;
+    case 'setCount': scene.setCount(rec.id, step.n ?? 1); break;
+    case 'count':    scene.bumpCount(rec.id, step.delta ?? 1); break;
 
     case 'setState': scene.setState(rec.id, step.key, step.value); break;
 

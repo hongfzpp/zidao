@@ -1266,7 +1266,9 @@ describe('e2e · 测试模式 (dev mode)', () => {
   });
 
   it('every story can be picked directly, by name', async () => {
-    await withApp(save({ owned: CASTABLE.map(c => c.id), firstCast: ALL }), async app => {
+    // ALL, not just castable: later stories require glue characters that are
+    // themselves only met by reading an earlier story.
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
       await app.start();
       await app.openParentPanel();
       const rows = app.storyRows();
@@ -1313,6 +1315,164 @@ describe('e2e · 测试模式 (dev mode)', () => {
       const t0 = Date.now();
       await app.openParentPanel();
       expect(Date.now() - t0).toBeLessThan(1200);    // real hold is 1500ms
+    });
+  });
+});
+
+describe('e2e · 厨房 (the second room)', () => {
+  const KITCHEN = ['chi','he','re','leng','duo','shao','yi','er','san',
+                   'mi','dan','yu','rou','cai','shou','kou'];
+
+  it('the house starts as the room you are in', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.sceneId()).toBe('house');
+      expect(Boolean(app.obj('cat'))).toBeTruthy();
+    });
+  });
+
+  it('REGRESSION: a shut door does not let you through — you must read 开 first', async () => {
+    // The door IS the gate. Getting to the next room means reading a character,
+    // which is the whole "read to act" idea (DESIGN.md §6.2).
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.objState('door', 'open')).toBe('false');
+      app.obj('door').click();
+      await app.frameTick();
+      expect(app.sceneId()).toBe('house');            // still here
+    });
+  });
+
+  it('开 the door, walk through, and you are in the kitchen', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.sceneId()).toBe('kitchen');
+      for (const id of ['pot','fish','egg','rice','meat','veg','cup'])
+        expect(Boolean(app.obj(id))).toBeTruthy();
+    });
+  });
+
+  it('REGRESSION: you can always get back — no room is a dead end', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.sceneId()).toBe('kitchen');
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.sceneId()).toBe('house');
+    });
+  });
+
+  it('each room remembers what you did to it', async () => {
+    await withApp(save({ owned: ['kai','da'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('大', 'cat');
+      const catScale = app.objScale('cat');
+      await app.drag('开', 'door');
+      await app.goThrough();
+      await app.drag('大', 'fish');
+      const fishScale = app.objScale('fish');
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.objScale('cat')).toBe(catScale);     // the house is as we left it
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.objScale('fish')).toBe(fishScale);   // and so is the kitchen
+    });
+  });
+
+  it('三 puts three of something there; 一 puts it back to one', async () => {
+    await withApp(save({ owned: ['kai','san','yi'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door'); await app.goThrough();
+      await app.drag('三', 'egg');
+      expect(app.objCount('egg')).toBe(3);
+      await app.drag('一', 'egg');
+      expect(app.objCount('egg')).toBe(1);
+    });
+  });
+
+  it('多 adds one and 少 takes one away', async () => {
+    await withApp(save({ owned: ['kai','duo','shao'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door'); await app.goThrough();
+      await app.drag('多', 'fish');
+      expect(app.objCount('fish')).toBe(2);
+      await app.drag('多', 'fish');
+      expect(app.objCount('fish')).toBe(3);
+      await app.drag('少', 'fish');
+      expect(app.objCount('fish')).toBe(2);
+    });
+  });
+
+  it('REGRESSION: the count never goes below one or runs away', async () => {
+    await withApp(save({ owned: ['kai','duo','shao'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door'); await app.goThrough();
+      for (let i = 0; i < 6; i++) await app.drag('少', 'egg');
+      expect(app.objCount('egg')).toBe(1);
+      for (let i = 0; i < 9; i++) await app.drag('多', 'egg');
+      expect(app.objCount('egg')).toBeLessThanOrEqual(5);
+    });
+  });
+
+  it('吃 eats one of them', async () => {
+    await withApp(save({ owned: ['kai','san','chi'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door'); await app.goThrough();
+      await app.drag('三', 'meat');
+      expect(app.objCount('meat')).toBe(3);
+      await app.drag('吃', 'meat');
+      expect(app.objCount('meat')).toBe(2);
+    });
+  });
+
+  it('热 and 冷 are opposites, not both at once', async () => {
+    await withApp(save({ owned: ['kai','re','leng'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door'); await app.goThrough();
+      await app.drag('热', 'pot');
+      expect(app.objState('pot', 'hot')).toBe('true');
+      expect(app.objState('pot', 'cold')).toBe('false');
+      await app.drag('冷', 'pot');
+      expect(app.objState('pot', 'cold')).toBe('true');
+      expect(app.objState('pot', 'hot')).toBe('false');
+    });
+  });
+
+  it('every kitchen character is castable and responds', async () => {
+    await withApp(save({ owned: ['kai', ...KITCHEN], firstCast: ALL, devMode: true }),
+      async app => {
+        await app.start();
+        await app.drag('开', 'door'); await app.goThrough();
+        const before = app.save().castCount;
+        let n = 0;
+        for (let i = 0; i < 8; i++) { await app.castAny(i, 'pot'); n++; }
+        expect(app.save().castCount).toBe(before + n);
+      });
+  });
+
+  it('REGRESSION: the character that opens the door is always reachable', async () => {
+    // The pouch is capped and rotates. Without pinning, 开 rotated out and the
+    // kid was stranded in the room with no way to open the door.
+    await withApp(save({ owned: ['kai', ...KITCHEN], firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.realCards().map(c => c.glyph)).toContain('开');
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.realCards().map(c => c.glyph)).toContain('开');   // and in there too
+    });
+  });
+
+  it('REGRESSION: 团团 comes along to every room', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      expect(Boolean(app.obj('tuantuan'))).toBeTruthy();
+      await app.drag('开', 'door'); await app.goThrough();
+      expect(Boolean(app.obj('tuantuan'))).toBeTruthy();
     });
   });
 });

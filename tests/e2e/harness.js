@@ -95,6 +95,16 @@ export class App {
   decoyCards () { return this.cards().filter(c => c.decoy); }
 
   obj (id) { return this.doc.getElementById('obj-' + id); }
+  sceneId () { return this.save().currentScene; }
+  objCount (id) { return Number(this.obj(id)?.dataset.count || 1); }
+  /** Walk through an open door. */
+  async goThrough (doorId = 'door') {
+    const to = this.obj(doorId).dataset.leadsTo;
+    this.obj(doorId).click();
+    await waitFor(() => this.sceneId() === to, { timeout: 4000, label: 'the next room' });
+    await waitFor(() => this.$$('.obj').length > 0, { label: 'the room to build' });
+    await this.frameTick();
+  }
   objScale (id) {
     const t = this.obj(id)?.querySelector('.scaler')?.style.transform || 'scale(1)';
     return parseFloat(t.replace(/[^\d.]/g, '')) || 1;

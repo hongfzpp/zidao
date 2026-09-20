@@ -1,0 +1,142 @@
+{
+  "id": "kitchen",
+  "name": "厨房",
+  "light": "on",
+  "objects": [
+    {
+      "id": "door",
+      "glyph": "🚪",
+      "x": 9,
+      "y": 81,
+      "size": 18,
+      "tags": [
+        "openable",
+        "furniture",
+        "door"
+      ],
+      "state": {
+        "open": false
+      },
+      "opening": "outside",
+      "leadsTo": "house",
+      "opensWith": "kai"
+    },
+    {
+      "id": "window",
+      "glyph": "🪟",
+      "x": 26,
+      "y": 30,
+      "size": 12,
+      "tags": [
+        "openable",
+        "window"
+      ],
+      "state": {
+        "open": false
+      },
+      "opening": "sky"
+    },
+    {
+      "id": "pot",
+      "glyph": "🍲",
+      "x": 41,
+      "y": 73,
+      "size": 14,
+      "tags": [
+        "pot",
+        "cookable",
+        "container"
+      ]
+    },
+    {
+      "id": "bowl",
+      "glyph": "🥣",
+      "x": 56,
+      "y": 90,
+      "size": 12,
+      "tags": [
+        "bowl",
+        "container"
+      ]
+    },
+    {
+      "id": "fish",
+      "glyph": "🐟",
+      "x": 23,
+      "y": 90,
+      "size": 11,
+      "tags": [
+        "food",
+        "fish"
+      ]
+    },
+    {
+      "id": "egg",
+      "glyph": "🥚",
+      "x": 34,
+      "y": 91,
+      "size": 9,
+      "tags": [
+        "food",
+        "egg"
+      ]
+    },
+    {
+      "id": "rice",
+      "glyph": "🍚",
+      "x": 45,
+      "y": 91,
+      "size": 10,
+      "tags": [
+        "food",
+        "rice"
+      ]
+    },
+    {
+      "id": "meat",
+      "glyph": "🍖",
+      "x": 69,
+      "y": 91,
+      "size": 11,
+      "tags": [
+        "food",
+        "meat"
+      ]
+    },
+    {
+      "id": "veg",
+      "glyph": "🥬",
+      "x": 79,
+      "y": 90,
+      "size": 11,
+      "tags": [
+        "food",
+        "veg"
+      ]
+    },
+    {
+      "id": "cup",
+      "glyph": "🥤",
+      "x": 89,
+      "y": 89,
+      "size": 11,
+      "tags": [
+        "cup",
+        "container",
+        "drinkable"
+      ]
+    },
+    {
+      "id": "tuantuan",
+      "glyph": "@tuantuan",
+      "x": 63,
+      "y": 75,
+      "size": 15,
+      "tags": [
+        "creature",
+        "tuantuan"
+      ],
+      "wander": true
+    }
+  ]
+}

@@ -500,3 +500,32 @@ html,body{
 .story-char.nudge{animation:charNudge .4s cubic-bezier(.34,1.56,.64,1)}
 /* the line being read back after an attempt */
 .story-char.reading{background:#fdebc9;transform:scale(1.14)}
+
+/* 多 / 少 / 一 / 二 / 三 — several of a thing at once */
+.glyph.multi{display:flex;align-items:flex-end;justify-content:center;
+  gap:calc(var(--s) * -0.16px)}
+.glyph.multi i{display:block;font-style:normal;line-height:1}
+.glyph.multi[data-n="2"] i{font-size:calc(var(--s) * 0.82px)}
+.glyph.multi[data-n="3"] i{font-size:calc(var(--s) * 0.72px)}
+.glyph.multi[data-n="4"] i{font-size:calc(var(--s) * 0.64px)}
+.glyph.multi[data-n="5"] i{font-size:calc(var(--s) * 0.58px)}
+.glyph.multi i:nth-child(2n){transform:translateY(-8%) rotate(-5deg)}
+.glyph.multi i:nth-child(3n){transform:translateY(4%) rotate(6deg)}
+
+/* walking between rooms */
+#room{transition:opacity .26s ease}
+#room.leaving{opacity:0}
+@keyframes roomIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+#room.arriving{animation:roomIn .4s ease}
+
+/* an open door you can walk through invites the tap */
+.obj[data-leads-to][data-open="true"]{cursor:pointer}
+.obj[data-leads-to][data-open="true"]::before{
+  content:"→";position:absolute;left:50%;bottom:calc(var(--s) * 0.95px);
+  transform:translateX(-50%);
+  font-size:calc(var(--s) * 0.3px);color:var(--accent);
+  text-shadow:0 2px 6px rgba(0,0,0,.25);
+  animation:goThrough 1.4s ease-in-out infinite;pointer-events:none;
+}
+@keyframes goThrough{0%,100%{transform:translateX(-50%) translateY(0);opacity:.75}
+                     50%{transform:translateX(-50%) translateY(-7px);opacity:1}}

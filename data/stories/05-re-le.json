@@ -1,0 +1,45 @@
+{
+  "id": "re-le",
+  "title": "热了",
+  "requires": [
+    "re",
+    "leng",
+    "cai",
+    "rou"
+  ],
+  "introduces": [
+    "le"
+  ],
+  "_comment": "Where 了 is met: it means nothing alone, so it is learnt by position -- 热了 after 热, the same way a child learns '-ed'.",
+  "pages": [
+    {
+      "art": "🥬",
+      "text": [
+        "菜"
+      ]
+    },
+    {
+      "art": "🥶🥬",
+      "text": [
+        "菜",
+        "冷"
+      ]
+    },
+    {
+      "art": "🥵🥬",
+      "text": [
+        "菜",
+        "热",
+        "了"
+      ]
+    },
+    {
+      "art": "🍖",
+      "text": [
+        "肉",
+        "热",
+        "了"
+      ]
+    }
+  ]
+}

@@ -11,13 +11,18 @@ const STORY_INDEX = await fetch('../data/stories/index.json').then(r => r.json()
 const STORIES = await Promise.all(STORY_INDEX.stories.map(
   f => fetch('../data/stories/' + f).then(r => r.json())));
 
-const [CHAR_DATA, RULE_DATA, HOUSE] = await Promise.all([
+const SCENE_IDS = ['house', 'kitchen'];
+const [CHAR_DATA, RULE_DATA, ...SCENE_LIST] = await Promise.all([
   fetch('../data/characters.json').then(r => r.json()),
   fetch('../data/cast-rules.json').then(r => r.json()),
-  fetch('../data/scenes/house.json').then(r => r.json())
+  ...SCENE_IDS.map(id => fetch(`../data/scenes/${id}.json`).then(r => r.json()))
 ]);
 const CHARS = CHAR_DATA.characters;
-const OBJECTS = HOUSE.objects.map(o => ({ id: o.id, tags: o.tags || [] }));
+const SCENES = Object.fromEntries(SCENE_LIST.map(s => [s.id, s]));
+const HOUSE = SCENES.house;
+// every object in every room -- a rule may target something in any scene
+const OBJECTS = SCENE_LIST.flatMap(sc =>
+  sc.objects.map(o => ({ id: o.id, tags: o.tags || [], scene: sc.id })));
 const SPAWNED = Object.entries(RULE_DATA.spawnables || {})
   .map(([k, v]) => ({ id: k + '-x', tags: v.tags || [] }));
 const ALL_TARGETS = [...OBJECTS, ...SPAWNED];
@@ -127,20 +132,46 @@ describe('data · cast-rules.json', () => {
   });
 });
 
-describe('data · house scene', () => {
-  it('object ids are unique', () => {
-    const ids = HOUSE.objects.map(o => o.id);
-    expect(new Set(ids).size).toBe(ids.length);
+describe('data · scenes', () => {
+  it('there is more than one room', () => {
+    expect(SCENE_LIST.length).toBeGreaterThan(1);
   });
-  it('everything sits inside the room', () => {
-    for (const o of HOUSE.objects) {
+  it('object ids are unique within each room', () => {
+    for (const sc of SCENE_LIST) {
+      const ids = sc.objects.map(o => o.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+  });
+  it('everything sits inside its room', () => {
+    for (const o of SCENE_LIST.flatMap(s2 => s2.objects)) {
       expect(o.x >= 0 && o.x <= 100).toBeTruthy();
       expect(o.y >= 0 && o.y <= 100).toBeTruthy();
     }
   });
   it('openable objects declare what shows through the opening', () => {
-    for (const o of HOUSE.objects) {
+    for (const o of SCENE_LIST.flatMap(s2 => s2.objects)) {
       if ((o.tags || []).includes('openable')) expect(Boolean(o.opening)).toBeTruthy();
+    }
+  });
+  it('REGRESSION: every door leads to a room that exists', () => {
+    for (const o of SCENE_LIST.flatMap(s2 => s2.objects)) {
+      if (o.leadsTo) expect(SCENE_IDS).toContain(o.leadsTo);
+    }
+  });
+  it('REGRESSION: every room has a way out — nobody gets stranded', () => {
+    for (const sc of SCENE_LIST) {
+      if (sc.id === 'house') continue;
+      expect(sc.objects.some(o => o.leadsTo)).toBeTruthy();
+    }
+  });
+  it('a door can only be walked through if it can be opened', () => {
+    for (const o of SCENE_LIST.flatMap(s2 => s2.objects)) {
+      if (o.leadsTo) expect((o.tags || [])).toContain('openable');
+    }
+  });
+  it('每个 room has 团团 in it', () => {
+    for (const sc of SCENE_LIST) {
+      expect(sc.objects.some(o => o.id === 'tuantuan')).toBeTruthy();
     }
   });
 });

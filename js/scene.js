@@ -3,18 +3,38 @@
 
 import { get, update } from './store.js';
 import { TUAN_SVG } from './tuantuan.js';
-import { clampScale } from './core/scale.js';
+import { clampScale, clampCount, stepCount } from './core/scale.js';
 
-let def = null;          // scene definition (data/scenes/house.json)
+let def = null;          // the scene definition currently loaded
+let sceneId = null;
 let spawnables = {};     // from cast-rules.json
+let onSceneChange = null;
 const objects = new Map();  // id -> { id, el, tags, scale, state, x, y, size }
 
 const host = () => document.getElementById('objects');
 
-export async function loadScene (sceneId, spawnDefs) {
-  def = await (await fetch(`data/scenes/${sceneId}.json`)).json();
-  spawnables = spawnDefs || {};
+export const currentSceneId = () => sceneId;
+export function onChangeScene (fn) { onSceneChange = fn; }
+
+export async function loadScene (id, spawnDefs) {
+  def = await (await fetch(`data/scenes/${id}.json`)).json();
+  sceneId = id;
+  if (spawnDefs) spawnables = spawnDefs;
+  update({ currentScene: id });
   build();
+  onSceneChange?.(id, def);
+  return def;
+}
+
+/** Walk through a door into another room. */
+export async function goToScene (id) {
+  const room = document.getElementById('room');
+  room?.classList.add('leaving');
+  await new Promise(r => setTimeout(r, 260));
+  await loadScene(id);
+  room?.classList.remove('leaving');
+  room?.classList.add('arriving');
+  setTimeout(() => room?.classList.remove('arriving'), 400);
 }
 
 function build () {
@@ -22,7 +42,7 @@ function build () {
   h.innerHTML = '';
   objects.clear();
 
-  const saved = get().sceneState || {};
+  const saved = (get().scenes || {})[sceneId] || {};
 
   for (const o of def.objects) addObject({ ...o }, saved[o.id]);
 
@@ -62,8 +82,11 @@ function addObject (o, saved) {
     (o.opening ? `<span class="opening"></span>` : '') +
     `<span class="swing"><span class="glyph">${glyph}</span></span>` +
     `</span></span></span>`;
+  el.dataset.glyph = glyph;
 
   h_setScale(el, scale);
+
+  if (o.leadsTo) el.dataset.leadsTo = o.leadsTo;
 
   const rec = {
     id: o.id, el,
@@ -71,11 +94,15 @@ function addObject (o, saved) {
     scale,
     state: { ...(o.state || {}), ...(saved?.state || {}) },
     x, y, size,
+    count: saved?.count ?? 1,
     wander: !!o.wander,
+    leadsTo: o.leadsTo || null,
+    opensWith: o.opensWith || null,
     spawnedAs: saved?.spawnedAs || o.spawnedAs || null
   };
   objects.set(o.id, rec);
   syncState(rec);
+  if (rec.count > 1) setCount(o.id, rec.count);
   host().appendChild(el);
   return rec;
 }
@@ -92,6 +119,16 @@ function syncState (rec) {
 
 export const getObject = id => objects.get(id);
 export const allObjects = () => [...objects.values()];
+
+/**
+ * Characters the kid MUST be able to reach in this room, because without them
+ * they cannot leave it. The pouch is capped and rotates, so without this a door
+ * character could rotate out and strand them (it did).
+ */
+export function requiredChars () {
+  return [...new Set(
+    [...objects.values()].filter(r => r.leadsTo && r.opensWith).map(r => r.opensWith))];
+}
 
 export function setScale (id, s) {
   const rec = objects.get(id); if (!rec) return;
@@ -111,6 +148,28 @@ export function lift (id, dy) {
 }
 
 const R = (a, b) => a + Math.random() * (b - a);
+
+/** Show `n` copies of a thing. 一/二/三 set it outright, 多/少 step it. */
+export function setCount (id, n) {
+  const rec = objects.get(id); if (!rec) return;
+  const count = clampCount(n);
+  rec.count = count;
+  const swing = rec.el.querySelector('.swing');
+  const glyph = rec.el.dataset.glyph || '';
+  if (glyph.startsWith('<svg')) return;             // 团团 does not multiply
+  swing.innerHTML = count === 1
+    ? `<span class="glyph">${glyph}</span>`
+    : `<span class="glyph multi" data-n="${count}">` +
+      Array.from({ length: count }, () => `<i>${glyph}</i>`).join('') +
+      `</span>`;
+  rec.el.dataset.count = String(count);
+  persist();
+}
+
+export function bumpCount (id, delta) {
+  const rec = objects.get(id); if (!rec) return;
+  setCount(id, stepCount(rec.count ?? 1, delta));
+}
 
 export function setState (id, key, value) {
   const rec = objects.get(id); if (!rec) return;
@@ -175,11 +234,11 @@ export function persist () {
   const out = {};
   for (const rec of objects.values()) {
     out[rec.id] = {
-      scale: rec.scale, state: rec.state,
+      scale: rec.scale, state: rec.state, count: rec.count,
       x: rec.x, y: rec.y, spawnedAs: rec.spawnedAs
     };
   }
-  update({ sceneState: out });
+  update({ scenes: { ...(get().scenes || {}), [sceneId]: out } });
 }
 
 /* ---------- idle life ----------

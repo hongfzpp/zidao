@@ -350,6 +350,73 @@ const PATCHES = {
     o.frequency.exponentialRampToValueAtTime(58, t + 0.8);
   },
 
+  chomp () {                                      // 吃
+    const bite = (at, f0) => setTimeout(() => {
+      if (!ctx) return;
+      const t = now();
+      const { o } = osc('triangle', f0, { a: 0.004, d: 0.1, r: 0.05, peak: 1.1 });
+      o.frequency.exponentialRampToValueAtTime(f0 * 0.35, t + 0.1);
+      noise(0.07, { filter: 'bandpass', freq: R(700, 1300), q: 2, peak: 0.55, d: 0.06 });
+    }, at);
+    bite(0, R(260, 320));
+    bite(R(130, 175), R(210, 270));
+  },
+
+  gulp () {                                       // 喝
+    for (let i = 0; i < 3; i++) setTimeout(() => {
+      if (!ctx) return;
+      const t = now();
+      const { o } = osc('sine', 180 + i * 30, { a: 0.006, d: 0.11, r: 0.05, peak: 0.95 });
+      o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
+    }, i * 165);
+  },
+
+  sizzle () {                                     // 热
+    noise(0.9, { filter: 'highpass', freq: 2600, peak: 0.55, d: 0.85, a: 0.06 });
+    for (let i = 0; i < 6; i++) setTimeout(() => {
+      if (!ctx) return;
+      noise(0.05, { filter: 'bandpass', freq: R(1800, 4200), q: 4, peak: 0.3, d: 0.04 });
+    }, R(30, 800));
+  },
+
+  freeze () {                                     // 冷
+    const t = now();
+    const { o } = osc('sine', 1500, { a: 0.01, d: 0.6, r: 0.3, peak: 0.5 });
+    o.frequency.exponentialRampToValueAtTime(420, t + 0.7);
+    for (let i = 0; i < 5; i++) setTimeout(() => {
+      if (!ctx) return;
+      osc('sine', R(2200, 3600), { a: 0.004, d: 0.14, r: 0.07, peak: 0.2 });
+    }, i * 90);
+  },
+
+  crack () {                                      // 蛋
+    noise(0.05, { filter: 'bandpass', freq: 2400, q: 3, peak: 1.0, d: 0.04 });
+    setTimeout(() => {
+      if (!ctx) return;
+      noise(0.18, { filter: 'lowpass', freq: 900, peak: 0.5, d: 0.15 });
+    }, 70);
+  },
+
+  pour () {                                       // 米
+    noise(0.75, { filter: 'bandpass', freq: 3000, sweepTo: 1400, q: 1.1,
+                  peak: 0.6, d: 0.7, a: 0.05 });
+  },
+
+  rustle () {                                     // 菜
+    for (let i = 0; i < 5; i++) setTimeout(() => {
+      if (!ctx) return;
+      noise(0.12, { filter: 'highpass', freq: R(2000, 3800), peak: 0.45, d: 0.1 });
+    }, i * 85);
+  },
+
+  clap () {                                       // 手
+    const hit = at => setTimeout(() => {
+      if (!ctx) return;
+      noise(0.09, { filter: 'bandpass', freq: R(1100, 1900), q: 1.2, peak: 1.2, d: 0.07 });
+    }, at);
+    hit(0); hit(190);
+  },
+
   womp () {                                       // a decoy: nothing happens
     const { o } = osc('triangle', 300, { a: 0.01, d: 0.3, r: 0.1, peak: 0.3 });
     o.frequency.exponentialRampToValueAtTime(110, now() + 0.3);

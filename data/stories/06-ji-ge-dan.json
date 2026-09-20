@@ -1,0 +1,51 @@
+{
+  "id": "ji-ge-dan",
+  "title": "几个蛋",
+  "requires": [
+    "dan",
+    "yi",
+    "er",
+    "san",
+    "duo",
+    "shao",
+    "le"
+  ],
+  "introduces": [
+    "ge"
+  ],
+  "_comment": "Where 个 is met: a measure word has no meaning on its own and cannot be cast at anything, so it is learnt between a number and a thing, which is the only place it ever appears.",
+  "pages": [
+    {
+      "art": "🥚",
+      "text": [
+        "一",
+        "个",
+        "蛋"
+      ]
+    },
+    {
+      "art": "🥚🥚",
+      "text": [
+        "二",
+        "个",
+        "蛋"
+      ]
+    },
+    {
+      "art": "🥚🥚🥚",
+      "text": [
+        "三",
+        "个",
+        "蛋"
+      ]
+    },
+    {
+      "art": "🥚",
+      "text": [
+        "蛋",
+        "少",
+        "了"
+      ]
+    }
+  ]
+}

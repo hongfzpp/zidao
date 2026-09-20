@@ -17,7 +17,9 @@
       "state": {
         "open": false
       },
-      "opening": "outside"
+      "opening": "outside",
+      "leadsTo": "kitchen",
+      "opensWith": "kai"
     },
     {
       "id": "window",

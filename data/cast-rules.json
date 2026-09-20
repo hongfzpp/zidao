@@ -2126,6 +2126,1061 @@
           ]
         }
       ]
+    },
+    {
+      "char": "chi",
+      "target": {
+        "tag": "food"
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "吃"
+            },
+            {
+              "type": "sfx",
+              "id": "chomp"
+            },
+            {
+              "type": "count",
+              "delta": -1
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "heart",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1600
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "吃"
+            },
+            {
+              "type": "sfx",
+              "id": "chomp"
+            },
+            {
+              "type": "count",
+              "delta": -1
+            },
+            {
+              "type": "hop",
+              "height": 16,
+              "times": 1
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 5
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "吃"
+          },
+          {
+            "type": "sfx",
+            "id": "chomp"
+          },
+          {
+            "type": "setCount",
+            "n": 1
+          },
+          {
+            "type": "setScale",
+            "value": 0.2,
+            "dur": 500
+          },
+          {
+            "type": "sfx",
+            "id": "chime"
+          },
+          {
+            "type": "particles",
+            "kind": "heart",
+            "count": 18
+          },
+          {
+            "type": "tuan",
+            "emotion": "happy",
+            "dur": 2400
+          }
+        ]
+      }
+    },
+    {
+      "char": "chi",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "吃"
+            },
+            {
+              "type": "sfx",
+              "id": "chomp"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "note",
+              "count": 5
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "chi",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "吃"
+            },
+            {
+              "type": "sfx",
+              "id": "chomp"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 5,
+              "dur": 320
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "he",
+      "target": {
+        "tag": "drinkable"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "喝"
+            },
+            {
+              "type": "sfx",
+              "id": "gulp"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1600
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "he",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "喝"
+            },
+            {
+              "type": "sfx",
+              "id": "gulp"
+            },
+            {
+              "type": "hop",
+              "height": 14,
+              "times": 1
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 5
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "he",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "喝"
+            },
+            {
+              "type": "sfx",
+              "id": "gulp"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 4,
+              "dur": 300
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "re",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "热"
+            },
+            {
+              "type": "sfx",
+              "id": "sizzle"
+            },
+            {
+              "type": "setState",
+              "key": "hot",
+              "value": true
+            },
+            {
+              "type": "setState",
+              "key": "cold",
+              "value": false
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 8
+            },
+            {
+              "type": "glow",
+              "color": "#ff8a4c",
+              "dur": 1500
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "热"
+            },
+            {
+              "type": "sfx",
+              "id": "sizzle"
+            },
+            {
+              "type": "setState",
+              "key": "hot",
+              "value": true
+            },
+            {
+              "type": "setState",
+              "key": "cold",
+              "value": false
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 4,
+              "dur": 600
+            },
+            {
+              "type": "particles",
+              "kind": "fire",
+              "count": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "leng",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "冷"
+            },
+            {
+              "type": "sfx",
+              "id": "freeze"
+            },
+            {
+              "type": "setState",
+              "key": "cold",
+              "value": true
+            },
+            {
+              "type": "setState",
+              "key": "hot",
+              "value": false
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 9
+            },
+            {
+              "type": "glow",
+              "color": "#8fd4ff",
+              "dur": 1500
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "冷"
+            },
+            {
+              "type": "sfx",
+              "id": "freeze"
+            },
+            {
+              "type": "setState",
+              "key": "cold",
+              "value": true
+            },
+            {
+              "type": "setState",
+              "key": "hot",
+              "value": false
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "scared",
+              "dur": 1500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "duo",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "多"
+            },
+            {
+              "type": "sfx",
+              "id": "pop"
+            },
+            {
+              "type": "count",
+              "delta": 1
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 7
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1300
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "多"
+          },
+          {
+            "type": "sfx",
+            "id": "pop"
+          },
+          {
+            "type": "setCount",
+            "n": 5
+          },
+          {
+            "type": "sfx",
+            "id": "chime"
+          },
+          {
+            "type": "particles",
+            "kind": "star",
+            "count": 22
+          },
+          {
+            "type": "tuan",
+            "emotion": "surprised",
+            "dur": 2200
+          }
+        ]
+      }
+    },
+    {
+      "char": "shao",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "少"
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            },
+            {
+              "type": "count",
+              "delta": -1
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "yi",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "一"
+            },
+            {
+              "type": "sfx",
+              "id": "pop"
+            },
+            {
+              "type": "setCount",
+              "n": 1
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "er",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "二"
+            },
+            {
+              "type": "sfx",
+              "id": "pop"
+            },
+            {
+              "type": "setCount",
+              "n": 2
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "san",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "三"
+            },
+            {
+              "type": "sfx",
+              "id": "pop"
+            },
+            {
+              "type": "setCount",
+              "n": 3
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 9
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "yu",
+      "target": {
+        "tag": "fish"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "鱼",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "hop",
+              "height": 18,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "yu",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "鱼 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "鱼"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "dan",
+      "target": {
+        "tag": "egg"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "蛋",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "crack"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "dan",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "蛋 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "蛋"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "mi",
+      "target": {
+        "tag": "rice"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "米",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "pour"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 420
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "mi",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "米 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "米"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "rou",
+      "target": {
+        "tag": "meat"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "肉",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "sizzle"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "rou",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "肉 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "肉"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "cai",
+      "target": {
+        "tag": "veg"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "菜",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "rustle"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 460
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "cai",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "菜 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "菜"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shou",
+      "target": {
+        "tag": "tuantuan"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "手",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "clap"
+            },
+            {
+              "type": "hop",
+              "height": 14,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "note",
+              "count": 5
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shou",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "手 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "手"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kou",
+      "target": {
+        "tag": "tuantuan"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "口",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "gulp"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "heart",
+              "count": 5
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kou",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "口 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "口"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
     }
   ],
   "fallback": {

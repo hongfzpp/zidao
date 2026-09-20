@@ -13,6 +13,11 @@ rules = json.loads((root / 'data/cast-rules.json').read_text())
 by_id = {c['id']: c for c in chars}
 by_glyph = {c['char']: c['id'] for c in chars}
 
+SCENES = {f.stem: json.loads(f.read_text())
+          for f in sorted((root / 'data/scenes').glob('*.json'))}
+scene = SCENES['house']
+scene_tags = {t for sc in SCENES.values() for o in sc['objects'] for t in o.get('tags', [])}
+
 # 1. every castable character has at least one rule, and an `any` rule (no dead taps)
 have_rule = {r['char'] for r in rules['rules']}
 have_any = {r['char'] for r in rules['rules'] if r['target'].get('any')}
@@ -61,11 +66,38 @@ walk(rules, lambda n: used.add(n['id']) if n.get('type') == 'sfx' else None)
 for s in sorted(used - defined):
     err.append(f"cast rules use sfx '{s}' which is not defined in js/sfx.js")
 
+# 6a. every scene: ids unique, positions sane, doors lead somewhere real
+for sid, sc in SCENES.items():
+    ids = [o['id'] for o in sc['objects']]
+    if len(set(ids)) != len(ids):
+        err.append(f"scene {sid}: duplicate object ids")
+    for o in sc['objects']:
+        if not (0 <= o['x'] <= 100 and 0 <= o['y'] <= 100):
+            err.append(f"scene {sid}: {o['id']} is outside the room")
+        if 'openable' in o.get('tags', []) and not o.get('opening'):
+            err.append(f"scene {sid}: {o['id']} is openable but declares no opening")
+        if o.get('leadsTo') and o['leadsTo'] not in SCENES:
+            err.append(f"scene {sid}: {o['id']} leads to unknown scene '{o['leadsTo']}'")
+        if o.get('leadsTo') and 'openable' not in o.get('tags', []):
+            err.append(f"scene {sid}: {o['id']} leads somewhere but cannot be opened")
+        if o.get('leadsTo') and not o.get('opensWith'):
+            err.append(f"scene {sid}: {o['id']} leads somewhere but does not say which "
+                       f"character opens it -- the pouch cap could rotate it away and "
+                       f"strand the kid")
+        if o.get('opensWith') and o['opensWith'] not in by_id:
+            err.append(f"scene {sid}: {o['id']} opensWith unknown character "
+                       f"'{o['opensWith']}'")
+
+# every scene needs a way back, or the kid is stranded
+for sid, sc in SCENES.items():
+    if sid == 'house':
+        continue
+    if not any(o.get('leadsTo') for o in sc['objects']):
+        err.append(f"scene {sid} has no way out")
+
 # 6. scene objects: tags referenced by tag-rules should exist somewhere
-scene = json.loads((root / 'data/scenes/house.json').read_text())
-scene_tags = {t for o in scene['objects'] for t in o.get('tags', [])}
 scene_tags |= {t for sp in rules.get('spawnables', {}).values() for t in sp.get('tags', [])}
-scene_ids = {o['id'] for o in scene['objects']} | set(rules.get('spawnables', {}))
+scene_ids = {o['id'] for sc in SCENES.values() for o in sc['objects']} | set(rules.get('spawnables', {}))
 for r in rules['rules']:
     t = r['target']
     if t.get('tag') and t['tag'] not in scene_tags:
@@ -165,7 +197,8 @@ pool = sorted({g for c in chars for g in c.get('confusables', [])} - curriculum)
 stories = STORY_FILES
 print(f"\n{len(chars)} characters, {len(rules['rules'])} cast rules, "
       f"{sum(len(r['variants']) for r in rules['rules'])} variants, "
-      f"{len(scene['objects'])} scene objects, "
+      f"{sum(len(s2['objects']) for s2 in SCENES.values())} objects in "
+      f"{len(SCENES)} scenes, "
       f"{len(pool)} decoys, {len(stories)} stories")
 print("FAILED" if err else "OK")
 sys.exit(1 if err else 0)

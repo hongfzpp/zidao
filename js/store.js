@@ -12,7 +12,8 @@ const BLANK = {
   arrivalsThisSession: 0,
   lastPlayedAt: 0,      // a real session boundary is a gap in TIME, not a page load
   fizzles: 0,         // decoy picks -- the only real signal of guessing
-  sceneState: null,   // per-object scale/state overrides + spawned objects
+  scenes: {},         // sceneId -> per-object scale/state overrides
+  currentScene: 'house',
   seenGolden: 0,
   progress: {},       // charId -> memory record (js/core/memory.js)
   prompts: { asked: 0, right: 0 },
@@ -53,8 +54,9 @@ export function own (charId) {
   }
 }
 
-export function resetScene () {
-  state.sceneState = null;
+export function resetScene (sceneId = null) {
+  if (sceneId) delete state.scenes[sceneId];
+  else state.scenes = {};
   save();
 }
 

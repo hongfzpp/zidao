@@ -11,6 +11,7 @@ import { initAudio, loadVoice, say } from './audio.js';
 import { TIMINGS, DEV_HOLD_MS, FAST, applyTestMode, devFlagFromUrl } from './timings.js';
 import { initSfx, sfx } from './sfx.js';
 import * as scene from './scene.js';
+import * as fx from './fx.js';
 import { initCast } from './cast.js';
 import { initPouch, render as renderPouch, onNewCharacter, attachPouchInput } from './pouch.js';
 import * as handMod from './hand.js';
@@ -85,6 +86,7 @@ async function boot () {
       prompt.isActive() && rec.id === 'tuantuan' && prompt.answer(cardId)
   });
   attachPouchInput();
+  attachSceneTaps();
   story.initStory(CHARS);
   story.attachStoryInput();
   // read-only hook so the E2E harness can answer 团团 deliberately right or wrong
@@ -181,6 +183,27 @@ async function afterCast () {
   if (story.isOpen() || prompt.isActive() || castsSincePrompt < CASTS_BETWEEN_PROMPTS) return;
   await new Promise(r => setTimeout(r, TIMINGS.arrivalDelayMs));
   if (await prompt.startPrompt()) castsSincePrompt = 0;
+}
+
+/* ---------- walking between rooms ----------
+   The door is the way through, and only when it is OPEN -- so getting to the
+   next room means reading 开 first. Reading to act, exactly as DESIGN.md §6.2
+   intends, rather than a menu. */
+
+function attachSceneTaps () {
+  document.getElementById('objects').addEventListener('click', async e => {
+    const el = e.target.closest('.obj');
+    if (!el || prompt.isActive() || story.isOpen()) return;
+    const rec = scene.getObject(el.dataset.id);
+    if (!rec?.leadsTo) return;
+    if (rec.state.open !== true) {          // shut: nudge, do not explain
+      fx.shake(el, 5, 320);
+      sfx('thud');
+      return;
+    }
+    sfx('creak');
+    await scene.goToScene(rec.leadsTo);
+  });
 }
 
 /* ---------- 测试模式 ----------

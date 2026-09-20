@@ -3,6 +3,7 @@
 
 import { get } from './store.js';
 import * as core from './core/hand.js';
+import { requiredChars } from './scene.js';
 
 export const { isDistractor, distractorGlyph, toDistractorId } = core;
 export const DISTRACTOR_PREFIX = core.DISTRACTOR_PREFIX;
@@ -44,7 +45,8 @@ export function rebuild ({ redraw = false } = {}) {
     currentSelection = core.selectPouch(chars, state.owned, {
       max: core.realSlots(currentDecoys.length),
       progress: state.progress || {},
-      pinned: pinnedId
+      // pin the last-shown character AND anything needed to leave this room
+      pinned: [pinnedId, ...requiredChars()].filter(Boolean)
     });
     castsSinceRedraw = 0;
   } else {
