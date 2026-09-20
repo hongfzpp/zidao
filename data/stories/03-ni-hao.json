@@ -1,0 +1,13 @@
+{
+  "id": "ni-hao",
+  "title": "你好",
+  "requires": ["kai", "deng", "men"],
+  "introduces": ["ni", "hao", "wo"],
+  "_comment": "Where 你 好 我 are met. Never taught in 初遇 and never cast -- they are learned by position and repetition, the way a child learns 'the' (DESIGN.md §9.1).",
+  "pages": [
+    { "art": "👋",      "text": ["你", "好"] },
+    { "art": "💡",      "text": ["我", "开", "灯"] },
+    { "art": "🚪",      "text": ["我", "开", "门"] },
+    { "art": "🙋👋",    "text": ["你", "好", "我", "好"] }
+  ]
+}

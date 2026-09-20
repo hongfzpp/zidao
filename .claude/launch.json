@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "zidao",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "scripts/serve.py",
+        "8181"
+      ],
+      "port": 8181
+    }
+  ]
+}

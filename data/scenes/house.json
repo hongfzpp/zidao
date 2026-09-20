@@ -1,0 +1,113 @@
+{
+  "id": "house",
+  "name": "家",
+  "light": "on",
+  "objects": [
+    {
+      "id": "door",
+      "glyph": "🚪",
+      "x": 10,
+      "y": 81,
+      "size": 18,
+      "tags": [
+        "openable",
+        "furniture",
+        "door"
+      ],
+      "state": {
+        "open": false
+      },
+      "opening": "outside"
+    },
+    {
+      "id": "window",
+      "glyph": "🪟",
+      "x": 30,
+      "y": 34,
+      "size": 13,
+      "tags": [
+        "openable",
+        "window"
+      ],
+      "state": {
+        "open": false
+      },
+      "opening": "sky"
+    },
+    {
+      "id": "lamp",
+      "glyph": "💡",
+      "x": 62,
+      "y": 26,
+      "size": 11,
+      "tags": [
+        "lightable",
+        "lamp"
+      ],
+      "state": {
+        "lit": true
+      }
+    },
+    {
+      "id": "bed",
+      "glyph": "🛏️",
+      "x": 86,
+      "y": 87,
+      "size": 20,
+      "tags": [
+        "furniture",
+        "soft",
+        "bed"
+      ]
+    },
+    {
+      "id": "cat",
+      "glyph": "🐱",
+      "x": 44,
+      "y": 89,
+      "size": 14,
+      "tags": [
+        "creature",
+        "animal",
+        "cat"
+      ],
+      "wander": true
+    },
+    {
+      "id": "dog",
+      "glyph": "🐶",
+      "x": 33,
+      "y": 89,
+      "size": 13,
+      "tags": [
+        "creature",
+        "animal",
+        "dog"
+      ],
+      "wander": true
+    },
+    {
+      "id": "plant",
+      "glyph": "🪴",
+      "x": 22,
+      "y": 91,
+      "size": 12,
+      "tags": [
+        "plant",
+        "growable"
+      ]
+    },
+    {
+      "id": "tuantuan",
+      "glyph": "@tuantuan",
+      "x": 64,
+      "y": 93,
+      "size": 15,
+      "tags": [
+        "creature",
+        "tuantuan"
+      ],
+      "wander": true
+    }
+  ]
+}

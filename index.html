@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>字岛</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4d9b0">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-title" content="字岛">
+<!-- iOS ignores the manifest icons; it needs these -->
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="assets/icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="assets/icons/icon-120.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Tap-to-start: required to unlock audio on iOS. Shown once per load. -->
+<div id="unlock" class="overlay">
+  <div class="unlock-inner">
+    <div class="unlock-title">字岛</div>
+    <button id="unlock-btn" class="unlock-btn" aria-label="开始">▶</button>
+  </div>
+</div>
+
+<!-- 初遇 First Meeting -->
+<div id="first-meeting" class="overlay hidden">
+  <div id="fm-stage" class="fm-stage">
+    <div id="fm-char" class="fm-char"></div>
+    <div id="fm-thing" class="fm-thing"></div>
+  </div>
+  <div id="fm-done" class="fm-done hidden">✓</div>
+</div>
+
+<!-- 故事 Story: the payoff. Every character on the page is one the kid knows. -->
+<div id="story" class="overlay hidden">
+  <div class="story-book">
+    <div id="story-art" class="story-art"></div>
+    <div id="story-text" class="story-text"></div>
+    <div class="story-say">
+      <button id="story-mic" class="story-mic">🎤 <span>说说看</span></button>
+      <div id="story-hint" class="story-hint"></div>
+    </div>
+    <div class="story-nav">
+      <button id="story-prev" class="story-btn" aria-label="上一页">‹</button>
+      <div id="story-dots" class="story-dots"></div>
+      <button id="story-next" class="story-btn" aria-label="下一页">›</button>
+    </div>
+  </div>
+</div>
+
+<div id="dev-badge" class="dev-badge hidden">测试模式</div>
+
+<!-- The world -->
+<main id="app">
+  <div id="room">
+    <div id="wall"></div>
+    <div id="floor"></div>
+    <div id="objects"></div>
+    <div id="particles"></div>
+    <div id="rain" class="hidden"></div>
+    <div id="dark"></div>
+  </div>
+
+  <div id="pouch">
+    <div id="pouch-cards"></div>
+  </div>
+
+  <!-- Parent gate: press and hold 3s in the corner -->
+  <!-- Parent gate. Deliberately dull and in the corner: an adult can find it,
+       a child has no reason to want it. The 3s hold is the actual gate. -->
+  <div id="parent-dot" aria-label="家长">
+    <svg viewBox="0 0 48 48">
+      <circle class="pd-track" cx="24" cy="24" r="19"/>
+      <circle class="pd-fill"  cx="24" cy="24" r="19"/>
+      <circle class="pd-core"  cx="24" cy="24" r="4.5"/>
+    </svg>
+  </div>
+  <div id="parent-panel" class="overlay hidden">
+    <div class="panel-inner">
+      <h2>家长</h2>
+      <div id="parent-stats"></div>
+      <div class="panel-row">
+        <button class="pbtn primary" data-act="next-char">认识下一个字</button>
+        <button class="pbtn" data-act="unlock-all">解锁全部字</button>
+        <button class="pbtn" data-act="read-story">读故事</button>
+        <button class="pbtn" data-act="reset-scene">重置房间</button>
+        <button class="pbtn dev" data-act="dev-toggle">测试模式</button>
+        <button class="pbtn danger" data-act="reset-all">全部重来</button>
+      </div>
+      <div id="parent-chars"></div>
+      <button class="pbtn close" data-act="close">关闭</button>
+    </div>
+  </div>
+</main>
+
+<div id="drag-layer"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

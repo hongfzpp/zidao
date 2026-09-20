@@ -1,0 +1,2276 @@
+{
+  "_comment": "char x target -> effect variants. Target specificity: id > tag > any. Every char MUST have an 'any' rule: no dead taps.",
+  "rules": [
+    {
+      "char": "da",
+      "target": {
+        "id": "cat"
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.7,
+              "max": 5.0,
+              "dur": 700
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "shake",
+              "target": "room",
+              "intensity": 7,
+              "dur": 500
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 12
+            },
+            {
+              "type": "sfx",
+              "id": "purr"
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1600
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.7,
+              "max": 5.0,
+              "dur": 650
+            },
+            {
+              "type": "hop",
+              "height": 34,
+              "times": 1
+            },
+            {
+              "type": "shake",
+              "target": "room",
+              "intensity": 5,
+              "dur": 400
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 8
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "大"
+          },
+          {
+            "type": "sfx",
+            "id": "whoomph"
+          },
+          {
+            "type": "scale",
+            "factor": 3.4,
+            "max": 6,
+            "dur": 900
+          },
+          {
+            "type": "shake",
+            "target": "room",
+            "intensity": 14,
+            "dur": 1100
+          },
+          {
+            "type": "sfx",
+            "id": "thunder"
+          },
+          {
+            "type": "particles",
+            "kind": "star",
+            "count": 26
+          },
+          {
+            "type": "tuan",
+            "emotion": "scared",
+            "dur": 2000
+          },
+          {
+            "type": "wait",
+            "dur": 500
+          },
+          {
+            "type": "sfx",
+            "id": "purr"
+          }
+        ]
+      }
+    },
+    {
+      "char": "da",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.4,
+              "max": 5.0,
+              "dur": 700
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "da",
+      "target": {
+        "id": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.4,
+              "max": 5.0,
+              "dur": 700
+            },
+            {
+              "type": "glow",
+              "color": "#ffe27a",
+              "dur": 1200
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "da",
+      "target": {
+        "id": "plant"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.4,
+              "max": 5.0,
+              "dur": 800
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 12
+            },
+            {
+              "type": "squash"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "da",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.4,
+              "max": 5.0,
+              "dur": 700
+            },
+            {
+              "type": "squash"
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "大"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "scale",
+              "factor": 2.4,
+              "max": 5.0,
+              "dur": 750
+            },
+            {
+              "type": "shake",
+              "target": "room",
+              "intensity": 4,
+              "dur": 350
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "xiao",
+      "target": {
+        "id": "cat"
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "小"
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            },
+            {
+              "type": "scale",
+              "factor": 0.42,
+              "min": 0.18,
+              "dur": 650
+            },
+            {
+              "type": "hop",
+              "height": 16,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 7
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "小"
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            },
+            {
+              "type": "scale",
+              "factor": 0.42,
+              "min": 0.18,
+              "dur": 600
+            },
+            {
+              "type": "spin",
+              "turns": 1,
+              "dur": 600
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1200
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "小"
+          },
+          {
+            "type": "sfx",
+            "id": "squeak"
+          },
+          {
+            "type": "setScale",
+            "value": 0.08,
+            "dur": 700
+          },
+          {
+            "type": "sfx",
+            "id": "pop"
+          },
+          {
+            "type": "wait",
+            "dur": 400
+          },
+          {
+            "type": "setScale",
+            "value": 1.0,
+            "dur": 400
+          },
+          {
+            "type": "particles",
+            "kind": "sparkle",
+            "count": 22
+          },
+          {
+            "type": "sfx",
+            "id": "chime"
+          }
+        ]
+      }
+    },
+    {
+      "char": "xiao",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "小"
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            },
+            {
+              "type": "scale",
+              "factor": 0.42,
+              "min": 0.18,
+              "dur": 650
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "小"
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            },
+            {
+              "type": "scale",
+              "factor": 0.42,
+              "min": 0.18,
+              "dur": 600
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 6
+            },
+            {
+              "type": "spin",
+              "turns": 1,
+              "dur": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kai",
+      "target": {
+        "id": "door"
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "sfx",
+              "id": "creak"
+            },
+            {
+              "type": "setState",
+              "key": "open",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "wind"
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 12
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1300
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "sfx",
+              "id": "creak"
+            },
+            {
+              "type": "setState",
+              "key": "open",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "wind"
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 18
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kai",
+      "target": {
+        "id": "window"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "sfx",
+              "id": "creak"
+            },
+            {
+              "type": "setState",
+              "key": "open",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "wind"
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 16
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kai",
+      "target": {
+        "id": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "sfx",
+              "id": "zap"
+            },
+            {
+              "type": "setState",
+              "key": "lit",
+              "value": true
+            },
+            {
+              "type": "roomLight",
+              "value": "on"
+            },
+            {
+              "type": "glow",
+              "color": "#ffe27a",
+              "dur": 1400
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 10
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kai",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "setState",
+              "key": "sleeping",
+              "value": false
+            },
+            {
+              "type": "sfx",
+              "id": "boing"
+            },
+            {
+              "type": "hop",
+              "height": 22,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "note",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "kai",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "开"
+            },
+            {
+              "type": "sfx",
+              "id": "creak"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 7,
+              "dur": 500
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1400
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "guan",
+      "target": {
+        "id": "door"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "关"
+            },
+            {
+              "type": "setState",
+              "key": "open",
+              "value": false
+            },
+            {
+              "type": "sfx",
+              "id": "thud"
+            },
+            {
+              "type": "shake",
+              "target": "room",
+              "intensity": 4,
+              "dur": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "guan",
+      "target": {
+        "id": "window"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "关"
+            },
+            {
+              "type": "setState",
+              "key": "open",
+              "value": false
+            },
+            {
+              "type": "sfx",
+              "id": "thud"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "guan",
+      "target": {
+        "id": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "关"
+            },
+            {
+              "type": "sfx",
+              "id": "zap"
+            },
+            {
+              "type": "setState",
+              "key": "lit",
+              "value": false
+            },
+            {
+              "type": "roomLight",
+              "value": "off"
+            },
+            {
+              "type": "tuan",
+              "emotion": "scared",
+              "dur": 2200
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "guan",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "关"
+            },
+            {
+              "type": "sfx",
+              "id": "yawn"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "guan",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "关"
+            },
+            {
+              "type": "sfx",
+              "id": "thud"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "huo",
+      "target": {
+        "id": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "火"
+            },
+            {
+              "type": "sfx",
+              "id": "fire"
+            },
+            {
+              "type": "setState",
+              "key": "lit",
+              "value": true
+            },
+            {
+              "type": "roomLight",
+              "value": "on"
+            },
+            {
+              "type": "particles",
+              "kind": "fire",
+              "count": 16
+            },
+            {
+              "type": "glow",
+              "color": "#ff9a3c",
+              "dur": 1600
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "huo",
+      "target": {
+        "id": "plant"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "火"
+            },
+            {
+              "type": "sfx",
+              "id": "fire"
+            },
+            {
+              "type": "setState",
+              "key": "burnt",
+              "value": true
+            },
+            {
+              "type": "particles",
+              "kind": "fire",
+              "count": 14
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 8
+            },
+            {
+              "type": "tuan",
+              "emotion": "scared",
+              "dur": 1800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "huo",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "火"
+            },
+            {
+              "type": "sfx",
+              "id": "fire"
+            },
+            {
+              "type": "glow",
+              "color": "#ff7a3c",
+              "dur": 1200
+            },
+            {
+              "type": "hop",
+              "height": 30,
+              "times": 3
+            },
+            {
+              "type": "particles",
+              "kind": "fire",
+              "count": 8
+            },
+            {
+              "type": "sfx",
+              "id": "squeak"
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "火"
+            },
+            {
+              "type": "sfx",
+              "id": "fire"
+            },
+            {
+              "type": "glow",
+              "color": "#ff7a3c",
+              "dur": 1000
+            },
+            {
+              "type": "spin",
+              "turns": 2,
+              "dur": 700
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "huo",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "火"
+            },
+            {
+              "type": "sfx",
+              "id": "fire"
+            },
+            {
+              "type": "setState",
+              "key": "burnt",
+              "value": true
+            },
+            {
+              "type": "particles",
+              "kind": "fire",
+              "count": 12
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 6
+            },
+            {
+              "type": "glow",
+              "color": "#ff7a3c",
+              "dur": 1200
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "火"
+          },
+          {
+            "type": "sfx",
+            "id": "fire"
+          },
+          {
+            "type": "particles",
+            "kind": "fire",
+            "count": 30
+          },
+          {
+            "type": "roomTint",
+            "color": "#ff7a3c",
+            "dur": 1800
+          },
+          {
+            "type": "shake",
+            "target": "room",
+            "intensity": 8,
+            "dur": 900
+          },
+          {
+            "type": "tuan",
+            "emotion": "scared",
+            "dur": 2200
+          }
+        ]
+      }
+    },
+    {
+      "char": "shui",
+      "target": {
+        "id": "plant"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "水"
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "setState",
+              "key": "burnt",
+              "value": false
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 12
+            },
+            {
+              "type": "scale",
+              "factor": 1.35,
+              "max": 3,
+              "dur": 800
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 10
+            },
+            {
+              "type": "sfx",
+              "id": "chime"
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shui",
+      "target": {
+        "id": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "水"
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 14
+            },
+            {
+              "type": "setState",
+              "key": "lit",
+              "value": false
+            },
+            {
+              "type": "roomLight",
+              "value": "off"
+            },
+            {
+              "type": "sfx",
+              "id": "zap"
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "scared",
+              "dur": 1800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shui",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "水"
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 16
+            },
+            {
+              "type": "setState",
+              "key": "wet",
+              "value": true
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 9,
+              "dur": 700
+            },
+            {
+              "type": "sfx",
+              "id": "sneeze"
+            },
+            {
+              "type": "tuan",
+              "emotion": "wet",
+              "dur": 2000
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "水"
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 12
+            },
+            {
+              "type": "setState",
+              "key": "wet",
+              "value": true
+            },
+            {
+              "type": "hop",
+              "height": 26,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "drip",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shui",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "水"
+            },
+            {
+              "type": "sfx",
+              "id": "splash"
+            },
+            {
+              "type": "setState",
+              "key": "burnt",
+              "value": false
+            },
+            {
+              "type": "setState",
+              "key": "wet",
+              "value": true
+            },
+            {
+              "type": "particles",
+              "kind": "water",
+              "count": 14
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "水"
+          },
+          {
+            "type": "sfx",
+            "id": "splash"
+          },
+          {
+            "type": "rain",
+            "dur": 3200
+          },
+          {
+            "type": "tuan",
+            "emotion": "wet",
+            "dur": 3000
+          },
+          {
+            "type": "sfx",
+            "id": "sneeze"
+          }
+        ]
+      }
+    },
+    {
+      "char": "mao",
+      "target": {
+        "tag": "cat"
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "猫",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "mew"
+            },
+            {
+              "type": "hop",
+              "height": 18,
+              "times": 1
+            },
+            {
+              "type": "particles",
+              "kind": "heart",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "猫",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "mew"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "heart",
+              "count": 8
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "mao",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "猫 on anything that is not a cat: acknowledged, but nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "猫"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "men",
+      "target": {
+        "tag": "door"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "门",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "dooropen"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 520
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "men",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "门 on anything that is not a door: acknowledged, but nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "门"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shang",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "上"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "lift",
+              "dy": -22
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 8
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1400
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "上"
+            },
+            {
+              "type": "sfx",
+              "id": "whoomph"
+            },
+            {
+              "type": "lift",
+              "dy": -16
+            },
+            {
+              "type": "spin",
+              "turns": 1,
+              "dur": 700
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 6
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "上"
+          },
+          {
+            "type": "sfx",
+            "id": "whoomph"
+          },
+          {
+            "type": "lift",
+            "dy": -45
+          },
+          {
+            "type": "setState",
+            "key": "flying",
+            "value": true
+          },
+          {
+            "type": "sfx",
+            "id": "wingflap"
+          },
+          {
+            "type": "particles",
+            "kind": "star",
+            "count": 20
+          },
+          {
+            "type": "tuan",
+            "emotion": "surprised",
+            "dur": 2000
+          }
+        ]
+      }
+    },
+    {
+      "char": "xia",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 3,
+          "steps": [
+            {
+              "type": "say",
+              "char": "下"
+            },
+            {
+              "type": "lift",
+              "dy": 22
+            },
+            {
+              "type": "sfx",
+              "id": "thud"
+            },
+            {
+              "type": "setState",
+              "key": "flying",
+              "value": false
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "shake",
+              "target": "room",
+              "intensity": 4,
+              "dur": 300
+            }
+          ]
+        },
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "下"
+            },
+            {
+              "type": "lift",
+              "dy": 16
+            },
+            {
+              "type": "sfx",
+              "id": "thud"
+            },
+            {
+              "type": "setState",
+              "key": "flying",
+              "value": false
+            },
+            {
+              "type": "particles",
+              "kind": "smoke",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "fei",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "飞"
+            },
+            {
+              "type": "sfx",
+              "id": "wingflap"
+            },
+            {
+              "type": "setState",
+              "key": "flying",
+              "value": true
+            },
+            {
+              "type": "lift",
+              "dy": -30
+            },
+            {
+              "type": "particles",
+              "kind": "note",
+              "count": 7
+            },
+            {
+              "type": "tuan",
+              "emotion": "surprised",
+              "dur": 1400
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "飞"
+            },
+            {
+              "type": "sfx",
+              "id": "wingflap"
+            },
+            {
+              "type": "setState",
+              "key": "flying",
+              "value": true
+            },
+            {
+              "type": "lift",
+              "dy": -24
+            },
+            {
+              "type": "spin",
+              "turns": 1,
+              "dur": 800
+            },
+            {
+              "type": "particles",
+              "kind": "star",
+              "count": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "fei",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "飞"
+            },
+            {
+              "type": "sfx",
+              "id": "wingflap"
+            },
+            {
+              "type": "setState",
+              "key": "flying",
+              "value": true
+            },
+            {
+              "type": "lift",
+              "dy": -26
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 6
+            }
+          ]
+        }
+      ],
+      "golden": {
+        "steps": [
+          {
+            "type": "say",
+            "char": "飞"
+          },
+          {
+            "type": "sfx",
+            "id": "wingflap"
+          },
+          {
+            "type": "setState",
+            "key": "flying",
+            "value": true
+          },
+          {
+            "type": "lift",
+            "dy": -48
+          },
+          {
+            "type": "spin",
+            "turns": 2,
+            "dur": 1200
+          },
+          {
+            "type": "particles",
+            "kind": "star",
+            "count": 22
+          },
+          {
+            "type": "sfx",
+            "id": "chime"
+          },
+          {
+            "type": "tuan",
+            "emotion": "surprised",
+            "dur": 2200
+          }
+        ]
+      }
+    },
+    {
+      "char": "shui4",
+      "target": {
+        "tag": "creature"
+      },
+      "variants": [
+        {
+          "w": 2,
+          "steps": [
+            {
+              "type": "say",
+              "char": "睡"
+            },
+            {
+              "type": "setState",
+              "key": "sleeping",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "snore"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "sleepy",
+              "dur": 2200
+            }
+          ]
+        },
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "睡"
+            },
+            {
+              "type": "setState",
+              "key": "sleeping",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "yawn"
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 4
+            },
+            {
+              "type": "tuan",
+              "emotion": "sleepy",
+              "dur": 2000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "shui4",
+      "target": {
+        "any": true
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "睡"
+            },
+            {
+              "type": "setState",
+              "key": "sleeping",
+              "value": true
+            },
+            {
+              "type": "sfx",
+              "id": "snore"
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "gou",
+      "target": {
+        "tag": "dog"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "狗",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "woof"
+            },
+            {
+              "type": "hop",
+              "height": 20,
+              "times": 2
+            },
+            {
+              "type": "particles",
+              "kind": "heart",
+              "count": 6
+            },
+            {
+              "type": "tuan",
+              "emotion": "happy",
+              "dur": 1400
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "gou",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "狗 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "狗"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "chuang_b",
+      "target": {
+        "tag": "bed"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "床",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "springs"
+            },
+            {
+              "type": "squash"
+            },
+            {
+              "type": "particles",
+              "kind": "zzz",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "chuang_b",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "床 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "床"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "deng",
+      "target": {
+        "tag": "lamp"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "灯",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "lampclick"
+            },
+            {
+              "type": "glow",
+              "color": "#ffe27a",
+              "dur": 1400
+            },
+            {
+              "type": "particles",
+              "kind": "sparkle",
+              "count": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "deng",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "灯 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "灯"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "chuang_w",
+      "target": {
+        "tag": "window"
+      },
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "窗",
+              "wait": true
+            },
+            {
+              "type": "sfx",
+              "id": "wind"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 2,
+              "dur": 420
+            },
+            {
+              "type": "particles",
+              "kind": "leaf",
+              "count": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "char": "chuang_w",
+      "target": {
+        "any": true
+      },
+      "noEffect": true,
+      "_comment": "窗 on anything it does not name: acknowledged, nothing happens.",
+      "variants": [
+        {
+          "w": 1,
+          "steps": [
+            {
+              "type": "say",
+              "char": "窗"
+            },
+            {
+              "type": "shake",
+              "target": "self",
+              "intensity": 3,
+              "dur": 280
+            },
+            {
+              "type": "tuan",
+              "emotion": "confused",
+              "dur": 1100
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fallback": {
+    "_comment": "Never a dead tap. Used if no rule matches at all.",
+    "variants": [
+      {
+        "w": 3,
+        "steps": [
+          {
+            "type": "saySelf"
+          },
+          {
+            "type": "sfx",
+            "id": "boing"
+          },
+          {
+            "type": "shake",
+            "target": "self",
+            "intensity": 6,
+            "dur": 450
+          },
+          {
+            "type": "tuan",
+            "emotion": "confused",
+            "dur": 1300
+          }
+        ]
+      },
+      {
+        "w": 2,
+        "steps": [
+          {
+            "type": "saySelf"
+          },
+          {
+            "type": "sfx",
+            "id": "boing"
+          },
+          {
+            "type": "hop",
+            "height": 14,
+            "times": 1
+          },
+          {
+            "type": "particles",
+            "kind": "note",
+            "count": 4
+          }
+        ]
+      }
+    ]
+  },
+  "spawnables": {
+    "cat": {
+      "glyph": "🐱",
+      "size": 11,
+      "tags": [
+        "creature",
+        "animal",
+        "cat"
+      ],
+      "wander": true
+    },
+    "door": {
+      "glyph": "🚪",
+      "size": 14,
+      "tags": [
+        "openable",
+        "furniture",
+        "door"
+      ],
+      "state": {
+        "open": false
+      }
+    }
+  },
+  "firstCastFlourish": {
+    "_comment": "Appended to the FIRST ever cast of a character so the hook always lands.",
+    "steps": [
+      {
+        "type": "particles",
+        "kind": "sparkle",
+        "count": 22
+      },
+      {
+        "type": "sfx",
+        "id": "chime"
+      },
+      {
+        "type": "tuan",
+        "emotion": "happy",
+        "dur": 1800
+      }
+    ]
+  },
+  "fizzle": {
+    "_comment": "Cast of a character that is NOT being taught. The world does not move for it. Never a failure state, never a buzzer -- just a small nope. The wordless lesson is that the taught shapes have power and random shapes do not.",
+    "variants": [
+      {
+        "w": 3,
+        "steps": [
+          {
+            "type": "sfx",
+            "id": "womp"
+          },
+          {
+            "type": "shake",
+            "target": "self",
+            "intensity": 4,
+            "dur": 320
+          },
+          {
+            "type": "particles",
+            "kind": "smoke",
+            "count": 3
+          },
+          {
+            "type": "tuan",
+            "emotion": "confused",
+            "dur": 1200
+          }
+        ]
+      },
+      {
+        "w": 2,
+        "steps": [
+          {
+            "type": "sfx",
+            "id": "womp"
+          },
+          {
+            "type": "squash"
+          },
+          {
+            "type": "particles",
+            "kind": "smoke",
+            "count": 2
+          },
+          {
+            "type": "tuan",
+            "emotion": "confused",
+            "dur": 1100
+          }
+        ]
+      }
+    ]
+  }
+}

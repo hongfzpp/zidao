@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>字岛 tests</title>
+<style>
+  :root{--ok:#1f8a4c;--bad:#c0392b;--ink:#2b2018;--bg:#fdf8ef}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:var(--bg);color:var(--ink);
+    font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{opacity:.6;margin-bottom:18px}
+  .summary{padding:14px 18px;border-radius:10px;font-size:17px;font-weight:700;
+    margin-bottom:18px;color:#fff;background:var(--ok)}
+  .summary.bad{background:var(--bad)}
+  section{background:#fff;border-radius:10px;margin-bottom:10px;padding:10px 14px;
+    border-left:5px solid var(--ok)}
+  section.bad{border-left-color:var(--bad)}
+  h3{margin:2px 0 6px;font-size:14px;display:flex;justify-content:space-between}
+  h3 span{opacity:.5;font-weight:400}
+  .t{padding:2px 0 2px 16px;font-size:13px}
+  .t.ok{color:var(--ok)} .t.bad{color:var(--bad);font-weight:700}
+  pre{margin:4px 0 8px 18px;padding:8px 10px;background:#fff1ef;border-radius:6px;
+    color:var(--bad);white-space:pre-wrap;font-size:12px}
+  #running{opacity:.6}
+</style>
+</head>
+<body>
+<h1>字岛 — test suite</h1>
+<div class="sub">unit tests (pure core) + data integrity + end-to-end (real app in an iframe)</div>
+<div id="running">running…</div>
+<div id="out"></div>
+
+<script type="module">
+import { runAll, render } from './runner.js';
+
+const SUITES = [
+  './unit/pacing.test.js', './unit/hand.test.js', './unit/rules.test.js',
+  './unit/layout.test.js', './unit/memory.test.js', './unit/distractors.test.js',
+  './unit/stories.test.js', './unit/speechmatch.test.js', './unit/data.test.js',
+  './e2e/app.test.js'
+];
+
+const out = document.getElementById('out');
+
+/** Headless runs read this; it must be posted on EVERY path, including failure. */
+async function publish (results) {
+  window.__testResults = results;
+  window.__done = true;
+  if (new URLSearchParams(location.search).get('post') !== '1') return;
+  try {
+    await fetch('/__results', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        total: results.total, passed: results.passed, failed: results.failed,
+        ok: results.ok, failures: results.failures, slowest: results.slowest || [],
+        suites: (results.suites || []).map(s => ({
+          name: s.name,
+          passed: s.tests.filter(t => t.ok).length,
+          total: s.tests.length
+        }))
+      })
+    });
+  } catch (e) { console.error('could not post results', e); }
+}
+
+// A failed import used to leave the page on "running..." forever -- a syntax
+// error in a test file looked exactly like a hung suite, and the headless CLI
+// sat through its whole timeout waiting for results that were never posted.
+const loadErrors = [];
+for (const path of SUITES) {
+  try { await import(path); }
+  catch (err) { loadErrors.push(`${path}\n    ${err.message}`); }
+}
+
+document.getElementById('running')?.remove();
+
+if (loadErrors.length) {
+  out.innerHTML =
+    `<div class="summary bad">${loadErrors.length} test file(s) failed to load</div>` +
+    loadErrors.map(e => `<section class="bad"><pre>${e}</pre></section>`).join('');
+  await publish({ total: 0, passed: 0, failed: loadErrors.length, ok: false,
+                  failures: loadErrors, suites: [], slowest: [] });
+  console.log('LOAD FAILURES:\n' + loadErrors.join('\n'));
+} else {
+  const results = await runAll();
+  render(results, out);
+  await publish(results);
+  console.log(results.ok ? 'ALL PASS' : 'FAILURES:\n' + results.failures.join('\n'));
+}
+</script>
+</body>
+</html>

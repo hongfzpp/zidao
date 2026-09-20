@@ -1,0 +1,474 @@
+{
+  "characters": [
+    {
+      "id": "da",
+      "char": "大",
+      "spoken": "大",
+      "kind": "transform",
+      "order": 1,
+      "castable": true,
+      "opposite": "xiao",
+      "reveal": {
+        "type": "grow",
+        "emoji": "🐘"
+      },
+      "confusables": [
+        "太",
+        "天",
+        "犬",
+        "木"
+      ],
+      "syllable": "da",
+      "homophones": [
+        "打",
+        "答",
+        "搭",
+        "达",
+        "塔"
+      ]
+    },
+    {
+      "id": "xiao",
+      "char": "小",
+      "spoken": "小",
+      "kind": "transform",
+      "order": 2,
+      "castable": true,
+      "opposite": "da",
+      "reveal": {
+        "type": "shrink",
+        "emoji": "🐜"
+      },
+      "confusables": [
+        "少",
+        "尔",
+        "水",
+        "木"
+      ],
+      "syllable": "xiao",
+      "homophones": [
+        "晓",
+        "笑",
+        "消"
+      ]
+    },
+    {
+      "id": "kai",
+      "char": "开",
+      "spoken": "开",
+      "kind": "action",
+      "order": 3,
+      "castable": true,
+      "opposite": "guan",
+      "reveal": {
+        "type": "open",
+        "emoji": "🚪"
+      },
+      "confusables": [
+        "井",
+        "天",
+        "升",
+        "平"
+      ],
+      "syllable": "kai",
+      "homophones": [
+        "揩",
+        "慨"
+      ]
+    },
+    {
+      "id": "guan",
+      "char": "关",
+      "spoken": "关",
+      "kind": "action",
+      "order": 4,
+      "castable": true,
+      "opposite": "kai",
+      "reveal": {
+        "type": "close",
+        "emoji": "🚪"
+      },
+      "confusables": [
+        "天",
+        "兰",
+        "米",
+        "并"
+      ],
+      "syllable": "guan",
+      "homophones": [
+        "观",
+        "官",
+        "冠",
+        "管"
+      ]
+    },
+    {
+      "id": "huo",
+      "char": "火",
+      "spoken": "火",
+      "kind": "transform",
+      "order": 5,
+      "castable": true,
+      "opposite": "shui",
+      "reveal": {
+        "type": "burn",
+        "emoji": "🔥"
+      },
+      "confusables": [
+        "大",
+        "人",
+        "米",
+        "长"
+      ],
+      "syllable": "huo",
+      "homophones": [
+        "伙",
+        "或",
+        "货",
+        "活"
+      ]
+    },
+    {
+      "id": "shui",
+      "char": "水",
+      "spoken": "水",
+      "kind": "transform",
+      "order": 6,
+      "castable": true,
+      "opposite": "huo",
+      "reveal": {
+        "type": "splash",
+        "emoji": "💧"
+      },
+      "confusables": [
+        "木",
+        "永",
+        "小",
+        "求"
+      ],
+      "syllable": "shui",
+      "homophones": [
+        "谁"
+      ]
+    },
+    {
+      "id": "mao",
+      "char": "猫",
+      "spoken": "猫",
+      "kind": "thing",
+      "order": 7,
+      "castable": true,
+      "spawns": "cat",
+      "reveal": {
+        "type": "pop",
+        "emoji": "🐱"
+      },
+      "confusables": [
+        "狗",
+        "猪",
+        "描",
+        "错"
+      ],
+      "syllable": "mao",
+      "homophones": [
+        "毛",
+        "帽",
+        "冒"
+      ]
+    },
+    {
+      "id": "men",
+      "char": "门",
+      "spoken": "门",
+      "kind": "thing",
+      "order": 8,
+      "castable": true,
+      "spawns": "door",
+      "reveal": {
+        "type": "pop",
+        "emoji": "🚪"
+      },
+      "confusables": [
+        "问",
+        "们",
+        "间",
+        "闭"
+      ],
+      "syllable": "men",
+      "homophones": [
+        "们",
+        "闷",
+        "焖"
+      ]
+    },
+    {
+      "id": "shang",
+      "char": "上",
+      "spoken": "上",
+      "kind": "transform",
+      "order": 9,
+      "castable": true,
+      "opposite": "xia",
+      "reveal": {
+        "type": "grow",
+        "emoji": "⬆️"
+      },
+      "confusables": [
+        "下",
+        "卡",
+        "止",
+        "土"
+      ],
+      "syllable": "shang",
+      "homophones": [
+        "尚",
+        "商",
+        "伤"
+      ]
+    },
+    {
+      "id": "xia",
+      "char": "下",
+      "spoken": "下",
+      "kind": "transform",
+      "order": 10,
+      "castable": true,
+      "opposite": "shang",
+      "reveal": {
+        "type": "close",
+        "emoji": "⬇️"
+      },
+      "confusables": [
+        "上",
+        "不",
+        "卡",
+        "丁"
+      ],
+      "syllable": "xia",
+      "homophones": [
+        "夏",
+        "吓",
+        "虾",
+        "瞎"
+      ]
+    },
+    {
+      "id": "fei",
+      "char": "飞",
+      "spoken": "飞",
+      "kind": "action",
+      "order": 11,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🕊️"
+      },
+      "confusables": [
+        "乙",
+        "九",
+        "几",
+        "风"
+      ],
+      "syllable": "fei",
+      "homophones": [
+        "非",
+        "肥",
+        "费",
+        "肺"
+      ]
+    },
+    {
+      "id": "shui4",
+      "char": "睡",
+      "spoken": "睡",
+      "kind": "action",
+      "order": 12,
+      "castable": true,
+      "reveal": {
+        "type": "close",
+        "emoji": "😴"
+      },
+      "confusables": [
+        "眠",
+        "睛",
+        "瞌",
+        "唾"
+      ],
+      "syllable": "shui",
+      "homophones": [
+        "税",
+        "说"
+      ]
+    },
+    {
+      "id": "chuang_w",
+      "char": "窗",
+      "spoken": "窗",
+      "kind": "thing",
+      "order": 13,
+      "castable": true,
+      "reveal": {
+        "type": "open",
+        "emoji": "🪟"
+      },
+      "confusables": [
+        "空",
+        "穿",
+        "突",
+        "窝"
+      ],
+      "syllable": "chuang",
+      "homophones": [
+        "创",
+        "闯",
+        "疮"
+      ]
+    },
+    {
+      "id": "chuang_b",
+      "char": "床",
+      "spoken": "床",
+      "kind": "thing",
+      "order": 14,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🛏️"
+      },
+      "confusables": [
+        "麻",
+        "庆",
+        "应",
+        "庄"
+      ],
+      "syllable": "chuang",
+      "homophones": [
+        "闯",
+        "创"
+      ]
+    },
+    {
+      "id": "deng",
+      "char": "灯",
+      "spoken": "灯",
+      "kind": "thing",
+      "order": 15,
+      "castable": true,
+      "reveal": {
+        "type": "burn",
+        "emoji": "💡"
+      },
+      "confusables": [
+        "打",
+        "订",
+        "汀",
+        "钉"
+      ],
+      "syllable": "deng",
+      "homophones": [
+        "登",
+        "等",
+        "瞪",
+        "蹬"
+      ]
+    },
+    {
+      "id": "gou",
+      "char": "狗",
+      "spoken": "狗",
+      "kind": "thing",
+      "order": 16,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🐶"
+      },
+      "confusables": [
+        "猫",
+        "狼",
+        "猪",
+        "够"
+      ],
+      "syllable": "gou",
+      "homophones": [
+        "够",
+        "构",
+        "沟",
+        "钩"
+      ]
+    },
+    {
+      "id": "ni",
+      "char": "你",
+      "spoken": "你",
+      "kind": "glue",
+      "order": 17,
+      "castable": false,
+      "reveal": {
+        "type": "pop",
+        "emoji": "👋"
+      },
+      "confusables": [
+        "他",
+        "们",
+        "尔",
+        "休"
+      ],
+      "syllable": "ni",
+      "homophones": [
+        "拟",
+        "泥",
+        "逆"
+      ]
+    },
+    {
+      "id": "hao",
+      "char": "好",
+      "spoken": "好",
+      "kind": "glue",
+      "order": 18,
+      "castable": false,
+      "reveal": {
+        "type": "pop",
+        "emoji": "👍"
+      },
+      "confusables": [
+        "奶",
+        "妈",
+        "子",
+        "如"
+      ],
+      "syllable": "hao",
+      "homophones": [
+        "号",
+        "豪",
+        "毫",
+        "耗"
+      ]
+    },
+    {
+      "id": "wo",
+      "char": "我",
+      "spoken": "我",
+      "kind": "glue",
+      "order": 19,
+      "castable": false,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🙋"
+      },
+      "confusables": [
+        "找",
+        "戏",
+        "成",
+        "钱"
+      ],
+      "syllable": "wo",
+      "homophones": [
+        "握",
+        "沃",
+        "卧"
+      ]
+    }
+  ]
+}

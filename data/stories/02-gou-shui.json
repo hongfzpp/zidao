@@ -1,0 +1,12 @@
+{
+  "id": "gou-shui",
+  "title": "小狗睡了",
+  "requires": ["gou", "xiao", "shui4", "chuang_b", "shang"],
+  "introduces": [],
+  "pages": [
+    { "art": "🐶",      "text": ["狗"] },
+    { "art": "🐶🛏️",    "text": ["狗", "上", "床"] },
+    { "art": "😴",      "text": ["小", "狗", "睡"] },
+    { "art": "🛏️💤",    "text": ["床", "上", "睡"] }
+  ]
+}
