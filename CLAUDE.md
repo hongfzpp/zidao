@@ -23,6 +23,8 @@ Every one of them is now a named regression test.
 | Drag ghost stranded on screen | assumed `pointerup` always arrives | `e2e · drag robustness` |
 | Parent gate unopenable by touch | `pointerleave` cancelled the hold | `e2e · parent panel` |
 | 12 cards overflowed the pouch | fixed-size cards | `layout · layoutFor` |
+| A door character could rotate out of the capped pouch, stranding the kid in a room | the cap had no notion of "this character is required here" | `e2e · 厨房` |
+| A flaky test: `多` asserted an exact count, but `多` has a 5% golden that jumps to five | an exact-value assertion on a mechanic with a deliberate random variant | `e2e · 厨房` |
 | A re-learned character often did not appear in the pouch | the cap guaranteed a slot to the most recently *acquired* character, and a review does not change acquisition order | `hand · the pouch is capped` |
 | Tapping a story character spoke it — an answer key on the reading page | a convenience that let the child skip reading entirely | `e2e · 故事` |
 | 读故事 did nothing at all on a fresh save | no story is unlocked yet, but the button never said so | `e2e · 故事` |
@@ -130,6 +132,9 @@ worth 14s.)
 
 Three rules keep it that way:
 
+- **Never assert an exact value on something with a random variant.** Golden
+  effects fire ~5% of the time; a test that pins the result flakes one run in
+  twenty and erodes trust in the whole suite. Assert the *direction* instead.
 - **Wait on conditions, never on the clock.** `waitFor(() => ...)`, not
   `sleep(500)`. A fixed sleep is either flaky or slow, usually both.
 - **Decide instead of polling.** When the app's own pure core can answer "is
