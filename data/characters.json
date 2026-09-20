@@ -25,7 +25,8 @@
         "搭",
         "达",
         "塔"
-      ]
+      ],
+      "unit": 1
     },
     {
       "id": "xiao",
@@ -50,7 +51,8 @@
         "晓",
         "笑",
         "消"
-      ]
+      ],
+      "unit": 1
     },
     {
       "id": "kai",
@@ -74,14 +76,93 @@
       "homophones": [
         "揩",
         "慨"
-      ]
+      ],
+      "unit": 1
+    },
+    {
+      "id": "men",
+      "char": "门",
+      "spoken": "门",
+      "kind": "thing",
+      "order": 4,
+      "castable": true,
+      "spawns": "door",
+      "reveal": {
+        "type": "pop",
+        "emoji": "🚪"
+      },
+      "confusables": [
+        "问",
+        "们",
+        "间",
+        "闭"
+      ],
+      "syllable": "men",
+      "homophones": [
+        "们",
+        "闷",
+        "焖"
+      ],
+      "unit": 1
+    },
+    {
+      "id": "mao",
+      "char": "猫",
+      "spoken": "猫",
+      "kind": "thing",
+      "order": 5,
+      "castable": true,
+      "spawns": "cat",
+      "reveal": {
+        "type": "pop",
+        "emoji": "🐱"
+      },
+      "confusables": [
+        "狗",
+        "猪",
+        "描",
+        "错"
+      ],
+      "syllable": "mao",
+      "homophones": [
+        "毛",
+        "帽",
+        "冒"
+      ],
+      "unit": 1
+    },
+    {
+      "id": "gou",
+      "char": "狗",
+      "spoken": "狗",
+      "kind": "thing",
+      "order": 6,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🐶"
+      },
+      "confusables": [
+        "猫",
+        "狼",
+        "猪",
+        "够"
+      ],
+      "syllable": "gou",
+      "homophones": [
+        "够",
+        "构",
+        "沟",
+        "钩"
+      ],
+      "unit": 1
     },
     {
       "id": "guan",
       "char": "关",
       "spoken": "关",
       "kind": "action",
-      "order": 4,
+      "order": 7,
       "castable": true,
       "opposite": "kai",
       "reveal": {
@@ -100,14 +181,41 @@
         "官",
         "冠",
         "管"
-      ]
+      ],
+      "unit": 2
+    },
+    {
+      "id": "deng",
+      "char": "灯",
+      "spoken": "灯",
+      "kind": "thing",
+      "order": 8,
+      "castable": true,
+      "reveal": {
+        "type": "burn",
+        "emoji": "💡"
+      },
+      "confusables": [
+        "打",
+        "订",
+        "汀",
+        "钉"
+      ],
+      "syllable": "deng",
+      "homophones": [
+        "登",
+        "等",
+        "瞪",
+        "蹬"
+      ],
+      "unit": 2
     },
     {
       "id": "huo",
       "char": "火",
       "spoken": "火",
       "kind": "transform",
-      "order": 5,
+      "order": 9,
       "castable": true,
       "opposite": "shui",
       "reveal": {
@@ -126,14 +234,15 @@
         "或",
         "货",
         "活"
-      ]
+      ],
+      "unit": 2
     },
     {
       "id": "shui",
       "char": "水",
       "spoken": "水",
       "kind": "transform",
-      "order": 6,
+      "order": 10,
       "castable": true,
       "opposite": "huo",
       "reveal": {
@@ -149,64 +258,66 @@
       "syllable": "shui",
       "homophones": [
         "谁"
-      ]
+      ],
+      "unit": 2
     },
     {
-      "id": "mao",
-      "char": "猫",
-      "spoken": "猫",
-      "kind": "thing",
-      "order": 7,
-      "castable": true,
-      "spawns": "cat",
+      "id": "ni",
+      "char": "你",
+      "spoken": "你",
+      "kind": "glue",
+      "order": 11,
+      "castable": false,
       "reveal": {
         "type": "pop",
-        "emoji": "🐱"
+        "emoji": "👋"
       },
       "confusables": [
-        "狗",
-        "猪",
-        "描",
-        "错"
+        "他",
+        "们",
+        "尔",
+        "休"
       ],
-      "syllable": "mao",
+      "syllable": "ni",
       "homophones": [
-        "毛",
-        "帽",
-        "冒"
-      ]
+        "拟",
+        "泥",
+        "逆"
+      ],
+      "unit": 2
     },
     {
-      "id": "men",
-      "char": "门",
-      "spoken": "门",
-      "kind": "thing",
-      "order": 8,
-      "castable": true,
-      "spawns": "door",
+      "id": "hao",
+      "char": "好",
+      "spoken": "好",
+      "kind": "glue",
+      "order": 12,
+      "castable": false,
       "reveal": {
         "type": "pop",
-        "emoji": "🚪"
+        "emoji": "👍"
       },
       "confusables": [
-        "问",
-        "们",
-        "间",
-        "闭"
+        "奶",
+        "妈",
+        "子",
+        "如"
       ],
-      "syllable": "men",
+      "syllable": "hao",
       "homophones": [
-        "们",
-        "闷",
-        "焖"
-      ]
+        "号",
+        "豪",
+        "毫",
+        "耗"
+      ],
+      "unit": 2
     },
     {
       "id": "shang",
       "char": "上",
       "spoken": "上",
       "kind": "transform",
-      "order": 9,
+      "order": 13,
       "castable": true,
       "opposite": "xia",
       "reveal": {
@@ -224,14 +335,15 @@
         "尚",
         "商",
         "伤"
-      ]
+      ],
+      "unit": 3
     },
     {
       "id": "xia",
       "char": "下",
       "spoken": "下",
       "kind": "transform",
-      "order": 10,
+      "order": 14,
       "castable": true,
       "opposite": "shang",
       "reveal": {
@@ -250,14 +362,15 @@
         "吓",
         "虾",
         "瞎"
-      ]
+      ],
+      "unit": 3
     },
     {
       "id": "fei",
       "char": "飞",
       "spoken": "飞",
       "kind": "action",
-      "order": 11,
+      "order": 15,
       "castable": true,
       "reveal": {
         "type": "pop",
@@ -275,14 +388,15 @@
         "肥",
         "费",
         "肺"
-      ]
+      ],
+      "unit": 3
     },
     {
       "id": "shui4",
       "char": "睡",
       "spoken": "睡",
       "kind": "action",
-      "order": 12,
+      "order": 16,
       "castable": true,
       "reveal": {
         "type": "close",
@@ -298,14 +412,62 @@
       "homophones": [
         "税",
         "说"
-      ]
+      ],
+      "unit": 3
+    },
+    {
+      "id": "chuang_b",
+      "char": "床",
+      "spoken": "床",
+      "kind": "thing",
+      "order": 17,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🛏️"
+      },
+      "confusables": [
+        "麻",
+        "庆",
+        "应",
+        "庄"
+      ],
+      "syllable": "chuang",
+      "homophones": [
+        "闯",
+        "创"
+      ],
+      "unit": 3
+    },
+    {
+      "id": "le",
+      "char": "了",
+      "kind": "glue",
+      "order": 18,
+      "castable": false,
+      "reveal": {
+        "type": "pop",
+        "emoji": "✅"
+      },
+      "confusables": [
+        "子",
+        "孑",
+        "乃",
+        "丁"
+      ],
+      "syllable": "le",
+      "homophones": [
+        "乐",
+        "勒"
+      ],
+      "unit": 3
     },
     {
       "id": "chuang_w",
       "char": "窗",
       "spoken": "窗",
       "kind": "thing",
-      "order": 13,
+      "order": 19,
       "castable": true,
       "reveal": {
         "type": "open",
@@ -322,484 +484,14 @@
         "创",
         "闯",
         "疮"
-      ]
-    },
-    {
-      "id": "chuang_b",
-      "char": "床",
-      "spoken": "床",
-      "kind": "thing",
-      "order": 14,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🛏️"
-      },
-      "confusables": [
-        "麻",
-        "庆",
-        "应",
-        "庄"
       ],
-      "syllable": "chuang",
-      "homophones": [
-        "闯",
-        "创"
-      ]
-    },
-    {
-      "id": "deng",
-      "char": "灯",
-      "spoken": "灯",
-      "kind": "thing",
-      "order": 15,
-      "castable": true,
-      "reveal": {
-        "type": "burn",
-        "emoji": "💡"
-      },
-      "confusables": [
-        "打",
-        "订",
-        "汀",
-        "钉"
-      ],
-      "syllable": "deng",
-      "homophones": [
-        "登",
-        "等",
-        "瞪",
-        "蹬"
-      ]
-    },
-    {
-      "id": "gou",
-      "char": "狗",
-      "spoken": "狗",
-      "kind": "thing",
-      "order": 16,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🐶"
-      },
-      "confusables": [
-        "猫",
-        "狼",
-        "猪",
-        "够"
-      ],
-      "syllable": "gou",
-      "homophones": [
-        "够",
-        "构",
-        "沟",
-        "钩"
-      ]
-    },
-    {
-      "id": "ni",
-      "char": "你",
-      "spoken": "你",
-      "kind": "glue",
-      "order": 17,
-      "castable": false,
-      "reveal": {
-        "type": "pop",
-        "emoji": "👋"
-      },
-      "confusables": [
-        "他",
-        "们",
-        "尔",
-        "休"
-      ],
-      "syllable": "ni",
-      "homophones": [
-        "拟",
-        "泥",
-        "逆"
-      ]
-    },
-    {
-      "id": "hao",
-      "char": "好",
-      "spoken": "好",
-      "kind": "glue",
-      "order": 18,
-      "castable": false,
-      "reveal": {
-        "type": "pop",
-        "emoji": "👍"
-      },
-      "confusables": [
-        "奶",
-        "妈",
-        "子",
-        "如"
-      ],
-      "syllable": "hao",
-      "homophones": [
-        "号",
-        "豪",
-        "毫",
-        "耗"
-      ]
-    },
-    {
-      "id": "wo",
-      "char": "我",
-      "spoken": "我",
-      "kind": "glue",
-      "order": 19,
-      "castable": false,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🙋"
-      },
-      "confusables": [
-        "找",
-        "戏",
-        "成",
-        "钱"
-      ],
-      "syllable": "wo",
-      "homophones": [
-        "握",
-        "沃",
-        "卧"
-      ]
-    },
-    {
-      "id": "chi",
-      "char": "吃",
-      "kind": "action",
-      "order": 20,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "😋"
-      },
-      "confusables": [
-        "叫",
-        "吹",
-        "呀",
-        "咬"
-      ],
-      "syllable": "chi",
-      "homophones": [
-        "迟",
-        "池",
-        "尺"
-      ]
-    },
-    {
-      "id": "he",
-      "char": "喝",
-      "kind": "action",
-      "order": 21,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🥤"
-      },
-      "confusables": [
-        "渴",
-        "喂",
-        "啊",
-        "哈"
-      ],
-      "syllable": "he",
-      "homophones": [
-        "和",
-        "河",
-        "盒"
-      ]
-    },
-    {
-      "id": "re",
-      "char": "热",
-      "kind": "transform",
-      "order": 22,
-      "castable": true,
-      "opposite": "leng",
-      "reveal": {
-        "type": "burn",
-        "emoji": "🥵"
-      },
-      "confusables": [
-        "势",
-        "执",
-        "熟",
-        "烈"
-      ],
-      "syllable": "re",
-      "homophones": [
-        "惹",
-        "若"
-      ]
-    },
-    {
-      "id": "leng",
-      "char": "冷",
-      "kind": "transform",
-      "order": 23,
-      "castable": true,
-      "opposite": "re",
-      "reveal": {
-        "type": "close",
-        "emoji": "🥶"
-      },
-      "confusables": [
-        "冰",
-        "冲",
-        "令",
-        "冬"
-      ],
-      "syllable": "leng",
-      "homophones": [
-        "愣",
-        "楞"
-      ]
-    },
-    {
-      "id": "duo",
-      "char": "多",
-      "kind": "transform",
-      "order": 24,
-      "castable": true,
-      "opposite": "shao",
-      "reveal": {
-        "type": "grow",
-        "emoji": "🍎"
-      },
-      "confusables": [
-        "夕",
-        "岁",
-        "够",
-        "名"
-      ],
-      "syllable": "duo",
-      "homophones": [
-        "朵",
-        "躲",
-        "夺"
-      ]
-    },
-    {
-      "id": "shao",
-      "char": "少",
-      "kind": "transform",
-      "order": 25,
-      "castable": true,
-      "opposite": "duo",
-      "reveal": {
-        "type": "shrink",
-        "emoji": "🍏"
-      },
-      "confusables": [
-        "沙",
-        "劣",
-        "步",
-        "尘"
-      ],
-      "syllable": "shao",
-      "homophones": [
-        "绍",
-        "烧",
-        "勺"
-      ]
-    },
-    {
-      "id": "yi",
-      "char": "一",
-      "kind": "transform",
-      "order": 26,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "1️⃣"
-      },
-      "confusables": [
-        "二",
-        "十",
-        "丁",
-        "七"
-      ],
-      "syllable": "yi",
-      "homophones": [
-        "衣",
-        "医",
-        "依"
-      ]
-    },
-    {
-      "id": "er",
-      "char": "二",
-      "kind": "transform",
-      "order": 27,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "2️⃣"
-      },
-      "confusables": [
-        "一",
-        "三",
-        "仁",
-        "工"
-      ],
-      "syllable": "er",
-      "homophones": [
-        "耳",
-        "儿",
-        "而"
-      ]
-    },
-    {
-      "id": "san",
-      "char": "三",
-      "kind": "transform",
-      "order": 28,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "3️⃣"
-      },
-      "confusables": [
-        "二",
-        "王",
-        "丰",
-        "川"
-      ],
-      "syllable": "san",
-      "homophones": [
-        "伞",
-        "散",
-        "叁"
-      ]
-    },
-    {
-      "id": "mi",
-      "char": "米",
-      "kind": "thing",
-      "order": 29,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🍚"
-      },
-      "confusables": [
-        "来",
-        "半",
-        "未",
-        "木"
-      ],
-      "syllable": "mi",
-      "homophones": [
-        "迷",
-        "谜",
-        "眯"
-      ]
-    },
-    {
-      "id": "dan",
-      "char": "蛋",
-      "kind": "thing",
-      "order": 30,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🥚"
-      },
-      "confusables": [
-        "疋",
-        "虽",
-        "蚕",
-        "旦"
-      ],
-      "syllable": "dan",
-      "homophones": [
-        "但",
-        "淡",
-        "弹"
-      ]
-    },
-    {
-      "id": "yu",
-      "char": "鱼",
-      "kind": "thing",
-      "order": 31,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🐟"
-      },
-      "confusables": [
-        "角",
-        "鲁",
-        "田",
-        "由"
-      ],
-      "syllable": "yu",
-      "homophones": [
-        "雨",
-        "语",
-        "玉",
-        "于"
-      ]
-    },
-    {
-      "id": "rou",
-      "char": "肉",
-      "kind": "thing",
-      "order": 32,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🍖"
-      },
-      "confusables": [
-        "内",
-        "冈",
-        "网",
-        "丙"
-      ],
-      "syllable": "rou",
-      "homophones": [
-        "柔",
-        "揉"
-      ]
-    },
-    {
-      "id": "cai",
-      "char": "菜",
-      "kind": "thing",
-      "order": 33,
-      "castable": true,
-      "reveal": {
-        "type": "pop",
-        "emoji": "🥬"
-      },
-      "confusables": [
-        "采",
-        "花",
-        "草",
-        "苹"
-      ],
-      "syllable": "cai",
-      "homophones": [
-        "彩",
-        "踩",
-        "猜",
-        "才"
-      ]
+      "unit": 4
     },
     {
       "id": "shou",
       "char": "手",
       "kind": "thing",
-      "order": 34,
+      "order": 20,
       "castable": true,
       "reveal": {
         "type": "pop",
@@ -817,13 +509,14 @@
         "守",
         "瘦",
         "收"
-      ]
+      ],
+      "unit": 4
     },
     {
       "id": "kou",
       "char": "口",
       "kind": "thing",
-      "order": 35,
+      "order": 21,
       "castable": true,
       "reveal": {
         "type": "open",
@@ -840,13 +533,378 @@
         "扣",
         "抠",
         "寇"
-      ]
+      ],
+      "unit": 4
+    },
+    {
+      "id": "chi",
+      "char": "吃",
+      "kind": "action",
+      "order": 22,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "😋"
+      },
+      "confusables": [
+        "叫",
+        "吹",
+        "呀",
+        "咬"
+      ],
+      "syllable": "chi",
+      "homophones": [
+        "迟",
+        "池",
+        "尺"
+      ],
+      "unit": 4
+    },
+    {
+      "id": "he",
+      "char": "喝",
+      "kind": "action",
+      "order": 23,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🥤"
+      },
+      "confusables": [
+        "渴",
+        "喂",
+        "啊",
+        "哈"
+      ],
+      "syllable": "he",
+      "homophones": [
+        "和",
+        "河",
+        "盒"
+      ],
+      "unit": 4
+    },
+    {
+      "id": "wo",
+      "char": "我",
+      "spoken": "我",
+      "kind": "glue",
+      "order": 24,
+      "castable": false,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🙋"
+      },
+      "confusables": [
+        "找",
+        "戏",
+        "成",
+        "钱"
+      ],
+      "syllable": "wo",
+      "homophones": [
+        "握",
+        "沃",
+        "卧"
+      ],
+      "unit": 4
+    },
+    {
+      "id": "yu",
+      "char": "鱼",
+      "kind": "thing",
+      "order": 25,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🐟"
+      },
+      "confusables": [
+        "角",
+        "鲁",
+        "田",
+        "由"
+      ],
+      "syllable": "yu",
+      "homophones": [
+        "雨",
+        "语",
+        "玉",
+        "于"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "dan",
+      "char": "蛋",
+      "kind": "thing",
+      "order": 26,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🥚"
+      },
+      "confusables": [
+        "疋",
+        "虽",
+        "蚕",
+        "旦"
+      ],
+      "syllable": "dan",
+      "homophones": [
+        "但",
+        "淡",
+        "弹"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "mi",
+      "char": "米",
+      "kind": "thing",
+      "order": 27,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🍚"
+      },
+      "confusables": [
+        "来",
+        "半",
+        "未",
+        "木"
+      ],
+      "syllable": "mi",
+      "homophones": [
+        "迷",
+        "谜",
+        "眯"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "rou",
+      "char": "肉",
+      "kind": "thing",
+      "order": 28,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🍖"
+      },
+      "confusables": [
+        "内",
+        "冈",
+        "网",
+        "丙"
+      ],
+      "syllable": "rou",
+      "homophones": [
+        "柔",
+        "揉"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "cai",
+      "char": "菜",
+      "kind": "thing",
+      "order": 29,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "🥬"
+      },
+      "confusables": [
+        "采",
+        "花",
+        "草",
+        "苹"
+      ],
+      "syllable": "cai",
+      "homophones": [
+        "彩",
+        "踩",
+        "猜",
+        "才"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "re",
+      "char": "热",
+      "kind": "transform",
+      "order": 30,
+      "castable": true,
+      "opposite": "leng",
+      "reveal": {
+        "type": "burn",
+        "emoji": "🥵"
+      },
+      "confusables": [
+        "势",
+        "执",
+        "熟",
+        "烈"
+      ],
+      "syllable": "re",
+      "homophones": [
+        "惹",
+        "若"
+      ],
+      "unit": 5
+    },
+    {
+      "id": "leng",
+      "char": "冷",
+      "kind": "transform",
+      "order": 31,
+      "castable": true,
+      "opposite": "re",
+      "reveal": {
+        "type": "close",
+        "emoji": "🥶"
+      },
+      "confusables": [
+        "冰",
+        "冲",
+        "令",
+        "冬"
+      ],
+      "syllable": "leng",
+      "homophones": [
+        "愣",
+        "楞"
+      ],
+      "unit": 6
+    },
+    {
+      "id": "duo",
+      "char": "多",
+      "kind": "transform",
+      "order": 32,
+      "castable": true,
+      "opposite": "shao",
+      "reveal": {
+        "type": "grow",
+        "emoji": "🍎"
+      },
+      "confusables": [
+        "夕",
+        "岁",
+        "够",
+        "名"
+      ],
+      "syllable": "duo",
+      "homophones": [
+        "朵",
+        "躲",
+        "夺"
+      ],
+      "unit": 6
+    },
+    {
+      "id": "shao",
+      "char": "少",
+      "kind": "transform",
+      "order": 33,
+      "castable": true,
+      "opposite": "duo",
+      "reveal": {
+        "type": "shrink",
+        "emoji": "🍏"
+      },
+      "confusables": [
+        "沙",
+        "劣",
+        "步",
+        "尘"
+      ],
+      "syllable": "shao",
+      "homophones": [
+        "绍",
+        "烧",
+        "勺"
+      ],
+      "unit": 6
+    },
+    {
+      "id": "yi",
+      "char": "一",
+      "kind": "transform",
+      "order": 34,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "1️⃣"
+      },
+      "confusables": [
+        "二",
+        "十",
+        "丁",
+        "七"
+      ],
+      "syllable": "yi",
+      "homophones": [
+        "衣",
+        "医",
+        "依"
+      ],
+      "unit": 6
+    },
+    {
+      "id": "er",
+      "char": "二",
+      "kind": "transform",
+      "order": 35,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "2️⃣"
+      },
+      "confusables": [
+        "一",
+        "三",
+        "仁",
+        "工"
+      ],
+      "syllable": "er",
+      "homophones": [
+        "耳",
+        "儿",
+        "而"
+      ],
+      "unit": 6
+    },
+    {
+      "id": "san",
+      "char": "三",
+      "kind": "transform",
+      "order": 36,
+      "castable": true,
+      "reveal": {
+        "type": "pop",
+        "emoji": "3️⃣"
+      },
+      "confusables": [
+        "二",
+        "王",
+        "丰",
+        "川"
+      ],
+      "syllable": "san",
+      "homophones": [
+        "伞",
+        "散",
+        "叁"
+      ],
+      "unit": 6
     },
     {
       "id": "ge",
       "char": "个",
       "kind": "glue",
-      "order": 36,
+      "order": 37,
       "castable": false,
       "reveal": {
         "type": "pop",
@@ -863,28 +921,88 @@
         "各",
         "哥",
         "歌"
+      ],
+      "unit": 6
+    }
+  ],
+  "units": [
+    {
+      "n": 1,
+      "name": "第一关",
+      "story": "猫开门",
+      "chars": [
+        "da",
+        "xiao",
+        "kai",
+        "men",
+        "mao",
+        "gou"
       ]
     },
     {
-      "id": "le",
-      "char": "了",
-      "kind": "glue",
-      "order": 37,
-      "castable": false,
-      "reveal": {
-        "type": "pop",
-        "emoji": "✅"
-      },
-      "confusables": [
-        "子",
-        "孑",
-        "乃",
-        "丁"
-      ],
-      "syllable": "le",
-      "homophones": [
-        "乐",
-        "勒"
+      "n": 2,
+      "name": "第二关",
+      "story": "你好",
+      "chars": [
+        "guan",
+        "deng",
+        "huo",
+        "shui",
+        "ni",
+        "hao"
+      ]
+    },
+    {
+      "n": 3,
+      "name": "第三关",
+      "story": "睡了",
+      "chars": [
+        "shang",
+        "xia",
+        "fei",
+        "shui4",
+        "chuang_b",
+        "le"
+      ]
+    },
+    {
+      "n": 4,
+      "name": "第四关",
+      "story": "我吃",
+      "chars": [
+        "chuang_w",
+        "shou",
+        "kou",
+        "chi",
+        "he",
+        "wo"
+      ]
+    },
+    {
+      "n": 5,
+      "name": "第五关",
+      "story": "热了",
+      "chars": [
+        "yu",
+        "dan",
+        "mi",
+        "rou",
+        "cai",
+        "re"
+      ]
+    },
+    {
+      "n": 6,
+      "name": "第六关",
+      "story": "几个蛋",
+      "chars": [
+        "leng",
+        "duo",
+        "shao",
+        "yi",
+        "er",
+        "san",
+        "ge"
       ]
     }
   ]

@@ -1,19 +1,19 @@
 {
   "id": "ji-ge-dan",
   "title": "几个蛋",
+  "unit": 6,
   "requires": [
     "dan",
     "yi",
     "er",
     "san",
-    "duo",
     "shao",
     "le"
   ],
   "introduces": [
     "ge"
   ],
-  "_comment": "Where 个 is met: a measure word has no meaning on its own and cannot be cast at anything, so it is learnt between a number and a thing, which is the only place it ever appears.",
+  "_comment": "Where 个 is met: a measure word only ever appears between a number and a thing, which is exactly how it is shown here.",
   "pages": [
     {
       "art": "🥚",

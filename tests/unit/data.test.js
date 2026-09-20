@@ -319,3 +319,72 @@ describe('data · stories are genuinely decodable', () => {
     expect(STORY_INDEX.stories.length).toBe(STORIES.length);
   });
 });
+
+describe('data · the curriculum is taught in small units', () => {
+  const UNITS = CHAR_DATA.units || [];
+  const unitOf = Object.fromEntries(CHARS.map(c => [c.id, c.unit]));
+
+  it('every character belongs to a unit', () => {
+    for (const c of CHARS) expect(Boolean(c.unit)).toBeTruthy();
+  });
+
+  it('REGRESSION: a unit is small — six, not eighteen', () => {
+    // Eighteen characters arriving as one undifferentiated block is what made
+    // the curriculum feel overwhelming.
+    expect(UNITS.length).toBeGreaterThan(3);
+    for (const u of UNITS) {
+      expect(u.chars.length).toBeGreaterThan(3);
+      expect(u.chars.length).toBeLessThanOrEqual(7);
+    }
+  });
+
+  it('units[] agrees with what the characters claim', () => {
+    for (const u of UNITS) {
+      const claimed = CHARS.filter(c => c.unit === u.n).map(c => c.id).sort();
+      expect(claimed).toEqual([...u.chars].sort());
+    }
+  });
+
+  it('REGRESSION: characters are taught in unit order', () => {
+    // Otherwise a unit-3 character could arrive before a unit-2 one, and its
+    // story would be unreachable.
+    const sorted = [...CHARS].sort((a, b) => a.order - b.order);
+    for (let i = 1; i < sorted.length; i++) {
+      expect(sorted[i].unit).toBeGreaterThanOrEqual(sorted[i - 1].unit);
+    }
+  });
+
+  it('every unit ends in exactly one story', () => {
+    for (const u of UNITS) {
+      const got = STORIES.filter(st => st.unit === u.n);
+      expect(got).toHaveLength(1);
+      expect(got[0].title).toBe(u.story);
+    }
+  });
+
+  it('REGRESSION: a story never needs a character from a later unit', () => {
+    // The decodable guarantee, at curriculum level: finishing a unit must be
+    // enough to read its story.
+    for (const st of STORIES) {
+      for (const id of [...(st.requires || []), ...(st.introduces || [])]) {
+        expect(unitOf[id]).toBeLessThanOrEqual(st.unit);
+      }
+    }
+  });
+
+  it('finishing a unit is enough to unlock its story', () => {
+    for (const u of UNITS) {
+      const throughHere = CHARS.filter(c => c.unit <= u.n).map(c => c.id);
+      const st = STORIES.find(x => x.unit === u.n);
+      for (const id of st.requires || []) expect(throughHere).toContain(id);
+    }
+  });
+
+  it('every glue character is introduced by the story of its own unit', () => {
+    for (const c of CHARS.filter(c => c.castable === false)) {
+      const st = STORIES.find(x => (x.introduces || []).includes(c.id));
+      expect(Boolean(st)).toBeTruthy();
+      expect(st.unit).toBe(c.unit);
+    }
+  });
+});

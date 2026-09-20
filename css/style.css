@@ -284,14 +284,19 @@ html,body{
   stroke-dashoffset:0;
 }
 .panel-inner{background:var(--card);padding:26px 30px;border-radius:22px;
-  width:min(620px,88vw);max-height:84vh;
+  width:min(640px,90vw);max-height:92vh;
   display:flex;flex-direction:column;gap:4px}
 /* The actions stay put; only the character list scrolls. The button a parent
    came here to press must never be below the fold. */
-#parent-chars{flex:1 1 auto;min-height:0;overflow-y:auto;
+#parent-chars{flex:1 1 auto;min-height:38vh;overflow-y:auto;
   border-top:2px solid #e8d8bb;margin-top:8px;padding-top:10px}
 .panel-inner h2{margin-bottom:16px;font-size:24px}
-#parent-stats{font-size:16px;line-height:1.9;margin-bottom:14px;flex:0 0 auto}
+#parent-stats{margin-bottom:12px;flex:0 0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 16px}
+#parent-stats .stat{display:flex;align-items:baseline;gap:7px;font-size:14px;line-height:1.7}
+#parent-stats .stat span{opacity:.6}
+#parent-stats .stat b{font-size:16px}
+#parent-stats .stat i{font-style:normal;font-size:12px;opacity:.5}
 .panel-inner .row{display:flex;gap:14px;align-items:center;line-height:1.5}
 /* Every character in the list is tappable: pick one to teach or to re-show,
    instead of only ever stepping to the next. */
@@ -529,3 +534,17 @@ html,body{
 }
 @keyframes goThrough{0%,100%{transform:translateX(-50%) translateY(0);opacity:.75}
                      50%{transform:translateX(-50%) translateY(-7px);opacity:1}}
+
+/* the curriculum, in units of six */
+.unit-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin:16px 0 6px;padding:0 10px 5px;
+  border-bottom:2px solid #eadcc0;
+  font-size:14px;font-weight:600;color:var(--ink);
+}
+.unit-head:first-child{margin-top:0}
+.unit-head .unit-progress{font-weight:400;font-size:13px;opacity:.6}
+.unit-head .unit-progress em{font-style:normal;font-family:var(--kai);
+  font-size:15px;margin-left:8px;opacity:.85}
+.unit-head.done{color:#3f8a5c;border-bottom-color:#bfe0c8}
+.unit-head.done .unit-progress{color:#3f8a5c;opacity:.85}

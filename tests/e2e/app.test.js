@@ -1304,8 +1304,13 @@ describe('e2e · 测试模式 (dev mode)', () => {
       const owned = app.save().owned;
       for (const id of STORIES[1].requires) expect(owned).toContain(id);
       const pages = await app.readWholeStory();
-      const known = new Set(CHAR_DEFS.filter(c => owned.includes(c.id)).map(c => c.char));
-      for (const p of pages) for (const ch of p) expect(known.has(ch)).toBeTruthy();
+      // "decodable" means: already known, OR one of the glue characters this
+      // story exists to introduce (those are granted on finishing, by design)
+      const allowed = new Set(
+        CHAR_DEFS.filter(c => owned.includes(c.id) ||
+                              (STORIES[1].introduces || []).includes(c.id))
+                 .map(c => c.char));
+      for (const p of pages) for (const ch of p) expect(allowed.has(ch)).toBeTruthy();
     });
   });
 

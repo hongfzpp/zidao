@@ -1,5 +1,5 @@
 {
-  "version": "a0230579994d",
+  "version": "cd2130044b6e",
   "assets": [
     "assets/icons/icon-1024.png",
     "assets/icons/icon-120.png",
@@ -55,10 +55,10 @@
     "data/characters.json",
     "data/scenes/house.json",
     "data/scenes/kitchen.json",
-    "data/stories/01-kai-men.json",
-    "data/stories/02-gou-shui.json",
-    "data/stories/03-ni-hao.json",
-    "data/stories/04-chi-yu.json",
+    "data/stories/01-mao-kai-men.json",
+    "data/stories/02-ni-hao.json",
+    "data/stories/03-gou-shui-le.json",
+    "data/stories/04-wo-chi.json",
     "data/stories/05-re-le.json",
     "data/stories/06-ji-ge-dan.json",
     "data/stories/index.json",

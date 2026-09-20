@@ -1,0 +1,47 @@
+{
+  "id": "wo-chi",
+  "title": "我吃",
+  "unit": 4,
+  "requires": [
+    "kou",
+    "shou",
+    "chi",
+    "he",
+    "kai",
+    "chuang_w"
+  ],
+  "introduces": [
+    "wo"
+  ],
+  "_comment": "Where 我 is met: a pronoun has no effect to demonstrate, so it is learnt in the position it always occupies.",
+  "pages": [
+    {
+      "art": "👄",
+      "text": [
+        "口"
+      ]
+    },
+    {
+      "art": "😋",
+      "text": [
+        "我",
+        "吃"
+      ]
+    },
+    {
+      "art": "🥤",
+      "text": [
+        "我",
+        "喝"
+      ]
+    },
+    {
+      "art": "🪟",
+      "text": [
+        "我",
+        "开",
+        "窗"
+      ]
+    }
+  ]
+}

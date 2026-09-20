@@ -151,6 +151,58 @@ for sf in STORY_FILES:
                 err.append(f"glue character {c['char']} is never introduced by any "
                            f"story -- it could never be learnt")
 
+# 7b. units: the curriculum is taught in small blocks, each ending in a story.
+UNITS = json.loads((root / 'data/characters.json').read_text()).get('units', [])
+unit_of = {c['id']: c.get('unit') for c in chars}
+
+if not UNITS:
+    err.append("characters.json has no units[]")
+for c in chars:
+    if not c.get('unit'):
+        err.append(f"{c['char']} is in no unit")
+
+seen_u = set()
+for u in UNITS:
+    if u['n'] in seen_u:
+        err.append(f"duplicate unit {u['n']}")
+    seen_u.add(u['n'])
+    listed = [c['id'] for c in chars if c.get('unit') == u['n']]
+    if sorted(listed) != sorted(u['chars']):
+        err.append(f"unit {u['n']}: chars[] does not match the characters "
+                   f"that claim unit {u['n']}")
+    if len(u['chars']) > 7:
+        warn.append(f"unit {u['n']} has {len(u['chars'])} characters; 6 is the target")
+
+# a character must never be taught before an earlier-unit character
+for c in chars:
+    for other in chars:
+        if (c.get('unit') or 0) < (other.get('unit') or 0) and c['order'] > other['order']:
+            err.append(f"{c['char']} (unit {c['unit']}) is taught after "
+                       f"{other['char']} (unit {other['unit']})")
+            break
+
+# every unit ends in exactly one story, and that story may only use characters
+# from its own unit or an earlier one -- the decodable guarantee, at curriculum level
+stories_by_unit = {}
+for sf in STORY_FILES:
+    st = json.loads(sf.read_text())
+    if not st.get('unit'):
+        err.append(f"{sf.name}: declares no unit")
+        continue
+    stories_by_unit.setdefault(st['unit'], []).append(st)
+    for i in st.get('requires', []) + st.get('introduces', []):
+        if unit_of.get(i) and unit_of[i] > st['unit']:
+            err.append(f"{sf.name} (unit {st['unit']}) needs {i}, which is not "
+                       f"taught until unit {unit_of[i]}")
+
+for u in UNITS:
+    got = stories_by_unit.get(u['n'], [])
+    if len(got) != 1:
+        err.append(f"unit {u['n']} has {len(got)} stories; it needs exactly one")
+    elif got[0]['title'] != u['story']:
+        err.append(f"unit {u['n']}: characters.json says the story is "
+                   f"'{u['story']}' but {got[0]['id']} is titled '{got[0]['title']}'")
+
 # 8. distractors: every character needs decoys, and none may be its own
 curriculum = {c['char'] for c in chars}
 for c in chars:
@@ -199,6 +251,7 @@ print(f"\n{len(chars)} characters, {len(rules['rules'])} cast rules, "
       f"{sum(len(r['variants']) for r in rules['rules'])} variants, "
       f"{sum(len(s2['objects']) for s2 in SCENES.values())} objects in "
       f"{len(SCENES)} scenes, "
-      f"{len(pool)} decoys, {len(stories)} stories")
+      f"{len(pool)} decoys, {len(stories)} stories, "
+      f"{len(UNITS)} units of {'/'.join(str(len(u['chars'])) for u in UNITS)}")
 print("FAILED" if err else "OK")
 sys.exit(1 if err else 0)

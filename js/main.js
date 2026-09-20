@@ -46,6 +46,7 @@ const CASTS_BETWEEN_PROMPTS = 3;   // 团团 asks between bouts of free play, ne
 let CHARS = [];
 let RULES = null;
 let STORIES = [];
+let UNITS = [];
 
 async function boot () {
   applyTestMode();
@@ -67,6 +68,7 @@ async function boot () {
   STORIES = await Promise.all(
     storyIndex.stories.map(f => fetch('data/stories/' + f).then(r => r.json())));
   CHARS = charData.characters.sort((a, b) => a.order - b.order);
+  UNITS = charData.units || [];
   RULES = ruleData;
 
   if (!FAST) {
@@ -333,7 +335,7 @@ function setupParentGate () {
   function openPanel () {
     const s = get();
     const LABEL = { new: '刚认识', shaky: '还不稳', 'getting-there': '快记住了', solid: '记住了' };
-    const rows = CHARS.map(c => {
+    const rowFor = c => {
       const has = s.owned.includes(c.id);
       const p = s.progress?.[c.id];
       const st = has ? charStatus(p) : null;
@@ -347,6 +349,19 @@ function setupParentGate () {
              bar +
              `<span class="cta">${has ? '再看一次' : '现在学'}</span>` +
              `</button>`;
+    };
+
+    // Grouped into units of six, each ending in its own story, so the
+    // curriculum reads as a handful of small steps rather than one long list.
+    const rows = UNITS.map(u => {
+      const mine = CHARS.filter(c => u.chars.includes(c.id));
+      const known = mine.filter(c => s.owned.includes(c.id)).length;
+      const done = known === mine.length;
+      return `<div class="unit-head${done ? ' done' : ''}">` +
+             `<span>${u.name}</span>` +
+             `<span class="unit-progress">${known}/${mine.length}` +
+             `<em>《${u.story}》</em></span></div>` +
+             mine.map(rowFor).join('');
     }).join('');
     // Discrimination accuracy: of all the cards picked, how many were real
     // characters rather than decoys? This is the ONLY number here that reflects
@@ -354,35 +369,31 @@ function setupParentGate () {
     const remaining = CHARS.filter(c => !s.owned.includes(c.id));
     const attempts = s.castCount + (s.fizzles || 0);
     const acc = attempts ? Math.round((s.castCount / attempts) * 100) : null;
+    const stat = (label, value, note = '') =>
+      `<div class="stat"><span>${label}</span><b>${value}</b>` +
+      (note ? `<i>${note}</i>` : '') + `</div>`;
+
+    const sp = Object.values(s.spoken || {});
+    const spTries = sp.reduce((n, x) => n + x.tries, 0);
+    const spRight = sp.reduce((n, x) => n + x.right, 0);
+
     document.getElementById('parent-stats').innerHTML =
-      `<div><b>认识的字：${s.owned.length} / ${CHARS.length}</b></div>` +
-      `<div>施法次数：${s.castCount}　　稀有反应：${s.seenGolden}</div>` +
-      `<div>认对率：${acc === null ? '—' : acc + '%'}` +
-      `　<span style="opacity:.6">(选错干扰字 ${s.fizzles || 0} 次)</span></div>` +
-      `<div>读过的故事：${(s.storiesRead || []).length} / ` +
-      `${unlockedStories(STORIES, s.owned || []).length} 本可读` +
-      (s.pagesRead
-        ? `　<span style="opacity:.6">${s.pagesRead} 页，其中 ${s.hintedPages || 0} 页看了图</span>`
-        : '') + `</div>` +
-      (() => {
-        const sp = Object.values(s.spoken || {});
-        const tries = sp.reduce((n, x) => n + x.tries, 0);
-        const right = sp.reduce((n, x) => n + x.right, 0);
-        if (!tries) return '';
-        return `<div>念出来：${tries} 次　念对 ${Math.round(100 * right / tries)}%` +
-               `　<span style="opacity:.6">（语音识别对小孩不太准，仅供参考）</span></div>`;
-      })() +
-      `<div>团团提问：${s.prompts?.asked || 0} 次` +
-      (s.prompts?.asked
-        ? `　答对 ${Math.round(100 * (s.prompts.right || 0) / s.prompts.asked)}%`
-        : '') + `</div>` +
-      `<div>本次新字：${Math.min(s.arrivalsThisSession || 0, MAX_ARRIVALS_PER_SESSION)}` +
-      ` / ${MAX_ARRIVALS_PER_SESSION}` +
-      (remaining.length === 0 ? ''
-        : sessionBudgetLeft(s) <= 0
-          ? `　<span style="opacity:.6">已达上限，休息 30 分钟后自动重置（或用下面的按钮）</span>`
-          : `　<span style="opacity:.6">还差 ${castsUntilArrival(s)} 次施法</span>`) +
-      `</div>`;
+      stat('认识的字', `${s.owned.length} / ${CHARS.length}`) +
+      stat('认对率', acc === null ? '—' : acc + '%', `错 ${s.fizzles || 0}`) +
+      stat('团团提问', s.prompts?.asked || 0,
+           s.prompts?.asked
+             ? `对 ${Math.round(100 * (s.prompts.right || 0) / s.prompts.asked)}%` : '') +
+      stat('读过故事', `${(s.storiesRead || []).length} / ` +
+           `${unlockedStories(STORIES, s.owned || []).length}`,
+           s.pagesRead ? `${s.pagesRead} 页 / 看图 ${s.hintedPages || 0}` : '') +
+      stat('本次新字', `${Math.min(s.arrivalsThisSession || 0, MAX_ARRIVALS_PER_SESSION)}` +
+           ` / ${MAX_ARRIVALS_PER_SESSION}`,
+           remaining.length === 0 ? ''
+             : sessionBudgetLeft(s) <= 0 ? '已达上限，30 分钟后重置'
+             : `还差 ${castsUntilArrival(s)} 次施法`) +
+      (spTries ? stat('念出来', `${Math.round(100 * spRight / spTries)}%`, `${spTries} 次`) : '') +
+      stat('施法', s.castCount, s.seenGolden ? `稀有 ${s.seenGolden}` : '');
+
     const STATUS = { read: '已读', ready: '可以读了', locked: '还差' };
     const dev = isDev();
     const shelfRows = shelf(STORIES, s.owned || [], s.storiesRead || []).map(e => {

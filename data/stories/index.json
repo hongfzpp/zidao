@@ -1,9 +1,9 @@
 {
   "stories": [
-    "01-kai-men.json",
-    "02-gou-shui.json",
-    "03-ni-hao.json",
-    "04-chi-yu.json",
+    "01-mao-kai-men.json",
+    "02-ni-hao.json",
+    "03-gou-shui-le.json",
+    "04-wo-chi.json",
     "05-re-le.json",
     "06-ji-ge-dan.json"
   ]

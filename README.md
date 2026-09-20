@@ -208,6 +208,35 @@ that reflects reading rather than play.
 
 **The room persists.** Leave a giant cat in the bedroom and it's still there tomorrow.
 
+## The curriculum: six units of six
+
+The 37 characters are taught in **six small units**, each ending in its own
+story:
+
+| | | |
+|---|---|---|
+| 第一关 | 大 小 开 门 猫 狗 | 《猫开门》 |
+| 第二关 | 关 灯 火 水 **你 好** | 《你好》 |
+| 第三关 | 上 下 飞 睡 床 **了** | 《睡了》 |
+| 第四关 | 窗 手 口 吃 喝 **我** | 《我吃》 |
+| 第五关 | 鱼 蛋 米 肉 菜 热 | 《热了》 |
+| 第六关 | 冷 多 少 一 二 三 **个** | 《几个蛋》 |
+
+Glue characters (**bold**) sit in the unit whose story introduces them, which is
+the only place they can be learnt.
+
+**Finishing a unit is exactly enough to read its story.** A story may never need
+a character from a later unit — enforced by `scripts/validate.py` and by a data
+test, the same guarantee as the page-level one but at curriculum level.
+
+This is about how the material is *grouped*, not how fast it arrives. The drip
+is unchanged: one character per 8 casts, at most 3 per session, so a unit takes
+two or three sittings. To change the pace, the knobs are `ARRIVAL_EVERY` and
+`MAX_ARRIVALS_PER_SESSION` in `js/main.js`.
+
+The parent panel shows each unit with its progress and its story
+(`第二关 2/6 《你好》`).
+
 ## Two rooms
 
 **家** (the house) and **厨房** (the kitchen). The door is the way between them —

@@ -1,0 +1,49 @@
+{
+  "id": "gou-shui-le",
+  "title": "睡了",
+  "unit": 3,
+  "requires": [
+    "gou",
+    "shang",
+    "chuang_b",
+    "shui4",
+    "mao",
+    "fei"
+  ],
+  "introduces": [
+    "le"
+  ],
+  "_comment": "Where 了 is met: it marks that something has happened, which only makes sense after the verb it follows.",
+  "pages": [
+    {
+      "art": "🐶",
+      "text": [
+        "狗"
+      ]
+    },
+    {
+      "art": "🐶🛏️",
+      "text": [
+        "狗",
+        "上",
+        "床"
+      ]
+    },
+    {
+      "art": "😴",
+      "text": [
+        "狗",
+        "睡",
+        "了"
+      ]
+    },
+    {
+      "art": "🐱",
+      "text": [
+        "猫",
+        "飞",
+        "上"
+      ]
+    }
+  ]
+}

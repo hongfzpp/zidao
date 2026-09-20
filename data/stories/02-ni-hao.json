@@ -1,0 +1,51 @@
+{
+  "id": "ni-hao",
+  "title": "你好",
+  "unit": 2,
+  "requires": [
+    "kai",
+    "guan",
+    "deng",
+    "huo",
+    "shui",
+    "da",
+    "xiao"
+  ],
+  "introduces": [
+    "ni",
+    "hao"
+  ],
+  "_comment": "Where 你 and 好 are met. They mean nothing alone, so they are learnt by position -- 你好 is the greeting he already says every day.",
+  "pages": [
+    {
+      "art": "👋",
+      "text": [
+        "你",
+        "好"
+      ]
+    },
+    {
+      "art": "💡",
+      "text": [
+        "开",
+        "灯"
+      ]
+    },
+    {
+      "art": "🌙",
+      "text": [
+        "关",
+        "灯"
+      ]
+    },
+    {
+      "art": "🔥💧",
+      "text": [
+        "火",
+        "大",
+        "水",
+        "小"
+      ]
+    }
+  ]
+}

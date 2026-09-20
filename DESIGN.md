@@ -365,7 +365,19 @@ No score is ever shown. No character is ever marked wrong in the UI. A strugglin
 
 ---
 
-## 9. Curriculum — the v1 sixty
+## 9. Curriculum — units of six
+
+Characters are taught in **units of six**, each ending in a story that the unit itself makes readable. This matters for two reasons.
+
+A block of eighteen characters is not a curriculum, it is a list — there is no moment of completion in it, nothing to finish. Six is small enough that a child reaches the end of one, and the story is the reward for having done so (§3.7, always end on a high).
+
+And it makes the decodable guarantee structural rather than incidental: **a story may only use characters from its own unit or an earlier one**, so finishing a unit is by construction enough to read its story. That is checked in the build, not remembered by hand.
+
+Glue characters live in the unit whose story introduces them, since a story is the only place they can be learnt at all (§9.1).
+
+This is orthogonal to pacing. Grouping is six; arrival is still one character per eight casts, at most three a session — a unit takes two or three sittings.
+
+## 9x. Curriculum — the v1 sixty
 
 Ordering is **not** by raw frequency. It is by, in priority order:
 

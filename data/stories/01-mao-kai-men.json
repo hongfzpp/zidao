@@ -1,12 +1,14 @@
 {
-  "id": "kai-men",
-  "title": "开门",
+  "id": "mao-kai-men",
+  "title": "猫开门",
+  "unit": 1,
   "requires": [
     "men",
     "mao",
     "kai",
     "da",
-    "xiao"
+    "xiao",
+    "gou"
   ],
   "introduces": [],
   "pages": [
@@ -32,11 +34,12 @@
       ]
     },
     {
-      "art": "🚪✨",
+      "art": "🐱🐶",
       "text": [
         "大",
-        "门",
-        "开"
+        "猫",
+        "小",
+        "狗"
       ]
     }
   ]
