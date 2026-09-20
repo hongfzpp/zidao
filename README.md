@@ -27,7 +27,36 @@ on first run, so it keeps working when the Mac is asleep.
 and a LAN address over plain http is not one. Without it 说说看 is disabled and
 says so.
 
-### Why the Mac has to be on
+## Deploying to a static host
+
+The app is plain files — no build step, no server code — so any static host
+works, and you get a real certificate (no warning) plus no dependency on the Mac
+being awake.
+
+```bash
+./scripts/build-dist.sh
+```
+
+Builds `dist/` (~536KB, 70 files). **Deploy the contents of `dist/`, never the
+project folder**: the project contains a TLS private key in `.certs/` for the
+`--https` dev server, and that must not reach a public host. The build script
+refuses to finish if a key or certificate ends up in `dist/`.
+
+**Easiest, no account or tooling needed** — open <https://app.netlify.com/drop>
+and drag the `dist` folder in. You get an HTTPS URL on a random subdomain in
+about twenty seconds. Not discoverable, but it is public to anyone with the
+link.
+
+**If you want it to redeploy on every change** — push this repo to GitHub and
+connect it to Netlify or Cloudflare Pages (publish directory `dist`, build
+command `./scripts/build-dist.sh`). Or use GitHub Pages directly, serving the
+repo; `.nojekyll` is already in `dist/`.
+
+Verified: the app runs correctly from a **subpath** (`/repo-name/index.html`),
+which is how GitHub Pages serves a project site — every path in the app is
+relative, so nothing breaks.
+
+### Why the Mac has to be on (LAN route only)
 
 The LAN route means the iPad loads from your Mac. Once installed the service
 worker serves it offline, but the *first* load needs the Mac running. If you
