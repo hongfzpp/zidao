@@ -385,7 +385,7 @@ Ordering is **not** by raw frequency. It is by, in priority order:
 
 First session teaches exactly **大**, cast on the cat. One character. That's it — that is the entire hook, and it is enough. 小 arrives later through play, once 大 is its own thing rather than half of a pair.
 
-### Scene 2 — 厨房 (Kitchen) — 20 characters
+### Scene 2 — 厨房 (Kitchen) — 18 characters *(built)*
 
 | Transforms & verbs | Things | Glue |
 |---|---|---|
@@ -610,7 +610,7 @@ Explicitly **not** metrics: session length, characters "covered," daily streak. 
 | **M1 — The hook** ✅ *built* | Cast mode + house scene. 大/小/开/关/火/水/猫/门 + cat, door, window, lamp, bed, plant, 团团. 27 rules / 34 variants / 3 golden. See README.md. | **The critical test.** Put it in front of the kid. If dragging 大 onto the cat doesn't get a laugh, the thesis is wrong and everything downstream changes. |
 | **M2 — 团团** ✅ *built* | Companion + retrieval mode + memory engine + mastery-scaled distractor selection. `js/core/memory.js`, `js/core/distractors.js`, `js/prompt.js`. | Does retrieval-as-helping actually feel different from a quiz? |
 | **M3 — The payoff** ✅ *built* | Story mode + 3 stories + validator. `js/core/stories.js`, `js/story.js`, `data/stories/`. | Does "I read it" land? |
-| **M4 — Scale** | Kitchen + outside scenes → 60 characters, 12+ stories, Find mode, parent dashboard. | Does it hold attention over weeks? |
+| **M4 — Scale** 🔨 *kitchen built* | Kitchen ✅ (18 characters, counting, 3 stories) + outside scene → 60 characters, Find mode, parent dashboard. | Does it hold attention over weeks? |
 
 **M1 is the gate.** Build it small, build it fast, and test it on the actual child before writing a line of M2. Everything in this document is a hypothesis until that moment.
 

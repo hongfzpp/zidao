@@ -208,6 +208,32 @@ that reflects reading rather than play.
 
 **The room persists.** Leave a giant cat in the bedroom and it's still there tomorrow.
 
+## Two rooms
+
+**家** (the house) and **厨房** (the kitchen). The door is the way between them —
+and only when it is **open**, so getting to the next room means reading 开. That
+is the "read to act" idea (DESIGN.md §6.2) rather than a menu.
+
+Each room remembers what you did to it independently: a giant cat in the house
+stays a giant cat while you are in the kitchen.
+
+A door declares `opensWith` in its scene file, and that character is **always
+pinned into the pouch**. Without it the pouch cap could rotate 开 away and
+strand the kid in a room with no way out — which it did, until the suite caught
+it. `scripts/validate.py` fails if a door forgets to declare it, and if any room
+has no way back.
+
+### Counting — 一 二 三 多 少
+
+Things in the kitchen come in numbers. Cast **三** on the eggs and there are
+three eggs; **一** puts it back to one; **多** adds one and **少** takes one
+away; **吃** eats one. One to five, clamped.
+
+This is why 一/二/三 are castable here, though DESIGN.md §9 lists them as glue: a
+number is the one piece of "glue" with an effect a four-year-old can *see*. 个
+and 了 remain glue — those really do mean nothing on their own, and are met in
+the stories 几个蛋 and 热了.
+
 ## 团团's questions (the memory engine)
 
 Every few casts, if a character is due, 团团 gets a thought bubble, **says a word
