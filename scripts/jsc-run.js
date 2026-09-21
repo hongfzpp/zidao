@@ -33,6 +33,7 @@ await import('../tests/unit/memory.test.js');
 await import('../tests/unit/distractors.test.js');
 await import('../tests/unit/stories.test.js');
 await import('../tests/unit/speechmatch.test.js');
+await import('../tests/unit/theme.test.js');
 await import('../tests/unit/data.test.js');
 
 const results = await runAll();

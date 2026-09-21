@@ -4,7 +4,9 @@ import { describe, it, expect } from '../runner.js';
 import { App, waitFor } from './harness.js';
 
 // derived from the data, so adding a character does not break the suite
-const CHAR_DEFS = (await fetch('../data/characters.json').then(r => r.json())).characters;
+const CHAR_DATA = await fetch('../data/characters.json').then(r => r.json());
+const CHAR_DEFS = CHAR_DATA.characters;
+const CHAR_DATA_UNITS = CHAR_DATA.units || [];
 const ALL = CHAR_DEFS.map(c => c.id);
 // glue characters (你 好 我) are owned but never appear in the pouch and are
 // never cast -- DESIGN.md §9.1
@@ -1484,6 +1486,70 @@ describe('e2e · 厨房 (the second room)', () => {
       expect(Boolean(app.obj('tuantuan'))).toBeTruthy();
       await app.drag('开', 'door'); await app.goThrough();
       expect(Boolean(app.obj('tuantuan'))).toBeTruthy();
+    });
+  });
+});
+
+describe('e2e ·每 unit has its own room', () => {
+  const UNITS = CHAR_DATA_UNITS;
+  const upTo = n => CHAR_DEFS.filter(c => c.unit <= n).map(c => c.id);
+
+  it('the room starts in the first unit\'s colours', async () => {
+    await withApp(save({ owned: [CHAR_DEFS[0].id], firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.roomUnit()).toBe(1);
+      expect(app.wallColour()).notToContain('none');
+    });
+  });
+
+  it('REGRESSION: reaching a new unit changes the room', async () => {
+    // The point of the change: finishing a unit is visible without opening
+    // the parent panel.
+    await withApp(save({ owned: upTo(1), firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.roomUnit()).toBe(1);
+      const before = app.wallColour();
+
+      await app.openParentPanel();
+      const next = CHAR_DEFS.find(c => c.unit === 2);
+      app.$(`[data-act="teach"][data-char="${next.id}"]`).click();
+      await app.completeFirstMeeting();
+
+      expect(app.roomUnit()).toBe(2);
+      expect(app.wallColour()).notToContain(before);
+    });
+  });
+
+  it('every unit gives a different room', async () => {
+    const seen = new Set();
+    for (const u of UNITS) {
+      await withApp(save({ owned: upTo(u.n), firstCast: ALL }), async app => {
+        await app.start();
+        expect(app.roomUnit()).toBe(u.n);
+        seen.add(app.wallColour());
+      });
+    }
+    expect(seen.size).toBe(UNITS.length);
+  });
+
+  it('REGRESSION: the kitchen does not look like the house', async () => {
+    await withApp(save({ owned: upTo(2), firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.roomFloor()).toBe('planks');
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.roomFloor()).toBe('tiles');
+    });
+  });
+
+  it('the light follows the unit into the other room', async () => {
+    await withApp(save({ owned: upTo(4), firstCast: ALL }), async app => {
+      await app.start();
+      const houseWall = app.wallColour();
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(app.roomUnit()).toBe(4);
+      expect(app.wallColour()).toBe(houseWall);     // same unit, same light
     });
   });
 });

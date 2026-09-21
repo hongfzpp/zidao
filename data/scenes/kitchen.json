@@ -138,5 +138,8 @@
       ],
       "wander": true
     }
-  ]
+  ],
+  "floorPattern": "tiles",
+  "floor": "#cfc3b4",
+  "floor2": "#bcae9c"
 }

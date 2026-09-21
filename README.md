@@ -225,6 +225,16 @@ story:
 Glue characters (**bold**) sit in the unit whose story introduces them, which is
 the only place they can be learnt.
 
+**Each unit has its own room.** The walls change colour as he progresses —
+晨 · 午 · 阴 · 绿 · 霞 · 夜, reading as a day going by — so finishing a unit is
+visible immediately, without anyone opening the parent panel. The palettes live
+on `units[].theme` in `data/characters.json`.
+
+**The scene supplies the materials, the unit supplies the light.** The house has
+board floors and the kitchen has tiles with its own cooler floor colour, so the
+two rooms never look alike; the wall colour still follows whichever unit he is
+in, in both rooms.
+
 **Finishing a unit is exactly enough to read its story.** A story may never need
 a character from a later unit — enforced by `scripts/validate.py` and by a data
 test, the same guarantee as the page-level one but at curriculum level.

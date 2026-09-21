@@ -96,6 +96,11 @@ export class App {
 
   obj (id) { return this.doc.getElementById('obj-' + id); }
   sceneId () { return this.save().currentScene; }
+  roomUnit () { return Number(this.$('#room').dataset.unit || 0); }
+  roomFloor () { return this.$('#room').dataset.floor; }
+  wallColour () {
+    return this.win.getComputedStyle(this.$('#wall')).backgroundImage;
+  }
   objCount (id) { return Number(this.obj(id)?.dataset.count || 1); }
   /** Walk through an open door. */
   async goThrough (doorId = 'door') {

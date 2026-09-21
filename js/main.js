@@ -23,6 +23,7 @@ import * as speechMod from './speech.js';
 import { nextUnread, unlockedStories, shelf, closestLocked } from './core/stories.js';
 import { blankProgress, getProgress, status as charStatus, mastery } from './core/memory.js';
 import { isUnlocked, missingFor } from './core/stories.js';
+import { currentUnit, themeFor, cssVars } from './core/theme.js';
 import {
   DEFAULTS as PACING, arrivalDecision, rollSession, applyArrival,
   castsUntilArrival, sessionBudgetLeft
@@ -75,7 +76,8 @@ async function boot () {
     try { await loadVoice(CHARS.map(c => c.id)); } catch (e) { console.warn('[audio] voices', e); }
   }
   initCast(RULES, CHARS);
-  await scene.loadScene('house', RULES.spawnables);
+  scene.onChangeScene((id, def) => { scene_def = def; applyTheme(); });
+  await scene.loadScene(get().currentScene || 'house', RULES.spawnables);
   scene.startWander();
 
   prompt.initPrompt(CHARS, {
@@ -110,7 +112,7 @@ async function boot () {
   // ?dev=1 is to skip straight past the characters. With everything already
   // owned, introduceNext() finds nothing to introduce and the first-run 初遇
   // does not happen at all.
-  if (devFlag === true) { update({ firstRun: false }); unlockEverything(); }
+  if (devFlag === true) { update({ firstRun: false }); unlockEverythingThenTheme(); }
 
   if (get().firstRun || get().owned.length === 0) {
     update({ firstRun: false });
@@ -147,6 +149,7 @@ async function introduce (def, { countsTowardSession = false, thenStory = false 
   sfx('chime');
   await firstMeeting(def);
   onNewCharacter(def.id);
+  applyTheme();
   // Fire and forget: the story is the session's high note, but introduce()
   // must not stay pending until the book is closed -- everything awaiting it
   // would stall behind the overlay.
@@ -187,6 +190,26 @@ async function afterCast () {
   if (await prompt.startPrompt()) castsSincePrompt = 0;
 }
 
+/* ---------- the room's look ----------
+   Each unit has its own palette, so finishing one is visible immediately: the
+   room changes. The scene supplies the materials, the unit supplies the light. */
+
+function applyTheme () {
+  const room = document.getElementById('room');
+  if (!room) return;
+  const unit = currentUnit(CHARS, get().owned || []);
+  const scene = scene_def || {};
+  const vars = cssVars(themeFor(UNITS, unit), scene);
+  for (const [k, v] of Object.entries(vars)) room.style.setProperty(k, v);
+  room.dataset.unit = String(unit);
+  room.dataset.floor = scene.floorPattern || 'planks';
+  document.body.style.background = vars['--wall'] || '';
+  document.querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', vars['--wall'] || '#f4d9b0');
+}
+
+let scene_def = null;
+
 /* ---------- walking between rooms ----------
    The door is the way through, and only when it is OPEN -- so getting to the
    next room means reading 开 first. Reading to act, exactly as DESIGN.md §6.2
@@ -221,6 +244,8 @@ function applyDevBadge () {
 }
 
 /** Everything, including 你 好 我, which are otherwise only met by reading. */
+function unlockEverythingThenTheme () { unlockEverything(); applyTheme(); }
+
 function unlockEverything () {
   const now = Date.now();
   for (const c of CHARS) {
@@ -301,7 +326,7 @@ function setupParentGate () {
     if (act === 'dev-toggle') {
       update({ devMode: !isDev() });
       applyDevBadge();
-      if (isDev()) unlockEverything();
+      if (isDev()) unlockEverythingThenTheme();
       openPanel();
       return;
     }

@@ -34,12 +34,25 @@ html,body{
 
 /* ---------- room ---------- */
 #room{position:relative;flex:1;overflow:hidden}
+/* The palette comes from the unit and the materials from the scene, both set
+   as custom properties on #room by js/main.js. */
+#wall,#floor{transition:background .6s ease}
 #wall{position:absolute;inset:0 0 26% 0;
   background:linear-gradient(180deg,var(--wall) 0%,var(--wall-2) 100%)}
 #floor{position:absolute;inset:74% 0 0 0;
   background:linear-gradient(180deg,var(--floor) 0%,var(--floor-2) 100%)}
-#floor::before{content:"";position:absolute;inset:0;
+
+/* boards in the house */
+#room[data-floor="planks"] #floor::before{content:"";position:absolute;inset:0;
   background:repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 2px,transparent 2px 64px)}
+/* tiles in the kitchen */
+#room[data-floor="tiles"] #floor::before{content:"";position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.07) 0 2px,transparent 2px 58px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 2px,transparent 2px 46px);}
+#room[data-floor="tiles"] #floor::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 29px,
+    transparent 29px 58px);mix-blend-mode:soft-light}
 
 #objects,#particles,#rain{position:absolute;inset:0;pointer-events:none}
 #objects{pointer-events:auto}

@@ -937,7 +937,14 @@
         "men",
         "mao",
         "gou"
-      ]
+      ],
+      "theme": {
+        "name": "晨",
+        "wall": "#f9e6c6",
+        "wall2": "#f2d6a8",
+        "floor": "#c98f5f",
+        "floor2": "#b97f50"
+      }
     },
     {
       "n": 2,
@@ -950,7 +957,14 @@
         "shui",
         "ni",
         "hao"
-      ]
+      ],
+      "theme": {
+        "name": "午",
+        "wall": "#fdf0c4",
+        "wall2": "#f8e29a",
+        "floor": "#d19a63",
+        "floor2": "#c08850"
+      }
     },
     {
       "n": 3,
@@ -963,7 +977,14 @@
         "shui4",
         "chuang_b",
         "le"
-      ]
+      ],
+      "theme": {
+        "name": "阴",
+        "wall": "#dfe6ea",
+        "wall2": "#c9d4dc",
+        "floor": "#a99080",
+        "floor2": "#96806f"
+      }
     },
     {
       "n": 4,
@@ -976,7 +997,14 @@
         "chi",
         "he",
         "wo"
-      ]
+      ],
+      "theme": {
+        "name": "绿",
+        "wall": "#dcecd2",
+        "wall2": "#c3dfb4",
+        "floor": "#b08f66",
+        "floor2": "#9d7d57"
+      }
     },
     {
       "n": 5,
@@ -989,7 +1017,14 @@
         "rou",
         "cai",
         "re"
-      ]
+      ],
+      "theme": {
+        "name": "霞",
+        "wall": "#fadcc9",
+        "wall2": "#f3bfa6",
+        "floor": "#b87a55",
+        "floor2": "#a56846"
+      }
     },
     {
       "n": 6,
@@ -1003,7 +1038,14 @@
         "er",
         "san",
         "ge"
-      ]
+      ],
+      "theme": {
+        "name": "夜",
+        "wall": "#c3cde4",
+        "wall2": "#a3b1ce",
+        "floor": "#7d7590",
+        "floor2": "#6b6480"
+      }
     }
   ]
 }

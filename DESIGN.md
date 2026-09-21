@@ -375,6 +375,10 @@ And it makes the decodable guarantee structural rather than incidental: **a stor
 
 Glue characters live in the unit whose story introduces them, since a story is the only place they can be learnt at all (§9.1).
 
+**Each unit also looks different.** The room's palette changes with the unit — 晨, 午, 阴, 绿, 霞, 夜 — so progress is visible in the world itself rather than only in a panel a child never opens. Six looks read as a day passing, which gives the sequence a shape a four-year-old can follow without being told what it means.
+
+The split is: **the scene supplies the materials, the unit supplies the light.** A kitchen floor is tiled and a house floor is boards whichever unit you are in; the walls take their colour from the unit in both rooms. Before this the two rooms were pixel-identical apart from the objects standing in them, which is not a second room, it is the same room redressed.
+
 This is orthogonal to pacing. Grouping is six; arrival is still one character per eight casts, at most three a session — a unit takes two or three sittings.
 
 ## 9x. Curriculum — the v1 sixty

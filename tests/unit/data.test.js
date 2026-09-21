@@ -354,6 +354,21 @@ describe('data · the curriculum is taught in small units', () => {
     }
   });
 
+  it('REGRESSION: every unit has its own look', () => {
+    // Finishing a unit should be visible in the room itself.
+    for (const u of UNITS) expect(Boolean(u.theme && u.theme.wall)).toBeTruthy();
+    const walls = UNITS.map(u => u.theme.wall);
+    expect(new Set(walls).size).toBe(walls.length);
+    const floors = UNITS.map(u => u.theme.floor);
+    expect(new Set(floors).size).toBe(floors.length);
+  });
+
+  it('REGRESSION: the two rooms do not look identical', () => {
+    // They did: same wall, same floor, only the objects differed.
+    const patterns = SCENE_LIST.map(sc => sc.floorPattern);
+    expect(new Set(patterns).size).toBe(patterns.length);
+  });
+
   it('every unit ends in exactly one story', () => {
     for (const u of UNITS) {
       const got = STORIES.filter(st => st.unit === u.n);
