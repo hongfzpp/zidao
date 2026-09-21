@@ -94,6 +94,10 @@ No build step, no `npm install`, no dependencies. Just static files and `python3
      variant** (`firstCast` in the save). The hook has to land on drag #1, so
      it is never left to the 5% golden roll. Afterwards effects settle into
      their normal range and golden goes back to ~5%.
+   - Dropping a card picks the object whose **centre is nearest**, not whichever
+     box is smallest — so aiming at a small thing under a giant cat works.
+     Hit areas also have a floor, so an object squashed or rotated by an
+     animation never becomes too small to aim at (`js/core/hittest.js`).
    - 开 on the door → it swings open on its hinge (a real 3D `rotateY` on a
      `.swing` layer, not a flat tilt) and you see sky and grass through the
      opening. Same for the window. 关 swings it shut.

@@ -114,7 +114,11 @@ html,body{
   transform-style:preserve-3d;
   transition:transform .6s cubic-bezier(.34,1.24,.64,1);
 }
-.obj[data-open="true"] .swing{transform:rotateY(-76deg) translateZ(2px)}
+/* Stop at 52deg, not 76: past about 60 the door is nearly edge-on and there is
+   almost nothing left to aim at. It still reads as open -- the gap behind it
+   does most of that work -- and js/core/hittest.js keeps a floor under the hit
+   box regardless. */
+.obj[data-open="true"] .swing{transform:rotateY(-52deg) translateZ(2px)}
 
 /* What you see through the opening. Sits behind the glyph, fades in as the
    door swings clear. */

@@ -4,6 +4,7 @@
 import { get, update } from './store.js';
 import { TUAN_SVG } from './tuantuan.js';
 import { clampScale, clampCount, stepCount } from './core/scale.js';
+import { pickTarget, clearSpot } from './core/hittest.js';
 
 let def = null;          // the scene definition currently loaded
 let sceneId = null;
@@ -210,19 +211,17 @@ export function spawn (what, pageX, pageY) {
   return rec;
 }
 
-/** Topmost object whose glyph box contains the point. */
+/** Which object the kid aimed at. See js/core/hittest.js for why it works this way. */
 export function hitTest (pageX, pageY) {
-  let best = null, bestArea = Infinity;
-  for (const rec of objects.values()) {
-    const g = rec.el.querySelector('.glyph').getBoundingClientRect();
-    const pad = 8;
-    if (pageX >= g.left - pad && pageX <= g.right + pad &&
-        pageY >= g.top - pad && pageY <= g.bottom + pad) {
-      const area = g.width * g.height;
-      if (area < bestArea) { best = rec; bestArea = area; }
-    }
-  }
-  return best;
+  const candidates = [...objects.values()].map(rec => ({
+    id: rec.id,
+    rect: rec.el.querySelector('.glyph').getBoundingClientRect(),
+    // the object's own on-screen size, independent of whatever animation is
+    // squashing or rotating it at this instant
+    size: rec.size * rec.scale
+  }));
+  const id = pickTarget(candidates, pageX, pageY);
+  return id ? objects.get(id) : null;
 }
 
 export function centerOf (rec) {
@@ -244,13 +243,26 @@ export function persist () {
 /* ---------- idle life ----------
    Creatures drift a little so the room never looks like a static diagram. */
 let wanderTimer = null;
+/** Half the object's width, as a percentage of the room. */
+function halfWidthPct (rec) {
+  const room = host()?.getBoundingClientRect();
+  if (!room?.width) return 5;
+  return ((rec.size * rec.scale * 8) / 2 / room.width) * 100;
+}
+
 export function startWander () {
   clearInterval(wanderTimer);
   wanderTimer = setInterval(() => {
     for (const rec of objects.values()) {
       if (!rec.wander || Math.random() > 0.35) continue;
-      const dx = (Math.random() - 0.5) * 5;
-      rec.x = Math.max(8, Math.min(92, rec.x + dx));
+      // Do not drift into something else: overlapping emoji are hard to aim at.
+      const others = [...objects.values()]
+        .filter(o => o !== rec)
+        .map(o => ({ x: o.x, halfWidth: halfWidthPct(o) }));
+      const want = rec.x + (Math.random() - 0.5) * 5;
+      const spot = clearSpot(want, halfWidthPct(rec), others);
+      if (spot === null) continue;
+      rec.x = spot;
       rec.el.style.transition = 'left 2.2s ease-in-out';
       rec.el.style.left = rec.x + '%';
       setTimeout(() => { rec.el.style.transition = ''; }, 2300);

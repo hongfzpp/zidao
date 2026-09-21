@@ -1,5 +1,5 @@
 {
-  "version": "64be205f0c3b",
+  "version": "35c45b2471f7",
   "assets": [
     "assets/icons/icon-1024.png",
     "assets/icons/icon-120.png",
@@ -67,6 +67,7 @@
     "js/cast.js",
     "js/core/distractors.js",
     "js/core/hand.js",
+    "js/core/hittest.js",
     "js/core/index.js",
     "js/core/layout.js",
     "js/core/memory.js",

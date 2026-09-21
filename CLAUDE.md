@@ -25,6 +25,8 @@ Every one of them is now a named regression test.
 | 12 cards overflowed the pouch | fixed-size cards | `layout · layoutFor` |
 | A door character could rotate out of the capped pouch, stranding the kid in a room | the cap had no notion of "this character is required here" | `e2e · 厨房` |
 | A flaky test: `多` asserted an exact count, but `多` has a 5% golden that jumps to five | an exact-value assertion on a mechanic with a deliberate random variant | `e2e · 厨房` |
+| An open door folded nearly edge-on and could not be closed | a 3D rotation collapsed the hit box to a sliver | `e2e · aiming at things`, `hittest · hitBox` |
+| Overlapping emoji: dropping on one hit whichever was smallest | "smallest box containing the point" is not "what the kid aimed at" | `hittest · pickTarget` |
 | A re-learned character often did not appear in the pouch | the cap guaranteed a slot to the most recently *acquired* character, and a review does not change acquisition order | `hand · the pouch is capped` |
 | Tapping a story character spoke it — an answer key on the reading page | a convenience that let the child skip reading entirely | `e2e · 故事` |
 | 读故事 did nothing at all on a fresh save | no story is unlocked yet, but the button never said so | `e2e · 故事` |
@@ -132,6 +134,12 @@ worth 14s.)
 
 Three rules keep it that way:
 
+- **A test that cannot fail is worse than no test.** After fixing a bug, put
+  the bug back and watch the test go red. Two rounds of tests here passed
+  vacuously: one compared a value against the very constant it was testing (so
+  zeroing the constant still passed), and the E2E harness dropped cards on the
+  exact geometric centre of a target, which hits even a one-pixel sliver — no
+  finger aims like that. Model the imprecision the real input has.
 - **Never assert an exact value on something with a random variant.** Golden
   effects fire ~5% of the time; a test that pins the result flakes one run in
   twenty and erodes trust in the whole suite. Assert the *direction* instead.

@@ -1553,3 +1553,76 @@ describe('e2e ·每 unit has its own room', () => {
     });
   });
 });
+
+describe('e2e · aiming at things', () => {
+  it('REGRESSION: an open door can still be closed', async () => {
+    // The 3D swing folded the door nearly edge-on, leaving a sliver to aim at:
+    // you could open a door and then not be able to shut it again.
+    await withApp(save({ owned: ['kai','guan'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'door');
+      expect(app.objState('door', 'open')).toBe('true');
+
+      const g = app.obj('door').querySelector('.glyph').getBoundingClientRect();
+      const size = Number(app.obj('door').style.getPropertyValue('--s'));
+      expect(g.width).toBeLessThan(size * 0.85);       // it really is folded
+      // ...but not folded to nothing. Past ~60deg there is no door left to aim
+      // at, which is exactly what the report was about.
+      expect(g.width).toBeGreaterThan(size * 0.45);
+
+      // aim a quarter of the door's width off centre, as a finger would
+      await app.drag('关', 'door', { offset: { dx: 0.25 } });
+      expect(app.objState('door', 'open')).toBe('false');
+    });
+  });
+
+  it('REGRESSION: an open window can still be closed', async () => {
+    await withApp(save({ owned: ['kai','guan'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('开', 'window');
+      await app.drag('关', 'window', { offset: { dx: 0.25 } });
+      expect(app.objState('window', 'open')).toBe('false');
+    });
+  });
+
+  it('REGRESSION: a small thing under a giant one is still reachable', async () => {
+    // 大 can make the cat cover half the room.
+    await withApp(save({ owned: ['da','huo'], firstCast: ALL }), async app => {
+      await app.start();
+      for (let i = 0; i < 3; i++) await app.drag('大', 'cat');
+      expect(app.objScale('cat')).toBeGreaterThan(3);
+
+      // aim slightly off the plant's centre, still well inside the cat
+      await app.drag('火', 'plant', { offset: { dx: 0.18 } });
+      expect(app.objState('plant', 'burnt')).toBe('true');
+      expect(app.objScale('cat')).toBeGreaterThan(3);  // the cat took no fire
+    });
+  });
+
+  it('dropping on a thing hits THAT thing, not whatever is smallest', async () => {
+    await withApp(save({ owned: ['da'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('大', 'bed');
+      expect(app.objScale('bed')).toBeGreaterThan(1);
+      expect(app.objScale('cat')).toBe(1);             // the cat was not touched
+    });
+  });
+
+  it('nothing in a room starts on top of anything else', async () => {
+    // (that a WANDERING thing keeps its distance is covered by
+    //  `hittest · keeping things apart`, without waiting on a 4.2s timer)
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      const boxes = app.$$('.obj')
+        .filter(el => el.dataset.id !== 'window' && el.dataset.id !== 'lamp')
+        .map(el => el.querySelector('.glyph').getBoundingClientRect());
+      for (let i = 0; i < boxes.length; i++) {
+        for (let j = i + 1; j < boxes.length; j++) {
+          const a = boxes[i], b = boxes[j];
+          const overlap = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          expect(overlap).toBeLessThan(Math.min(a.width, b.width) * 0.5);
+        }
+      }
+    });
+  });
+});

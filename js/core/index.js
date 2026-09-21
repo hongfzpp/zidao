@@ -9,3 +9,5 @@ export * from './memory.js';
 export * from './distractors.js';
 export * from './stories.js';
 export * from './speechmatch.js';
+export * from './hittest.js';
+export * from './theme.js';

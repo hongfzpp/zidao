@@ -236,7 +236,13 @@ export class App {
   }
 
   /** Drag a pouch card onto a scene object, the way a finger would. */
-  async drag (glyph, targetId, { expectAttempt = true } = {}) {
+  /**
+   * `offset` shifts the drop point away from the target's exact centre, as a
+   * fraction of its size. Dropping dead-centre hits even a one-pixel sliver,
+   * which no real finger does -- so a test that always drops centrally cannot
+   * detect a target that has become too small to aim at.
+   */
+  async drag (glyph, targetId, { expectAttempt = true, offset = null } = {}) {
     // A question takes over the pouch. Deal with it first, the way a kid would,
     // so free-play assertions are not derailed by 团团 interrupting.
     if (expectAttempt && this.promptOpen()) await this.settlePrompt();
