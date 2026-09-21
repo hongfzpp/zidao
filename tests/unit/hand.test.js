@@ -27,12 +27,20 @@ describe('hand · distractor ids', () => {
 });
 
 describe('hand · decoyCount', () => {
-  it('scales with how much the kid owns', () => {
-    expect(decoyCount(1)).toBe(2);
-    expect(decoyCount(3)).toBe(2);
-    expect(decoyCount(4)).toBe(3);
-    expect(decoyCount(6)).toBe(3);
-    expect(decoyCount(8)).toBe(4);
+  it('is whatever the pouch is not owing to real characters', () => {
+    expect(decoyCount(0)).toBe(0);
+    expect(decoyCount(1)).toBe(MAX_POUCH - MIN_REAL);
+    expect(decoyCount(37)).toBe(MAX_POUCH - MIN_REAL);
+  });
+
+  it('REGRESSION: decoys never crowd out a whole unit of characters', () => {
+    // No unit has more than six castable characters, so six real slots means
+    // everything currently being learnt is always reachable.
+    for (const owned of [1, 4, 8, 20, 37]) {
+      expect(realSlots(decoyCount(owned))).toBeGreaterThanOrEqual(6);
+      expect(decoyCount(owned) + realSlots(decoyCount(owned)))
+        .toBeLessThanOrEqual(MAX_POUCH);
+    }
   });
   it('is zero when nothing is owned', () => {
     expect(decoyCount(0)).toBe(0);
@@ -173,7 +181,13 @@ describe('hand · the pouch is capped', () => {
   it('REGRESSION: it does not grow without limit', () => {
     // Thirty-odd cards is not a pouch, it is a wall, and a small child faced
     // with a wall of choices picks nothing.
-    expect(selectPouch(many, owned, { max: 12, rng: mulberry32(1) })).toHaveLength(12);
+    expect(selectPouch(many, owned, { max: 8, rng: mulberry32(1) })).toHaveLength(8);
+  });
+
+  it('REGRESSION: the whole pouch stays small enough to take in at a glance', () => {
+    // Twelve was still too many next to a unit of six.
+    expect(MAX_POUCH).toBeLessThanOrEqual(8);
+    expect(decoyCount(37) + realSlots(decoyCount(37))).toBeLessThanOrEqual(MAX_POUCH);
   });
 
   it('shows everything while everything fits', () => {
@@ -266,7 +280,7 @@ describe('hand · the pouch is capped', () => {
   });
 
   it('realSlots leaves room for the decoys but never starves the real ones', () => {
-    expect(realSlots(4)).toBe(MAX_POUCH - 4);
+    expect(realSlots(2)).toBe(MAX_POUCH - 2);
     expect(realSlots(20)).toBe(MIN_REAL);
   });
 });

@@ -4,6 +4,7 @@
    unit tests deliberately skip. */
 
 import { arrivalDecision } from '../../js/core/pacing.js';
+import * as POUCH from '../../js/core/hand.js';
 
 const APP_URL = '../index.html?test=1';   // see js/timings.js
 const SAVE_KEY = 'zidao.v1';
@@ -90,7 +91,8 @@ export class App {
   /** How many real cards should show, given the cap and the decoys present. */
   expectedRealCards () {
     const owned = (this.save().owned || []).length;
-    return Math.min(owned, Math.max(4, 12 - this.decoyCards().length));
+    return Math.min(owned, Math.max(POUCH.MIN_REAL,
+                                    POUCH.MAX_POUCH - this.decoyCards().length));
   }
   decoyCards () { return this.cards().filter(c => c.decoy); }
 

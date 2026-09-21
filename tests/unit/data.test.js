@@ -5,6 +5,7 @@ import { describe, it, expect } from '../runner.js';
 import { findRule, chooseSteps } from '../../js/core/rules.js';
 import { decoyPool } from '../../js/core/hand.js';
 import { undeclaredGlyphs } from '../../js/core/stories.js';
+import * as POUCH from '../../js/core/hand.js';
 import { mulberry32 } from '../../js/core/rng.js';
 
 const STORY_INDEX = await fetch('../data/stories/index.json').then(r => r.json());
@@ -367,6 +368,16 @@ describe('data · the curriculum is taught in small units', () => {
     // They did: same wall, same floor, only the objects differed.
     const patterns = SCENE_LIST.map(sc => sc.floorPattern);
     expect(new Set(patterns).size).toBe(patterns.length);
+  });
+
+  it('REGRESSION: a whole unit fits in the pouch at once', () => {
+    // The pouch is capped at eight cards. If a unit held more castable
+    // characters than there are real slots, the kid could not reach everything
+    // they are currently being taught.
+    for (const u of UNITS) {
+      const castable = CHARS.filter(c => u.chars.includes(c.id) && c.castable !== false);
+      expect(castable.length).toBeLessThanOrEqual(POUCH.MIN_REAL);
+    }
   });
 
   it('every unit ends in exactly one story', () => {

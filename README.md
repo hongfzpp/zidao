@@ -171,15 +171,21 @@ real ones, which hands the kid the answer. Decoys are redrawn at natural
 boundaries instead: launch, a new character arriving, and every 12 casts
 (`REDRAW_EVERY` in `js/hand.js`).
 
-Decoy count scales with how much the kid owns: 2 decoys up to 3 characters,
-3 up to 6, then 4. Cards shrink to keep everything visible without scrolling —
-a kid should never have to scroll to find a character.
+Decoy count is scaled to the pouch rather than to how much the kid owns: two,
+always, which is whatever the eight cards do not owe to real characters. At
+eight cards nothing has to shrink — they stay at full size in one row.
 
 ### The pouch is capped
 
-**`MAX_POUCH` is 12 cards, decoys included** (`js/core/hand.js`). Left to grow it
+**`MAX_POUCH` is 8 cards, decoys included** (`js/core/hand.js`). Left to grow it
 would reach sixty-odd at full curriculum, which is not a pouch, it is a wall —
 and a small child faced with a wall of choices picks nothing.
+
+The split is **6 real + 2 decoys**, and that is not arbitrary: no unit holds more
+than six castable characters, so the pouch can always show a complete unit with
+room for the contrast. A third decoy would mean the kid could not reach
+everything they are currently being taught. A data test asserts every unit still
+fits.
 
 Past the cap, characters rotate rather than pile up. Two guarantees:
 

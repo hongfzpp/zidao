@@ -8,12 +8,18 @@ export const isDistractor = id => String(id).startsWith(DISTRACTOR_PREFIX);
 export const distractorGlyph = id => String(id).slice(DISTRACTOR_PREFIX.length);
 export const toDistractorId = glyph => DISTRACTOR_PREFIX + glyph;
 
-/** Heavier proportion of decoys early, when guessing would otherwise be trivial. */
-export function decoyCount (ownedCount) {
+/**
+ * How many decoys to mix in.
+ *
+ * Scaled to the POUCH, not to how much the kid owns. Eight cards is the whole
+ * pouch, and no unit has more than six castable characters -- so the split is
+ * six real and two decoys, and the pouch can always hold a complete unit with
+ * room for the contrast. Taking a third decoy slot would mean the kid could not
+ * reach everything they are currently learning.
+ */
+export function decoyCount (ownedCount, max = MAX_POUCH) {
   if (ownedCount <= 0) return 0;
-  if (ownedCount <= 3) return 2;
-  if (ownedCount <= 6) return 3;
-  return 4;
+  return Math.max(0, max - MIN_REAL);            // whatever is not owed to real cards
 }
 
 /** Decoys come from the confusables of what the kid owns, minus the curriculum. */
@@ -55,8 +61,8 @@ export function pruneDecoys (chars, owned, decoys) {
 /* The pouch is capped. Left to grow it would reach sixty-odd cards, which is
    not a pouch, it is a wall -- and a 3-8 year old faced with a wall of choices
    picks nothing. Past the cap, characters rotate. */
-export const MAX_POUCH = 12;      // total cards, decoys included
-export const MIN_REAL = 4;        // never squeeze real characters below this
+export const MAX_POUCH = 8;       // total cards, decoys included
+export const MIN_REAL = 6;        // never squeeze real characters below this
 
 /** Characters the kid owns that can actually be cast (glue cannot). */
 export function castableOwned (chars, owned) {
