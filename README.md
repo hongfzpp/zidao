@@ -283,6 +283,21 @@ number is the one piece of "glue" with an effect a four-year-old can *see*. 个
 and 了 remain glue — those really do mean nothing on their own, and are met in
 the stories 几个蛋 and 热了.
 
+## 团团
+
+The companion is a **photograph of the child**, cut out of a snapshot
+(`assets/tuantuan.png`). A photo cannot change expression, so the moods moved to
+body movement plus a small emoji badge beside the head — see `js/tuantuan.js`.
+
+The original photograph lives in `private/`, which is git-ignored and excluded
+from `dist/`. Only the cut-out ships.
+
+> **Note:** the live site is public. A face in the app is a face on a public URL.
+
+To swap in a different photo: replace `assets/tuantuan.png` with a PNG that has
+a transparent background, roughly 3× the on-screen height (~420px tall), then
+run `python3 scripts/gen-sw-manifest.py`.
+
 ## 团团's questions (the memory engine)
 
 Every few casts, if a character is due, 团团 gets a thought bubble, **says a word

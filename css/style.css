@@ -89,6 +89,42 @@ html,body{
 .obj .glyph svg{display:block;width:calc(var(--s) * 1px);height:auto;
   filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
 
+/* ---------- 团团 is a photograph ----------
+   A photo cannot pull a face, so the feeling lives in how the body moves and in
+   a small badge beside it (js/tuantuan.js). */
+.tuan{position:relative;display:block}
+.tuan-img{
+  /* just under the door's height: the room is not to scale, but a child
+     taller than a doorway reads as wrong even to a four-year-old */
+  display:block;height:calc(var(--s) * 1.15px);width:auto;
+  transform-origin:50% 92%;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 7px 9px rgba(0,0,0,.3));
+  -webkit-user-drag:none;user-select:none;
+}
+.tuan-mood{
+  /* clear of the head: a badge over his face is worse than no badge */
+  position:absolute;right:-42%;top:-6%;
+  font-size:calc(var(--s) * 0.38px);line-height:1;
+  opacity:0;transform:scale(.4);
+  transition:opacity .25s ease,transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+  text-shadow:0 2px 6px rgba(0,0,0,.35);
+}
+.tuan-mood.on{opacity:1;transform:scale(1)}
+
+@keyframes tuanBounce{0%,100%{translate:0 0}40%{translate:0 -14%}70%{translate:0 -4%}}
+@keyframes tuanJump{0%,100%{translate:0 0}30%{translate:0 -22%}60%{translate:0 0}}
+@keyframes tuanShiver{0%,100%{translate:0 0}25%{translate:-3% 0}75%{translate:3% 0}}
+@keyframes tuanDoze{0%,100%{scale:1 1}50%{scale:1.02 .97}}
+.tuan-img.tuan-bounce{animation:tuanBounce .6s ease-in-out 2}
+.tuan-img.tuan-jump{animation:tuanJump .45s ease-out 2}
+.tuan-img.tuan-shiver{animation:tuanShiver .14s linear 8}
+.tuan-img.tuan-doze{animation:tuanDoze 2.4s ease-in-out infinite}
+
+/* the breathing idle that used to be on the blob */
+.obj#obj-tuantuan .glyph{animation:none}
+
 .obj.drop-target .glyph{transform:scale(1.14)}
 .obj.drop-target::after{
   content:"";position:absolute;left:50%;bottom:0;
@@ -342,7 +378,7 @@ html,body{
 
 /* 团团's thought bubble while asking for a character */
 .think{
-  position:absolute;left:50%;bottom:calc(var(--s) * 1px);
+  position:absolute;left:50%;bottom:calc(var(--s) * 1.2px);
   transform:translateX(-50%) scale(0);
   width:54px;height:54px;border-radius:50%;
   background:var(--card);border:4px solid var(--card-edge);

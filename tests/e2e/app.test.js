@@ -1626,3 +1626,45 @@ describe('e2e · aiming at things', () => {
     });
   });
 });
+
+describe('e2e · 团团 is a photograph', () => {
+  it('the photo is there in every room', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      expect(Boolean(app.$('#obj-tuantuan .tuan-img'))).toBeTruthy();
+      await app.drag('开', 'door');
+      await app.goThrough();
+      expect(Boolean(app.$('#obj-tuantuan .tuan-img'))).toBeTruthy();
+    });
+  });
+
+  it('REGRESSION: the feelings survive losing the drawn face', async () => {
+    // A photo cannot pull a face, and 团团 being *confused* rather than the
+    // child being wrong is load-bearing (DESIGN.md §3.3). The mood moved to a
+    // badge and to how the body moves.
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      const t = await app.win.eval ? null : null;      // module import below
+      const mod = await app.win.__moodTest();
+      expect(mod.badge).toBeTruthy();
+      expect(mod.tilt).toContain('rotate');
+    });
+  });
+
+  it('REGRESSION: 多 never clones 团团', async () => {
+    // Everything else in the room can be multiplied; a child cannot.
+    await withApp(save({ owned: ['kai','duo'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.drag('多', 'tuantuan');
+      expect(app.$$('#obj-tuantuan .tuan-img')).toHaveLength(1);
+      expect(app.$$('#obj-tuantuan .glyph.multi')).toHaveLength(0);
+    });
+  });
+
+  it('the photo is not draggable out of the page', async () => {
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.$('#obj-tuantuan .tuan-img').draggable).toBeFalsy();
+    });
+  });
+});

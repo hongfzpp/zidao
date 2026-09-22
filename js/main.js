@@ -99,6 +99,15 @@ async function boot () {
   // test hook: lets the E2E suite feed the recogniser a scripted transcript,
   // since there is no way to speak into a headless browser
   window.__setRecognizer = f => speechMod.setRecognizerFactory(f);
+  // test hook: 团团's mood is no longer a drawn face, so expose what it became
+  window.__moodTest = async () => {
+    const t = await import('./tuantuan.js');
+    t.emote('confused', 5000);
+    await new Promise(r => requestAnimationFrame(r));
+    const root = document.getElementById('obj-tuantuan');
+    return { badge: root.querySelector('.tuan-mood').textContent,
+             tilt: root.querySelector('.tuan-img').style.transform };
+  };
   renderPouch();
 
   const devFlag = devFlagFromUrl();

@@ -292,11 +292,17 @@ Rules:
 
 | Property | Decision |
 |---|---|
-| Form | A small round soft blob. Simple enough to animate cheaply, expressive enough to emote. |
+| Form | **A photograph of the child themselves**, cut out of a real snapshot. Previously a drawn blob. |
 | Competence | **Always less competent than the child at reading.** Never corrects the child, never teaches. |
 | Voice | Non-verbal sounds plus a very small set of simple spoken Chinese phrases ("团团饿了", "好吃！", "黑黑的…"). Never explains anything. |
 | Role | Generates every retrieval prompt; reacts to every cast; provides the emotional stakes ("团团 is cold") that make reading worth doing. |
 | Rule | 团团 never says the child is wrong. 团团 only ever gets confused, and is delighted when helped. |
+
+**A photograph cannot pull a face**, and 团团's expressions are load-bearing — §3.3 rests on 团团 being *confused* rather than the child being *wrong*. So the feeling moved to the two channels a photo can carry: how the body moves (bounce, jump, shiver, doze) and a small emoji badge beside the head. Both read at a glance, which a drawn eyebrow never really did at this size.
+
+The badge sits clear of the face. A mood marker over the child's own face is worse than no marker.
+
+**The source photograph is not in the repository** (`private/`, git-ignored) and not in `dist/`. Only the cut-out asset ships. Publishing a child's photograph to a public URL is a decision for the parent to take deliberately, not a side effect of a UI change.
 
 ---
 

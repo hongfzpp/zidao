@@ -2,7 +2,7 @@
    DESIGN.md §6.2: the scene persists between sessions. */
 
 import { get, update } from './store.js';
-import { TUAN_SVG } from './tuantuan.js';
+import { TUAN_HTML } from './tuantuan.js';
 import { clampScale, clampCount, stepCount } from './core/scale.js';
 import { pickTarget, clearSpot } from './core/hittest.js';
 
@@ -74,7 +74,7 @@ function addObject (o, saved) {
   el.style.setProperty('--s', size);
   if ((o.tags || []).includes('creature')) el.dataset.kind = 'creature';
 
-  const glyph = o.glyph === '@tuantuan' ? TUAN_SVG : (o.glyph || '❓');
+  const glyph = o.glyph === '@tuantuan' ? TUAN_HTML : (o.glyph || '❓');
   if (o.opening) el.dataset.opening = o.opening;
   // .swing is its own layer so the hinge rotation never fights the squash,
   // hop or spin animations that live on .glyph and .mover.
@@ -84,6 +84,7 @@ function addObject (o, saved) {
     `<span class="swing"><span class="glyph">${glyph}</span></span>` +
     `</span></span></span>`;
   el.dataset.glyph = glyph;
+  if (o.glyph === '@tuantuan') el.dataset.single = 'true';
 
   h_setScale(el, scale);
 
@@ -157,7 +158,7 @@ export function setCount (id, n) {
   rec.count = count;
   const swing = rec.el.querySelector('.swing');
   const glyph = rec.el.dataset.glyph || '';
-  if (glyph.startsWith('<svg')) return;             // 团团 does not multiply
+  if (rec.el.dataset.single === 'true') return;      // 团团 does not multiply
   swing.innerHTML = count === 1
     ? `<span class="glyph">${glyph}</span>`
     : `<span class="glyph multi" data-n="${count}">` +
