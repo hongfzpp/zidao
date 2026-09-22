@@ -1433,13 +1433,19 @@ describe('e2e · 厨房 (the second room)', () => {
   });
 
   it('吃 eats one of them', async () => {
+    // Direction, not an exact number -- the same trap the 多 test fell into.
+    // 吃 has a golden variant that eats the lot down to one, so `toBe(2)`
+    // flaked about one run in twenty. It failed exactly once here, and the
+    // output naming it was thrown away by a grep, which cost a long hunt.
     await withApp(save({ owned: ['kai','san','chi'], firstCast: ALL }), async app => {
       await app.start();
       await app.drag('开', 'door'); await app.goThrough();
       await app.drag('三', 'meat');
-      expect(app.objCount('meat')).toBe(3);
+      expect(app.objCount('meat')).toBe(3);        // 三 is exact: one variant, no golden
       await app.drag('吃', 'meat');
-      expect(app.objCount('meat')).toBe(2);
+      const after = app.objCount('meat');
+      expect(after).toBeLessThan(3);
+      expect(after).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -1623,6 +1629,117 @@ describe('e2e · aiming at things', () => {
           expect(overlap).toBeLessThan(Math.min(a.width, b.width) * 0.5);
         }
       }
+    });
+  });
+});
+
+describe('e2e · choosing a 关 moves the room', () => {
+  // The report: "if I choose different session ... there is no changes of the
+  // emoji", and "or even the background". Picking 第五关 left the kid standing
+  // in the house holding 鱼 with no fish anywhere. A character you cannot use
+  // is worse than one you have not met.
+
+  it('REGRESSION: picking a character takes the room to its unit', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      expect(app.sceneId()).toBe('house');
+
+      await app.openParentPanel();
+      app.$('[data-act="teach"][data-char="yu"]').click();   // 鱼, 第五关
+      await app.completeFirstMeeting();
+
+      expect(app.sceneId()).toBe('kitchen');
+      expect(app.roomUnit()).toBe(5);
+      expect(Boolean(app.obj('fish'))).toBeTruthy();         // something to cast it at
+    });
+  });
+
+  it('REGRESSION: and the background changes with it', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="6"]').click();
+      await waitFor(() => app.roomUnit() === 6, { label: 'unit 6' });
+      const late = app.wallColour();
+
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="1"]').click();
+      await waitFor(() => app.roomUnit() === 1, { label: 'unit 1' });
+
+      expect(app.roomUnit()).toBe(1);
+      expect(app.sceneId()).toBe('house');
+      expect(app.wallColour() === late).toBe(false);
+    });
+  });
+
+  it('deals that unit\'s own characters, or the choice means nothing', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="5"]').click();
+      await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
+
+      // Five of the six, not all six: 开 is pinned ahead of them so the kid can
+      // always get back out of the kitchen, and it takes one of the places.
+      // Which one misses out varies, so this counts rather than names them.
+      const glyphs = app.handGlyphs().join('');
+      const dealt = ['鱼', '蛋', '米', '肉', '菜', '热'].filter(g => glyphs.includes(g));
+      expect(dealt.length).toBeGreaterThanOrEqual(5);
+      expect(glyphs).toContain('开');
+    });
+  });
+
+  it('the kid can still act: the unit\'s characters work on what is there', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="5"]').click();
+      await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
+      await app.drag('鱼', 'fish');
+      expect(app.errors).toHaveLength(0);
+    });
+  });
+
+  it('says where the room is parked, and takes you back', async () => {
+    // Rule 10: the room is no longer where progress alone would put it, so the
+    // panel has to say so rather than leave a parent wondering.
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="1"]').click();
+      await waitFor(() => app.roomUnit() === 1, { label: 'unit 1' });
+
+      await app.openParentPanel();
+      const note = app.$('.focus-note');
+      expect(Boolean(note)).toBeTruthy();
+      expect(note.textContent).toContain('第一关');
+
+      note.click();
+      await waitFor(() => app.roomUnit() !== 1, { label: 'back to progress' });
+      expect(app.roomUnit()).toBe(6);
+      expect(app.save().focusUnit == null).toBe(true);
+    });
+  });
+
+  it('a parked room lets go once the kid moves on by themselves', async () => {
+    // Otherwise one visit to 第一关 pins the room there for good.
+    await withApp(save({ owned: ['da', 'xiao'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="1"]').click();
+      await waitFor(() => app.save().focusUnit === 1, { label: 'focus set' });
+
+      const arrivals = await app.play(12);
+      expect(arrivals.length).toBeGreaterThan(0);
+      expect(app.save().focusUnit == null).toBe(true);
+    });
+  });
+
+  it('survives a focus naming a unit that does not exist', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL, focusUnit: 99 }), async app => {
+      await app.start();
+      expect(app.errors).toHaveLength(0);
+      expect(app.roomUnit()).toBe(6);
     });
   });
 });

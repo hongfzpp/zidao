@@ -597,11 +597,26 @@ html,body{
 
 /* the curriculum, in units of six */
 .unit-head{
-  display:flex;align-items:baseline;justify-content:space-between;
-  margin:16px 0 6px;padding:0 10px 5px;
-  border-bottom:2px solid #eadcc0;
-  font-size:14px;font-weight:600;color:var(--ink);
+  /* a button, not a label: tapping a unit takes the room there */
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  width:100%;margin:16px 0 6px;padding:6px 10px 7px;
+  border:0;border-bottom:2px solid #eadcc0;border-radius:8px 8px 0 0;
+  background:transparent;text-align:left;cursor:pointer;
+  font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;
 }
+.unit-head:active{background:#f6ecd8}
+.unit-head .go{margin-left:auto;font-weight:600;font-size:13px;color:var(--accent);white-space:nowrap}
+.unit-head.here{border-bottom-color:var(--accent);background:#fdf4e4}
+.unit-head.here .go{color:var(--ink);opacity:.55}
+.focus-note{
+  /* Rule 10: the room is not where progress alone would put it -- say so. */
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  width:100%;margin:0 0 8px;padding:9px 12px;
+  border:0;border-left:3px solid var(--accent);border-radius:6px;
+  background:#fdf0dc;color:var(--ink);font-size:13px;font-family:inherit;
+  text-align:left;cursor:pointer;
+}
+.focus-note .cta{font-weight:600;color:var(--accent);white-space:nowrap}
 .unit-head:first-child{margin-top:0}
 .unit-head .unit-progress{font-weight:400;font-size:13px;opacity:.6}
 .unit-head .unit-progress em{font-style:normal;font-family:var(--kai);

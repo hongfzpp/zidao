@@ -1,5 +1,5 @@
 import { describe, it, expect } from '../runner.js';
-import { currentUnit, themeFor, cssVars, DEFAULT_UNIT } from '../../js/core/theme.js';
+import { currentUnit, roomUnit, themeFor, cssVars, DEFAULT_UNIT } from '../../js/core/theme.js';
 
 const CHARS = [
   { id: 'a', unit: 1 }, { id: 'b', unit: 1 },
@@ -27,6 +27,30 @@ describe('theme · currentUnit', () => {
   });
   it('ignores an id it does not know', () => {
     expect(currentUnit(CHARS, ['nope'])).toBe(DEFAULT_UNIT);
+  });
+});
+
+describe('theme · roomUnit', () => {
+  it('follows progress when nothing is focused', () => {
+    expect(roomUnit(CHARS, ['a', 'c'], null, UNITS)).toBe(2);
+    expect(roomUnit(CHARS, ['a', 'c'], undefined, UNITS)).toBe(2);
+  });
+  it('REGRESSION: a parent choosing an earlier unit moves the room there', () => {
+    // The room used to be derived from progress alone, so picking 第一关 while
+    // everything was already owned changed nothing at all -- same wall, same
+    // room, same emoji.
+    expect(roomUnit(CHARS, ['a', 'b', 'c', 'd'], 1, UNITS)).toBe(1);
+    expect(roomUnit(CHARS, ['a', 'b', 'c', 'd'], 2, UNITS)).toBe(2);
+  });
+  it('ignores a focus that names no real unit, rather than stranding the room', () => {
+    expect(roomUnit(CHARS, ['a', 'c'], 99, UNITS)).toBe(2);
+    expect(roomUnit(CHARS, ['a', 'c'], 0, UNITS)).toBe(2);
+    expect(roomUnit(CHARS, ['a', 'c'], -1, UNITS)).toBe(2);
+    expect(roomUnit(CHARS, ['a', 'c'], 'kitchen', UNITS)).toBe(2);
+    expect(roomUnit(CHARS, ['a', 'c'], 1.5, UNITS)).toBe(2);
+  });
+  it('accepts a focus without a unit list to check against', () => {
+    expect(roomUnit(CHARS, ['a'], 3)).toBe(3);
   });
 });
 

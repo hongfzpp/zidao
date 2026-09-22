@@ -928,6 +928,7 @@
   "units": [
     {
       "n": 1,
+      "scene": "house",
       "name": "第一关",
       "story": "猫开门",
       "chars": [
@@ -948,6 +949,7 @@
     },
     {
       "n": 2,
+      "scene": "house",
       "name": "第二关",
       "story": "你好",
       "chars": [
@@ -968,6 +970,7 @@
     },
     {
       "n": 3,
+      "scene": "house",
       "name": "第三关",
       "story": "睡了",
       "chars": [
@@ -988,6 +991,7 @@
     },
     {
       "n": 4,
+      "scene": "kitchen",
       "name": "第四关",
       "story": "我吃",
       "chars": [
@@ -1008,6 +1012,7 @@
     },
     {
       "n": 5,
+      "scene": "kitchen",
       "name": "第五关",
       "story": "热了",
       "chars": [
@@ -1028,6 +1033,7 @@
     },
     {
       "n": 6,
+      "scene": "kitchen",
       "name": "第六关",
       "story": "几个蛋",
       "chars": [

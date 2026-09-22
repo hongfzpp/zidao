@@ -230,6 +230,35 @@ else:
     for ghost in sorted(listed - on_disk):
         err.append(f"index.json lists {ghost}, which does not exist")
 
+# 10b. a unit must be playable in the room it declares
+# Picking 第五关 used to leave you in the house holding 鱼 with no fish in it.
+# A character the kid cannot use is worse than one they have not met, so the
+# declaration is proved rather than trusted: every object a unit's characters
+# reach for has to be standing in that unit's room. Rules targeting `any` are
+# skipped -- 大 小 多 少 work on whatever is there and constrain nothing.
+for u in UNITS:
+    sc_id = u.get('scene')
+    if not sc_id:
+        err.append(f"unit {u.get('n')} declares no scene")
+        continue
+    if sc_id not in SCENES:
+        err.append(f"unit {u.get('n')} declares scene '{sc_id}', which does not exist")
+        continue
+    objs = SCENES[sc_id]['objects']
+    have_ids = {o['id'] for o in objs}
+    have_tags = {t for o in objs for t in o.get('tags', [])}
+    in_unit = set(u['chars'])
+    for r in rules['rules']:
+        if r['char'] not in in_unit:
+            continue
+        t = r.get('target', {})
+        if t.get('id') and t['id'] not in have_ids:
+            err.append(f"unit {u['n']} ({u['name']}) is played in {sc_id}, but "
+                       f"{r['char']} targets object '{t['id']}', which is not there")
+        if t.get('tag') and t['tag'] not in have_tags:
+            err.append(f"unit {u['n']} ({u['name']}) is played in {sc_id}, but "
+                       f"{r['char']} targets tag '{t['tag']}', which nothing there has")
+
 # 11. the offline manifest must match what is on disk, or the app breaks offline
 sw_path = root / 'sw-assets.json'
 if not sw_path.exists():

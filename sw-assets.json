@@ -1,5 +1,5 @@
 {
-  "version": "aacb0f4dec84",
+  "version": "281cfcbef3c0",
   "assets": [
     "assets/icons/icon-1024.png",
     "assets/icons/icon-120.png",
@@ -78,6 +78,7 @@
     "js/core/speechmatch.js",
     "js/core/stories.js",
     "js/core/theme.js",
+    "js/core/units.js",
     "js/firstMeeting.js",
     "js/fx.js",
     "js/hand.js",

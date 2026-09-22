@@ -23,7 +23,8 @@ import * as speechMod from './speech.js';
 import { nextUnread, unlockedStories, shelf, closestLocked } from './core/stories.js';
 import { blankProgress, getProgress, status as charStatus, mastery } from './core/memory.js';
 import { isUnlocked, missingFor } from './core/stories.js';
-import { currentUnit, themeFor, cssVars } from './core/theme.js';
+import { currentUnit, roomUnit, themeFor, cssVars } from './core/theme.js';
+import { unitScene, unitOf, unitCards } from './core/units.js';
 import {
   DEFAULTS as PACING, arrivalDecision, rollSession, applyArrival,
   castsUntilArrival, sessionBudgetLeft
@@ -163,6 +164,10 @@ async function introduce (def, { countsTowardSession = false, thenStory = false 
   if (isNew) {
     update(applyArrival(get(), { countsTowardSession }));
     setProgress(def.id, blankProgress(def.id, Date.now()));
+    // The child has moved on under their own steam, so a room a parent parked
+    // on an earlier unit should let go. Otherwise one visit to 第一关 pins the
+    // room there for good.
+    if (countsTowardSession) await clearUnitFocus();
   }
   sfx('chime');
   await firstMeeting(def);
@@ -215,7 +220,7 @@ async function afterCast () {
 function applyTheme () {
   const room = document.getElementById('room');
   if (!room) return;
-  const unit = currentUnit(CHARS, get().owned || []);
+  const unit = roomUnit(CHARS, get().owned || [], get().focusUnit, UNITS);
   const scene = scene_def || {};
   const vars = cssVars(themeFor(UNITS, unit), scene);
   for (const [k, v] of Object.entries(vars)) room.style.setProperty(k, v);
@@ -224,6 +229,39 @@ function applyTheme () {
   document.body.style.background = vars['--wall'] || '';
   document.querySelector('meta[name="theme-color"]')
     ?.setAttribute('content', vars['--wall'] || '#f4d9b0');
+}
+
+/**
+ * Send the room to a unit: its room, its light, its characters in the pouch.
+ *
+ * Choosing 第五关 in the parent panel used to change nothing -- you were left
+ * standing in the house holding 鱼 with no fish to cast it at. Picking a unit
+ * has to move the whole room, not just the list in the panel.
+ *
+ * This is deliberately a parent's door rather than the child's: the child still
+ * has to read 开 to walk through one (DESIGN.md §6.2).
+ */
+async function focusUnit (n, { pin = null } = {}) {
+  if (!Number.isInteger(n)) return;
+  update({ focusUnit: n });
+  const want = unitScene(UNITS, n, scene.currentSceneId());
+  if (want && want !== scene.currentSceneId()) await scene.goToScene(want);
+  // The pouch follows too: a unit's own characters are what it is for.
+  handMod.setUnitCards(unitCards(CHARS, UNITS, n, get().owned || []));
+  if (pin) handMod.onNewCharacter(pin); else renderPouch();
+  applyTheme();
+}
+
+/** Back to wherever the child's own progress has reached. */
+async function clearUnitFocus ({ move = false } = {}) {
+  if (get().focusUnit == null) return;
+  update({ focusUnit: null });
+  handMod.setUnitCards([]);
+  const n = currentUnit(CHARS, get().owned || []);
+  const want = unitScene(UNITS, n, scene.currentSceneId());
+  if (move && want && want !== scene.currentSceneId()) await scene.goToScene(want);
+  renderPouch();
+  applyTheme();
 }
 
 let scene_def = null;
@@ -337,9 +375,19 @@ function setupParentGate () {
     // pick any character directly, rather than only ever "the next one"
     if (act === 'teach') {
       panel.classList.add('hidden');
-      await introduce(CHARS.find(c => c.id === hit.dataset.char));
+      const def = CHARS.find(c => c.id === hit.dataset.char);
+      const n = unitOf(CHARS, def?.id);
+      if (n != null) await focusUnit(n, { pin: def.id });
+      await introduce(def);
       return;
     }
+    // the unit header itself: go and play that one
+    if (act === 'go-unit') {
+      panel.classList.add('hidden');
+      await focusUnit(Number(hit.dataset.unit));
+      return;
+    }
+    if (act === 'unfocus') { await clearUnitFocus({ move: true }); openPanel(); return; }
     if (act === 'close') panel.classList.add('hidden');
     if (act === 'dev-toggle') {
       update({ devMode: !isDev() });
@@ -396,14 +444,20 @@ function setupParentGate () {
 
     // Grouped into units of six, each ending in its own story, so the
     // curriculum reads as a handful of small steps rather than one long list.
+    const here = roomUnit(CHARS, s.owned || [], s.focusUnit, UNITS);
     const rows = UNITS.map(u => {
       const mine = CHARS.filter(c => u.chars.includes(c.id));
       const known = mine.filter(c => s.owned.includes(c.id)).length;
       const done = known === mine.length;
-      return `<div class="unit-head${done ? ' done' : ''}">` +
+      // The header is the way INTO a unit: tapping it moves the room, its light
+      // and the pouch. A list you cannot act on is just a report.
+      return `<button class="unit-head${done ? ' done' : ''}` +
+             `${u.n === here ? ' here' : ''}" data-act="go-unit" data-unit="${u.n}">` +
              `<span>${u.name}</span>` +
              `<span class="unit-progress">${known}/${mine.length}` +
-             `<em>《${u.story}》</em></span></div>` +
+             `<em>《${u.story}》</em></span>` +
+             `<span class="go">${u.n === here ? '在这里' : '去这关 ›'}</span>` +
+             `</button>` +
              mine.map(rowFor).join('');
     }).join('');
     // Discrimination accuracy: of all the cards picked, how many were real
@@ -454,9 +508,15 @@ function setupParentGate () {
              `</button>`;
     }).join('');
 
+    const natural = currentUnit(CHARS, s.owned || []);
+    const focusNote = (s.focusUnit != null && s.focusUnit !== natural)
+      ? `<button class="row focus-note" data-act="unfocus">` +
+        `<span>房间停在${UNITS.find(u => u.n === s.focusUnit)?.name || ''}</span>` +
+        `<span class="cta">回到现在 ›</span></button>`
+      : '';
     document.getElementById('parent-chars').innerHTML =
       `<div class="sec">故事</div>` + shelfRows +
-      `<div class="sec">字</div>` + rows;
+      `<div class="sec">字</div>` + focusNote + rows;
     // A story locks until the kid knows every character in it. That is the
     // point -- but a button that silently does nothing reads as broken, so say
     // what is missing (CLAUDE.md rule 9).

@@ -171,6 +171,50 @@ describe('hand · glyphFor', () => {
   });
 });
 
+describe('hand · pins are ranked, not equal', () => {
+  const many = Array.from({ length: 12 }, (_, i) => ({ id: 'c' + i, char: 'c' + i }));
+  const owned = many.map(c => c.id);
+
+  it('REGRESSION: the character just shown outranks the unit it belongs to', () => {
+    // Focusing a unit pins all six of its characters. With a door character
+    // pinned too that is seven pins for six slots, and when every pin scored
+    // Infinity the just-shown character could lose the tie -- the same
+    // disappearance the explicit pin was added to prevent.
+    const pins = ['c9', 'c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+    for (let seed = 1; seed <= 40; seed++) {
+      const got = selectPouch(many, owned, {
+        max: 6, rng: mulberry32(seed), now: 0, pinned: pins
+      });
+      expect(got).toContain('c9');          // first pin, never dropped
+      expect(got).toHaveLength(6);
+    }
+  });
+
+  it('keeps pins in the order given when they outnumber the slots', () => {
+    const got = selectPouch(many, owned, {
+      max: 3, rng: mulberry32(7), now: 0, pinned: ['c8', 'c7', 'c6', 'c5', 'c4']
+    });
+    expect(got).toEqual(['c8', 'c7', 'c6']);
+  });
+
+  it('still keeps every pin when they fit', () => {
+    const got = selectPouch(many, owned, {
+      max: 6, rng: mulberry32(3), now: 0, pinned: ['c8', 'c7']
+    });
+    expect(got).toContain('c8');
+    expect(got).toContain('c7');
+  });
+
+  it('ignores a pin the kid does not own, rather than wasting a slot', () => {
+    const got = selectPouch(many, owned, {
+      max: 3, rng: mulberry32(5), now: 0, pinned: ['nope', 'c7']
+    });
+    expect(got).toContain('c7');
+    expect(got).toHaveLength(3);
+    expect(got.includes('nope')).toBe(false);
+  });
+});
+
 describe('hand · the pouch is capped', () => {
   const many = Array.from({ length: 30 }, (_, i) => ({
     id: 'c' + i, char: String.fromCharCode(0x4e00 + i), castable: true, confusables: ['々']

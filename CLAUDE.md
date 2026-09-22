@@ -35,6 +35,9 @@ Every one of them is now a named regression test.
 | 初遇 opened on top of a live question; the pouch stayed stuck at 3 cards and the new character never appeared | two modes that each own the pouch were allowed to run at once | `e2e · 团团 asks` |
 | Cards overflowed in portrait | min card size with no wrapping | `layout · layoutFor` |
 | A check that repaired the thing it checked: `sw-assets.json` staleness regenerated the file **as it failed**, so it failed once and passed ever after | a self-healing check cannot fail twice — a re-run "fixes" it, and a stale offline manifest can ship under a green suite | `scripts/validate.py` diffs against a copy and restores the file |
+| Choosing a 关 in the parent panel changed nothing: same room, same emoji, same wall — you could pick 第五关 and be left in the house holding 鱼 with no fish to cast it at | the room was derived from progress alone (`currentUnit`), and scenes had no notion of which unit they served | `e2e · choosing a 关 moves the room`, `units · missingTargets`, and a validator check that proves each unit's room holds what its characters reach for |
+| A flaky test, seen once and then lost: `吃 eats one of them` asserted an exact count, but 吃 has a ~5% golden that eats the lot down to one | the same exact-value-on-a-random-variant trap as `多`, in a second place | `e2e · 厨房` asserts direction |
+| Pinning a whole unit pushed the just-learnt character out of the pouch | pins were an unordered set scored `Infinity`, so with more pins than slots the tie broke arbitrarily | `hand · pins are ranked, not equal` |
 | 团团's mood badge sat on the child's own face | the badge is positioned against `.tuan`, which was a full-width block — about twice the photo's width — so "just outside the right edge" landed back on top of him | `e2e · 团团 is a photograph` |
 
 ---

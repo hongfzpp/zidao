@@ -62,6 +62,9 @@ export function pruneDecoys (chars, owned, decoys) {
    not a pouch, it is a wall -- and a 3-8 year old faced with a wall of choices
    picks nothing. Past the cap, characters rotate. */
 export const MAX_POUCH = 8;       // total cards, decoys included
+/** Above any score an unpinned character can reach, so pins always come first,
+    while still ordering the pins among themselves. */
+export const PIN_SCORE = 1e6;
 export const MIN_REAL = 6;        // never squeeze real characters below this
 
 /** Characters the kid owns that can actually be cast (glue cannot). */
@@ -100,13 +103,20 @@ export function selectPouch (chars, owned, {
   // re-shown for review. Position in `owned` cannot express that: re-learning a
   // character does not move it, so without an explicit pin a review was a coin
   // flip as to whether the character then appeared in the pouch at all.
-  const keep = new Set(
-    [...(Array.isArray(pinned) ? pinned : [pinned]),
-     castable[castable.length - 1]]
-    .filter(id => id && castable.includes(id)));
+  //
+  // Pins are RANKED, not a set. There can be more of them than there are slots
+  // -- the character just shown, plus whatever opens the door, plus a whole
+  // unit a parent has focused -- and when they collide the earlier pin wins.
+  // Treating them as equals let the just-learnt character lose a coin toss to
+  // the unit it belongs to, which is the same disappearance in a new costume.
+  const rank = new Map();
+  [...(Array.isArray(pinned) ? pinned : [pinned]),
+   castable[castable.length - 1]]
+    .filter(id => id && castable.includes(id))
+    .forEach(id => { if (!rank.has(id)) rank.set(id, rank.size); });
 
   const scored = castable.map(id => {
-    if (keep.has(id)) return { id, score: Infinity };
+    if (rank.has(id)) return { id, score: PIN_SCORE - rank.get(id) };
     const p = progress[id];
     const box = p?.box ?? 0;
     const retired = box >= 5;

@@ -35,6 +35,7 @@ await import('../tests/unit/stories.test.js');
 await import('../tests/unit/speechmatch.test.js');
 await import('../tests/unit/theme.test.js');
 await import('../tests/unit/hittest.test.js');
+await import('../tests/unit/units.test.js');
 await import('../tests/unit/data.test.js');
 
 const results = await runAll();

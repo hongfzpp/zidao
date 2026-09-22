@@ -19,6 +19,21 @@ export function currentUnit (chars, owned) {
   return n;
 }
 
+/**
+ * The unit the ROOM is showing.
+ *
+ * Normally the furthest one reached -- but a parent can send the room back to
+ * an earlier unit to work on it, and then the room must follow them there. The
+ * focus wins whenever it names a real unit; anything else falls through to
+ * progress, so a stale or corrupt value cannot strand the room on a unit that
+ * no longer exists.
+ */
+export function roomUnit (chars, owned, focus = null, units = null) {
+  const n = Number(focus);
+  if (Number.isInteger(n) && n >= 1 && (!units || units.some(u => u.n === n))) return n;
+  return currentUnit(chars, owned);
+}
+
 export function themeFor (units, n) {
   if (!units || !units.length) return null;
   const exact = units.find(u => u.n === n);

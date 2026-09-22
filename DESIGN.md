@@ -662,6 +662,43 @@ This is the question §15 said everything downstream depended on, so it is recor
 
 ---
 
+### 16c. Choosing a unit moves the room
+
+The parent panel lists the six 关 and lets an adult pick one. It used to pick
+only *which character to teach next* — the room stayed exactly where it was. So
+choosing 第五关 taught the child 鱼 and then left them standing in the house,
+holding a card for a fish, with no fish anywhere in it.
+
+A character you cannot use is worse than one you have not met. Choosing a unit
+now moves three things together:
+
+| | |
+|---|---|
+| the room | each unit declares the scene it is played in |
+| the light | the unit's palette, so 第一关 looks like 第一关 again |
+| the pouch | that unit's own characters are dealt |
+
+The declaration is **proved, not trusted**: `scripts/validate.py` checks that
+every object a unit's characters reach for is standing in that unit's room, so
+adding a character that targets something the room lacks fails the build rather
+than stranding a child. Rules targeting `any` — 大 小 多 少 一 二 三 个 — are
+skipped, since they work on whatever is there and constrain nothing.
+
+Two things stay deliberately as they were. The **child** still has to read 开 to
+walk through a door; this is a parent's door, reached by holding a corner for a
+second and a half, not a menu the child can take. And the character that opens
+the door keeps its place in the pouch ahead of the unit's own, because being
+sealed in a room is worse than being one card short — which leaves five places
+for a six-character unit, so which one misses out is shuffled rather than
+always falling on the last.
+
+A parked room **says so** (§Rule 10): the panel shows 房间停在第五关 with a way
+back, and the room lets go by itself as soon as the child meets a new character
+under their own steam. Otherwise one visit to 第一关 would pin the room there
+for good.
+
+---
+
 ## 17. Where this is now
 
 *A cold start should read this section, then CLAUDE.md, then run the tests.*
@@ -669,17 +706,17 @@ This is the question §15 said everything downstream depended on, so it is recor
 **Built:** M0–M3 complete, M4 in progress (kitchen done, outside scene not started).
 
 - 37 characters in six units of six, each ending in its own story
-- Two rooms (家, 厨房) joined by a door that must be read open; each unit has its own palette
+- Two rooms (家, 厨房) joined by a door that must be read open; each unit has its own palette **and its own room**, declared in the data and proved by the validator — a parent choosing 第五关 is moved to the kitchen, because 鱼 needs a fish to act on
 - Cast sandbox, memory engine with 团团's questions, six decodable stories, speech practice
 - PWA: installable, offline, live at the URL in README
 - 团团 is a photograph of the child himself (§7); his moods are a badge plus body motion
-- 409 tests (unit + data + end-to-end), all headless
+- 438 tests (unit + data + end-to-end), all headless
 
 **Not built:** the outside scene and the remaining ~23 characters toward the planned sixty; Find mode (§6.4); a real parent dashboard beyond the current panel.
 
 **Where knowledge lives, in order of reliability:**
 
-1. **The tests.** 409 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
+1. **The tests.** 438 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
 2. **CLAUDE.md.** How to work here, and a table of every bug shipped with its root cause.
 3. **This document.** Why the product is shaped the way it is, including the decisions that were reversed and why.
 4. **README.md.** How to run, test, and deploy it.
