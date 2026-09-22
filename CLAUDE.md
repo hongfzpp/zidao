@@ -212,6 +212,27 @@ manual override.
 
 ---
 
+## Rule 11 — Write it down before the session ends
+
+Conversation context is lost; this repository is not. Anything learned in a
+session that would change a future decision belongs in one of four places
+**before that session ends**:
+
+| What | Where |
+|---|---|
+| Intended behaviour | a test — ideally a named `REGRESSION:` one |
+| A bug and its root cause | the table at the top of this file |
+| Why the product is shaped this way | `DESIGN.md` |
+| How to run, test or deploy it | `README.md` |
+
+`DESIGN.md` §17 is the cold-start summary: current state, what is not built, and
+where knowledge lives. Keep it current — it is the first thing a fresh session
+should read.
+
+The test suite is the most reliable of the four, because it is the only one that
+cannot quietly go stale: a doc can drift from the code, a red test cannot be
+ignored. Prefer encoding a lesson as a test over describing it in prose.
+
 ## Layout
 
 ```

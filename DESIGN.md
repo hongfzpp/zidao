@@ -632,6 +632,12 @@ Explicitly **not** metrics: session length, characters "covered," daily streak. 
 
 ---
 
+## 15b. The M1 gate: passed
+
+**September 2026 — the child played it and came back to it.** Asked, he said it was interesting.
+
+This is the question §15 said everything downstream depended on, so it is recorded here rather than left in a chat log. What it licenses: building more. What it does **not** tell us is which parts he used — whether he answered 团团, whether he read a story or only poked the cat, whether he returned unprompted on a second day. Those are the things worth watching, and they are still unknown.
+
 ## 16. Open questions
 
 1. **Does the sandbox hold up without goals?** 3-year-olds love pure sandboxes; 7-year-olds often want objectives. May need a light "团团's wish list" layer for the older end of the range.
@@ -643,7 +649,35 @@ Explicitly **not** metrics: session length, characters "covered," daily streak. 
     Still open: whether the recogniser is accurate enough on a 4-year-old to be worth the screen space at all. That can only be answered with the actual child.
 4. **Two-player / parent-and-child mode?** Deferred.
 5. **Traditional vs simplified.** Assumed simplified. Confirm.
-6. **Art production.** The real bottleneck. Decide early whether to commission, generate, or lean on a deliberately minimal style that one person can sustain.
+6. **Art production.** The real bottleneck. Decide early whether to commission, generate, or lean on a deliberately minimal style that one person can sustain. *(Still emoji placeholders, and they have held up better than expected — a real child found them interesting.)*
+7. **The voice is still `say -v Tingting`.** Every character is macOS TTS. Replacing 37 words with a familiar human voice is ~20 minutes of the parent's time and would lift every interaction in the app more than any code change available. It is the highest-value outstanding item and it is not one Claude can do.
+8. **Does the capped pouch help or frustrate?** Eight cards holds exactly one unit plus two decoys, and the rest rotate. Rotation is the part that cannot be tested, only observed: does he reach for a character and find it missing?
+9. **Is the speech recogniser usable on a four-year-old?** The parent panel's 念对率 is the number that answers this. Until there is data, 说说看 stays optional and ungated.
+
+---
+
+## 17. Where this is now
+
+*A cold start should read this section, then CLAUDE.md, then run the tests.*
+
+**Built:** M0–M3 complete, M4 in progress (kitchen done, outside scene not started).
+
+- 37 characters in six units of six, each ending in its own story
+- Two rooms (家, 厨房) joined by a door that must be read open; each unit has its own palette
+- Cast sandbox, memory engine with 团团's questions, six decodable stories, speech practice
+- PWA: installable, offline, live at the URL in README
+- 404 tests (unit + data + end-to-end), all headless
+
+**Not built:** the outside scene and the remaining ~23 characters toward the planned sixty; Find mode (§6.4); a real parent dashboard beyond the current panel.
+
+**Where knowledge lives, in order of reliability:**
+
+1. **The tests.** 404 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
+2. **CLAUDE.md.** How to work here, and a table of every bug shipped with its root cause.
+3. **This document.** Why the product is shaped the way it is, including the decisions that were reversed and why.
+4. **README.md.** How to run, test, and deploy it.
+
+Conversation history is *not* on that list. Anything learned in a session that matters belongs in one of the four above before the session ends.
 
 ---
 
