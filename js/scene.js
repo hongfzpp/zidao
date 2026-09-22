@@ -261,7 +261,11 @@ export function startWander () {
         .filter(o => o !== rec)
         .map(o => ({ x: o.x, halfWidth: halfWidthPct(o) }));
       const want = rec.x + (Math.random() - 0.5) * 5;
-      const spot = clearSpot(want, halfWidthPct(rec), others);
+      // clearSpot bounds the CENTRE, not the edges. That is fine for everything
+      // drawn inside its own box, but 团团's mood badge hangs off his right
+      // shoulder -- at the far wall it would be sliced in half by the frame.
+      const bounds = rec.id === 'tuantuan' ? { max: 86 } : undefined;
+      const spot = clearSpot(want, halfWidthPct(rec), others, bounds);
       if (spot === null) continue;
       rec.x = spot;
       rec.el.style.transition = 'left 2.2s ease-in-out';

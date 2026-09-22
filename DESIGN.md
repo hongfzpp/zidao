@@ -672,18 +672,27 @@ This is the question §15 said everything downstream depended on, so it is recor
 - Two rooms (家, 厨房) joined by a door that must be read open; each unit has its own palette
 - Cast sandbox, memory engine with 团团's questions, six decodable stories, speech practice
 - PWA: installable, offline, live at the URL in README
-- 404 tests (unit + data + end-to-end), all headless
+- 团团 is a photograph of the child himself (§7); his moods are a badge plus body motion
+- 409 tests (unit + data + end-to-end), all headless
 
 **Not built:** the outside scene and the remaining ~23 characters toward the planned sixty; Find mode (§6.4); a real parent dashboard beyond the current panel.
 
 **Where knowledge lives, in order of reliability:**
 
-1. **The tests.** 404 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
+1. **The tests.** 409 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
 2. **CLAUDE.md.** How to work here, and a table of every bug shipped with its root cause.
 3. **This document.** Why the product is shaped the way it is, including the decisions that were reversed and why.
 4. **README.md.** How to run, test, and deploy it.
 
 Conversation history is *not* on that list. Anything learned in a session that matters belongs in one of the four above before the session ends.
+
+---
+
+**Not yet published.** The photograph work is committed but unpushed. The live
+site is public, so shipping it puts a real child's face on a public URL — that
+is a parent's decision to take deliberately, never a side effect of a UI change.
+The source photograph stays in `private/` (git-ignored, excluded from `dist/`);
+only the cut-out asset would ship.
 
 ---
 

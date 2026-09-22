@@ -34,6 +34,8 @@ Every one of them is now a named regression test.
 | An owned character could never come up for review | a missing progress record re-dated itself to `now` on every read, sliding its due date forward forever | `memory · dueCharacters` |
 | 初遇 opened on top of a live question; the pouch stayed stuck at 3 cards and the new character never appeared | two modes that each own the pouch were allowed to run at once | `e2e · 团团 asks` |
 | Cards overflowed in portrait | min card size with no wrapping | `layout · layoutFor` |
+| A check that repaired the thing it checked: `sw-assets.json` staleness regenerated the file **as it failed**, so it failed once and passed ever after | a self-healing check cannot fail twice — a re-run "fixes" it, and a stale offline manifest can ship under a green suite | `scripts/validate.py` diffs against a copy and restores the file |
+| 团团's mood badge sat on the child's own face | the badge is positioned against `.tuan`, which was a full-width block — about twice the photo's width — so "just outside the right edge" landed back on top of him | `e2e · 团团 is a photograph` |
 
 ---
 
@@ -135,11 +137,21 @@ worth 14s.)
 Three rules keep it that way:
 
 - **A test that cannot fail is worse than no test.** After fixing a bug, put
-  the bug back and watch the test go red. Two rounds of tests here passed
+  the bug back and watch the test go red. Three rounds of tests here passed
   vacuously: one compared a value against the very constant it was testing (so
-  zeroing the constant still passed), and the E2E harness dropped cards on the
-  exact geometric centre of a target, which hits even a one-pixel sliver — no
-  finger aims like that. Model the imprecision the real input has.
+  zeroing the constant still passed); the E2E harness dropped cards on the exact
+  geometric centre of a target, which hits even a one-pixel sliver — no finger
+  aims like that; and the manifest check **regenerated the file as it failed**,
+  so it could never fail twice in a row. Model the imprecision the real input
+  has, and never let a check repair what it is checking — report and stop.
+- **Never pipe the suite to `head` or `tail`.** The exit code becomes the
+  pager's, so a red run reads as green — that is how a failing commit got made
+  here. It also throws away the `FAIL <group> › <test>` line, which is the only
+  record of *which* test failed; an intermittent seen once and filtered out
+  cannot be chased. Read the whole output, or write it to a file first.
+- **Measure geometry after the transition, not during.** A badge read
+  mid-transition returns its `scale(.4)` box, which made an overlapping element
+  look comfortably clear.
 - **Never assert an exact value on something with a random variant.** Golden
   effects fire ~5% of the time; a test that pins the result flakes one run in
   twenty and erodes trust in the whole suite. Assert the *direction* instead.

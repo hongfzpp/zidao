@@ -100,13 +100,22 @@ async function boot () {
   // since there is no way to speak into a headless browser
   window.__setRecognizer = f => speechMod.setRecognizerFactory(f);
   // test hook: 团团's mood is no longer a drawn face, so expose what it became
-  window.__moodTest = async () => {
+  window.__moodTest = async (mood = 'confused') => {
     const t = await import('./tuantuan.js');
-    t.emote('confused', 5000);
-    await new Promise(r => requestAnimationFrame(r));
+    t.emote(mood, 5000);
     const root = document.getElementById('obj-tuantuan');
-    return { badge: root.querySelector('.tuan-mood').textContent,
-             tilt: root.querySelector('.tuan-img').style.transform };
+    const img = root.querySelector('.tuan-img');
+    const badge = root.querySelector('.tuan-mood');
+    // Wait out the badge's pop-in transition. Measuring mid-transition reads
+    // the scale(.4) box and makes an overlapping badge look clear.
+    await new Promise(r => setTimeout(r, 400));
+    const box = n => { const b = n.getBoundingClientRect();
+                       return { x: b.x, y: b.y, w: b.width, h: b.height }; };
+    return { moods: t.MOOD_NAMES,
+             badge: badge.textContent,
+             tilt:  img.style.transform,
+             cls:   img.className,
+             badgeBox: box(badge), imgBox: box(img) };
   };
   renderPouch();
 

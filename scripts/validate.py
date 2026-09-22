@@ -235,13 +235,23 @@ sw_path = root / 'sw-assets.json'
 if not sw_path.exists():
     err.append("sw-assets.json is missing: run scripts/gen-sw-manifest.py")
 else:
-    import subprocess as _sp
-    before = sw_path.read_text()
-    _sp.run(['python3', str(root / 'scripts' / 'gen-sw-manifest.py')],
-            capture_output=True)
-    if sw_path.read_text() != before:
-        err.append("sw-assets.json was stale (it has been regenerated) -- "
-                   "commit the new one")
+    # Check WITHOUT writing. Regenerating in place made this fail exactly once
+    # and pass ever after -- so a re-run "fixed" it, and a manifest could be
+    # left out of a commit with a green suite. A check that repairs the thing
+    # it checks cannot fail twice, which is the same disease as a test that
+    # cannot fail at all (CLAUDE.md, bug table).
+    import subprocess as _sp, tempfile, shutil
+    with tempfile.TemporaryDirectory() as tmp:
+        keep = pathlib.Path(tmp) / "sw-assets.json"
+        shutil.copy2(sw_path, keep)
+        _sp.run(['python3', str(root / 'scripts' / 'gen-sw-manifest.py')],
+                capture_output=True)
+        fresh = sw_path.read_text()
+        stale = keep.read_text() != fresh
+        shutil.copy2(keep, sw_path)          # put the repo back as we found it
+    if stale:
+        err.append("sw-assets.json is stale -- run scripts/gen-sw-manifest.py "
+                   "and commit the result")
 
 for w in warn: print(f"  warn: {w}")
 for e in err:  print(f"  FAIL: {e}")

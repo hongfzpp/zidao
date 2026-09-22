@@ -25,6 +25,11 @@ export const TUAN_HTML =
   `<span class="tuan-mood"></span>` +
   `</span>`;
 
+/** Every feeling 团团 can have. Exported so a test can check they stay
+    distinguishable from each other -- a mood that looks like every other mood
+    is the same as having no moods at all. */
+export const MOOD_NAMES = Object.keys(MOODS);
+
 /** Kept for anything still asking for the old name. */
 export const TUAN_SVG = TUAN_HTML;
 

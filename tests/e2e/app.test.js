@@ -1644,10 +1644,35 @@ describe('e2e · 团团 is a photograph', () => {
     // badge and to how the body moves.
     await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
       await app.start();
-      const t = await app.win.eval ? null : null;      // module import below
-      const mod = await app.win.__moodTest();
-      expect(mod.badge).toBeTruthy();
-      expect(mod.tilt).toContain('rotate');
+      const confused = await app.win.__moodTest('confused');
+      expect(confused.badge).toBeTruthy();
+      expect(confused.tilt).toContain('rotate');
+
+      // And every feeling has to be tellable apart from the others. A set of
+      // moods that all render identically is the same as having no moods.
+      const seen = new Set();
+      for (const name of confused.moods) {
+        const m = await app.win.__moodTest(name);
+        seen.add(`${m.badge}|${m.tilt}|${m.cls}`);
+      }
+      expect(seen.size).toBe(confused.moods.length);
+    });
+  });
+
+  it('REGRESSION: the mood badge never sits on his face', async () => {
+    // It did. The badge is positioned against .tuan, which was a full-width
+    // block -- twice the photo's width -- so "outside the right edge" landed
+    // back on top of his head. A marker over a child's own face is worse than
+    // no marker at all.
+    await withApp(save({ owned: ['kai'], firstCast: ALL }), async app => {
+      await app.start();
+      const m = await app.win.__moodTest('confused');
+      const i = m.imgBox, b = m.badgeBox;
+      expect(b.w).toBeGreaterThan(8);              // it is actually showing
+      const head = { x: i.x + i.w * 0.18, y: i.y, w: i.w * 0.64, h: i.h * 0.28 };
+      const ox = Math.max(0, Math.min(b.x + b.w, head.x + head.w) - Math.max(b.x, head.x));
+      const oy = Math.max(0, Math.min(b.y + b.h, head.y + head.h) - Math.max(b.y, head.y));
+      expect(ox * oy).toBe(0);
     });
   });
 

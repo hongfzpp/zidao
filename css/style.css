@@ -92,7 +92,7 @@ html,body{
 /* ---------- 团团 is a photograph ----------
    A photo cannot pull a face, so the feeling lives in how the body moves and in
    a small badge beside it (js/tuantuan.js). */
-.tuan{position:relative;display:block}
+.tuan{position:relative;display:inline-block;line-height:0}
 .tuan-img{
   /* just under the door's height: the room is not to scale, but a child
      taller than a doorway reads as wrong even to a four-year-old */
@@ -103,9 +103,16 @@ html,body{
   -webkit-user-drag:none;user-select:none;
 }
 .tuan-mood{
-  /* clear of the head: a badge over his face is worse than no badge */
-  position:absolute;right:-42%;top:-6%;
-  font-size:calc(var(--s) * 0.38px);line-height:1;
+  /* Clear of the head: a badge over his face is worse than no badge. The
+     percentages are against .tuan, which is shrink-wrapped to the photo --
+     as a full-width block it was twice the photo's width, and "outside the
+     right edge" landed back on top of him.
+
+     The extra offset past 100% clears the TILT: the moods rotate him up to 8
+     degrees, which widens what he actually covers on screen by about a fifth
+     of his width even though his layout box never changes. */
+  position:absolute;left:calc(100% + var(--s) * 0.13px);top:-2%;
+  font-size:calc(var(--s) * 0.34px);line-height:1;
   opacity:0;transform:scale(.4);
   transition:opacity .25s ease,transform .3s cubic-bezier(.34,1.56,.64,1);
   pointer-events:none;
