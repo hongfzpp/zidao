@@ -6,21 +6,23 @@
        sitting got none
      - the opening character spent the budget, walling a fresh install at two
    All of it is now decidable from a plain state object, so it can be tested
-   without a browser. */
+   without a browser.
+
+   There used to be a third guard: at most three new characters per half-hour,
+   the clock resetting after thirty idle minutes. It is gone. It was the app
+   deciding when a child had had enough, and it produced the one complaint no
+   amount of correct logic answers -- a kid who kept playing and kept being told
+   nothing, with no way to see why. Pace now comes from ONE thing only: how much
+   the child actually plays. Keep casting and characters keep arriving; stop and
+   nothing happens. That is a pace the child sets themselves. */
 
 export const DEFAULTS = Object.freeze({
-  arrivalEvery: 8,               // casts between arrivals, FROM THE LAST ARRIVAL
-  maxArrivalsPerSession: 3,
-  sessionGapMs: 30 * 60 * 1000   // idle gap that starts a new session
+  arrivalEvery: 8                // casts between arrivals, FROM THE LAST ARRIVAL
 });
 
 /** Casts still required before the next arrival. 0 means "due now". */
 export function castsUntilArrival (state, cfg = DEFAULTS) {
   return Math.max(0, cfg.arrivalEvery - (state.castsSinceArrival || 0));
-}
-
-export function sessionBudgetLeft (state, cfg = DEFAULTS) {
-  return Math.max(0, cfg.maxArrivalsPerSession - (state.arrivalsThisSession || 0));
 }
 
 /**
@@ -29,19 +31,14 @@ export function sessionBudgetLeft (state, cfg = DEFAULTS) {
  * parent panel) can explain *why* nothing is arriving.
  */
 export function arrivalDecision (state, { hasUnowned }, cfg = DEFAULTS) {
-  if (!hasUnowned)                              return { introduce: false, reason: 'all-known' };
-  if (sessionBudgetLeft(state, cfg) <= 0)       return { introduce: false, reason: 'session-full' };
-  if (castsUntilArrival(state, cfg) > 0)        return { introduce: false, reason: 'too-soon' };
+  if (!hasUnowned)                       return { introduce: false, reason: 'all-known' };
+  if (castsUntilArrival(state, cfg) > 0) return { introduce: false, reason: 'too-soon' };
   return { introduce: true, reason: 'due' };
 }
 
-/** A session is a gap in TIME, not a page load. Returns a state patch. */
-export function rollSession (state, now, cfg = DEFAULTS) {
-  const last = state.lastPlayedAt || 0;
-  const isNew = !last || (now - last) > cfg.sessionGapMs;
-  return isNew
-    ? { arrivalsThisSession: 0, lastPlayedAt: now, sessionRolled: true }
-    : { lastPlayedAt: now, sessionRolled: false };
+/** Record that play happened. Nothing gates on it; the parent panel shows it. */
+export function touchPlay (state, now) {
+  return { lastPlayedAt: now };
 }
 
 /** Patch to apply when a real (non-decoy) character is cast. */
@@ -53,15 +50,8 @@ export function applyCast (state, now = Date.now()) {
   };
 }
 
-/**
- * Patch to apply when a character is introduced.
- * `countsTowardSession` is false for the opening character of a fresh install
- * (it is the hook, not one of the day's lessons) and for a parent's manual
- * request, which must always work regardless of the cap.
- */
-export function applyArrival (state, { countsTowardSession = true } = {}) {
-  return {
-    castsSinceArrival: 0,
-    arrivalsThisSession: (state.arrivalsThisSession || 0) + (countsTowardSession ? 1 : 0)
-  };
+/** Patch to apply when a character is introduced: the count to the next one
+    restarts, and nothing else is spent. */
+export function applyArrival () {
+  return { castsSinceArrival: 0 };
 }

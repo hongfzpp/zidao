@@ -187,7 +187,41 @@ Rules:
 - The kid controls repetition. Tapping it twenty times is fine and is good for us.
 - Immediately usable in the world afterward. Learned → used within seconds.
 
-**One character at a time, always** — never two 初遇 screens back to back. Two new characters per session maximum, sometimes zero, and the opening character of a brand-new install counts toward that budget. The app is not in a hurry.
+**One character at a time, always** — never two 初遇 screens back to back. Beyond that there is no ceiling: how many a sitting brings is decided by how much the child plays, and nothing else. *(There was a cap of three per half hour. It is gone — see §6.1a.)*
+
+### 6.1a Why the arrival cap is gone
+
+The app used to introduce at most three new characters per half hour, the clock
+resetting after thirty idle minutes. The reasoning was sound: a small child
+shown twelve new characters in one sitting remembers none of them, and the app
+is not in a hurry.
+
+It was removed anyway, and the reasoning is worth keeping because it will be
+tempting to add back.
+
+The cap was tried twice. First keyed to page load, which meant reloading farmed
+a fresh budget while a long genuine sitting got none. Then keyed to a gap in
+wall-clock time, which was correct by its own lights and still produced the
+single most-repeated complaint in this project's history: *"I am at 小, and no
+matter how much I tried, it won't go to next letter."* The logic was right. The
+child could not tell the difference between a deliberate limit and a broken
+app — and neither could the adult watching.
+
+Rule 10 (say so where an adult can see it) was written for exactly this, and it
+helped: the panel gained `本次新字：3 / 3 · 已达上限，30 分钟后重置`. But a limit
+that has to be explained to the parent is still a limit the child experiences as
+the app going dead. The honest reading is that the cap was the app deciding when
+a four-year-old had had enough, on a timer, from the outside.
+
+Pace now comes from one thing: **how much the child plays.** Eight casts buys a
+new character, always, with no ceiling and no clock. A child who plays a lot
+meets a lot; a child who plays for five minutes meets one. That is a pace they
+set themselves, and it cannot go silently quiet, because the only thing that
+stops it is them stopping.
+
+What is kept: one character at a time, never two 初遇 back to back, and the
+eight-cast spacing itself — that one is not a budget but a rhythm, and it is
+still measured in the child's own actions rather than in minutes.
 
 ### 6.2 施法 — Cast (the sandbox)
 
@@ -233,6 +267,18 @@ Design notes:
 ### 6.3 团团要… — Retrieval, disguised
 
 Interrupts free play. 团团 wants something and can't read.
+
+**再听一次.** A 🔊 button sits beside 团团 for as long as the question is open,
+and replays the word. The question *is* a sound, so missing it — a noisy room, a
+passing thought — used to leave only one way to hear it again: get it wrong on
+purpose. That taught precisely the wrong lesson.
+
+This is not a hint and is not counted as one, unlike the story's picture (§6.5).
+The picture shows you the answer; hearing the question again shows you nothing
+you were not already given. The only adjustment is that the seconds spent
+listening are subtracted from the answer latency, because latency feeds the
+memory engine — a slow answer holds a character back rather than promoting it —
+and time spent listening is not time spent hesitating.
 
 ```
       团团: (rubs belly, looks sad)     ← audio: a hungry little noise
@@ -385,7 +431,7 @@ Glue characters live in the unit whose story introduces them, since a story is t
 
 The split is: **the scene supplies the materials, the unit supplies the light.** A kitchen floor is tiled and a house floor is boards whichever unit you are in; the walls take their colour from the unit in both rooms. Before this the two rooms were pixel-identical apart from the objects standing in them, which is not a second room, it is the same room redressed.
 
-This is orthogonal to pacing. Grouping is six; arrival is still one character per eight casts, at most three a session — a unit takes two or three sittings.
+This is orthogonal to pacing. Grouping is six; arrival is one character per eight casts with no ceiling, so how long a unit takes is up to the child.
 
 ## 9x. Curriculum — the v1 sixty
 
@@ -441,12 +487,12 @@ Distinct handling, distinct code path, flagged in the data as `kind: "glue"`.
 | | |
 |---|---|
 | Target session | 8–12 minutes |
-| New characters per session | 0–2, never more — and never two in a row. The first character of a new install counts toward the budget. |
+| New characters per session | However many the child plays for. Never two in a row. |
 | Cold open | Straight into the scene. No splash, no menu, no "choose your level." |
 | Arrival spacing | Counted in casts **since the last arrival**, persisted across restarts — never `totalCasts % N`. The total persists while any in-memory session counter resets, so a modulo test fires on the first cast of any session that happens to resume just below a multiple of N, and a character ambushes the kid out of nowhere. *(Shipped that bug in M1.)* |
-| What a "session" is | **A gap in time (30 min idle), not a page load**, and it persists. Keyed to page load, reloading farms a fresh budget while a long real sitting gets none — and once spent, the only way to continue is to restart the app. *(Also shipped that in M1: a fresh install spent its whole budget on the first two characters and then went silent forever.)* |
-| The opening character | Free. It is the hook, not one of the day's lessons, so it does not spend the session budget. |
-| When a limit stops something | **Say so somewhere an adult can see it.** A cap that silently does nothing is indistinguishable from a bug — the parent panel shows `本次新字：n / N` and the reason, and the manual button always overrides. |
+| What a "session" is | **Nothing the code consults.** It was a gap in time (30 min idle), which was already the second attempt — keyed to page load, reloading farmed a fresh budget while a long real sitting got none. Both attempts failed the same way; see §6.1a. |
+| The opening character | Arrives before any playing has happened. It is the hook. |
+| When a limit stops something | **Say so somewhere an adult can see it.** A cap that silently does nothing is indistinguishable from a bug. The arrival cap is gone entirely now, and the panel shows `下一个新字：还差 N 次` — a count of the child's own play rather than a limit being enforced. |
 | Ending | Always a story page or a chaos snapshot. Never a drill, never a score screen. |
 | Time limit | Soft. When the budget is spent, the app steers toward the story and then 团团 gets sleepy and the scene dims. **Never a hard mid-play cutoff** — that produces a tantrum and poisons the whole app. |
 | Parent override | Session length configurable behind the parent gate. |
@@ -710,13 +756,13 @@ for good.
 - Cast sandbox, memory engine with 团团's questions, six decodable stories, speech practice
 - PWA: installable, offline, live at the URL in README
 - 团团 is a photograph of the child himself (§7); his moods are a badge plus body motion
-- 438 tests (unit + data + end-to-end), all headless
+- 441 tests (unit + data + end-to-end), all headless
 
 **Not built:** the outside scene and the remaining ~23 characters toward the planned sixty; Find mode (§6.4); a real parent dashboard beyond the current panel.
 
 **Where knowledge lives, in order of reliability:**
 
-1. **The tests.** 438 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
+1. **The tests.** 441 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
 2. **CLAUDE.md.** How to work here, and a table of every bug shipped with its root cause.
 3. **This document.** Why the product is shaped the way it is, including the decisions that were reversed and why.
 4. **README.md.** How to run, test, and deploy it.

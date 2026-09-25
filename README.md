@@ -128,22 +128,24 @@ No build step, no `npm install`, no dependencies. Just static files and `python3
 | Constant | Default | What it does |
 |---|---|---|
 | `ARRIVAL_EVERY` | 8 | Casts between arrivals, counted from the last arrival |
-| `MAX_ARRIVALS_PER_SESSION` | 3 | New characters per session |
-| `SESSION_GAP_MS` | 30 min | Idle time that starts a new session |
 
-**A session is a gap in time, not a page load.** Reloading does *not* grant a
-fresh budget (otherwise you could farm characters by restarting), and 30 minutes
-away resets it automatically.
+That is the whole of it. **There is no cap and no clock.** How fast characters
+arrive is decided by one thing only: how much the child actually plays. Keep
+casting and they keep coming; stop and nothing happens.
 
-The opening character of a brand-new install is **free** — it's the hook, not
-one of the day's lessons — so a first sitting delivers 大 immediately and then
-three more at casts 8, 16 and 24.
+There used to be a second and third knob — at most three new characters per
+half hour, the clock resetting after thirty idle minutes — and they are gone
+deliberately. Every version of that budget produced the same complaint: a child
+who kept playing, kept being given nothing, and had no way to see why. The app
+does not get to decide when a four-year-old has had enough.
 
-When the session budget is spent, the drip stops. That is deliberate, but it
-used to be **silent**, which reads exactly like a broken app. The parent panel
-now shows `本次新字：3 / 3` with the reason, and **认识下一个字** always overrides
-the cap. If you're testing and want the wall out of the way, raise
-`MAX_ARRIVALS_PER_SESSION`.
+The opening character of a brand-new install arrives before any playing has
+happened — it's the hook — so a first sitting delivers 大 immediately and then
+one more every 8 casts, without end.
+
+The parent panel shows `下一个新字：还差 N 次`, which is a count of the kid's own
+play rather than a limit being enforced, and **认识下一个字** still introduces one
+on demand.
    Opposite pairs like 大/小 and 开/关 are deliberately *not* introduced
    together: the pairing makes them useful but also makes them confusable, so
    each gets its own moment.
@@ -250,9 +252,9 @@ a character from a later unit — enforced by `scripts/validate.py` and by a dat
 test, the same guarantee as the page-level one but at curriculum level.
 
 This is about how the material is *grouped*, not how fast it arrives. The drip
-is unchanged: one character per 8 casts, at most 3 per session, so a unit takes
-two or three sittings. To change the pace, the knobs are `ARRIVAL_EVERY` and
-`MAX_ARRIVALS_PER_SESSION` in `js/main.js`.
+is unchanged: one character per 8 casts, with no ceiling, so how long a unit
+takes is up to the child. The only pacing knob is `ARRIVAL_EVERY` in
+`js/main.js`.
 
 The parent panel shows each unit with its progress and its story
 (`第二关 2/6 《你好》`).

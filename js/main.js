@@ -26,18 +26,16 @@ import { isUnlocked, missingFor } from './core/stories.js';
 import { currentUnit, roomUnit, themeFor, cssVars } from './core/theme.js';
 import { unitScene, unitOf, unitCards } from './core/units.js';
 import {
-  DEFAULTS as PACING, arrivalDecision, rollSession, applyArrival,
-  castsUntilArrival, sessionBudgetLeft
+  DEFAULTS as PACING, arrivalDecision, touchPlay, applyArrival, castsUntilArrival
 } from './core/pacing.js';
 
 const ARRIVAL_EVERY = PACING.arrivalEvery;
-const MAX_ARRIVALS_PER_SESSION = PACING.maxArrivalsPerSession;
 const CASTS_BETWEEN_PROMPTS = 3;   // 团团 asks between bouts of free play, never constantly
 
-// A session is a gap in TIME, not a page load. Keying it to page load meant
-// reloading granted a fresh budget while playing for forty minutes straight did
-// not -- and once the budget was spent the ONLY way to see another character
-// was to restart the app, with no indication that was why nothing was coming.
+// There is no cap on how many characters a session may bring any more, and no
+// clock. Arrivals are paced by ONE thing: how much the child actually plays.
+// Every version of a budget here ended the same way -- a kid who kept playing,
+// kept being given nothing, and had no way to see why.
 
 // Characters arrive ONE AT A TIME, always. Never two 初遇 screens back to back,
 // not even for an opposite pair like 大/小 or 开/关 -- a pair introduced
@@ -97,6 +95,9 @@ async function boot () {
   // read-only hook so the E2E harness can answer 团团 deliberately right or wrong
   window.__promptTarget = () => prompt.targetId();
   window.__startPrompt = () => prompt.startPrompt();
+  // test hook: the replay button's only observable effect is the audio it
+  // plays, and audio is off under test
+  window.__promptReplays = () => prompt.replayCount();
   // test hook: lets the E2E suite feed the recogniser a scripted transcript,
   // since there is no way to speak into a headless browser
   window.__setRecognizer = f => speechMod.setRecognizerFactory(f);
@@ -123,7 +124,7 @@ async function boot () {
   const devFlag = devFlagFromUrl();
   if (devFlag !== null) update({ devMode: devFlag });
   applyDevBadge();
-  update(rollSession(get(), Date.now()));
+  update(touchPlay(get(), Date.now()));
 
   document.getElementById('unlock').classList.add('hidden');
 
@@ -135,24 +136,24 @@ async function boot () {
 
   if (get().firstRun || get().owned.length === 0) {
     update({ firstRun: false });
-    await introduceNext();        // one character (curriculum order picks 大),
-                                  // and it does NOT spend the session budget --
-                                  // it is the hook, not one of the day's lessons.
+    await introduceNext();        // one character (curriculum order picks 大):
+                                  // the hook, before any playing has happened.
   }
 
   setupParentGate();
 }
 
 /* ---------- character arrival ----------
-   New characters drip in through play rather than through a menu. Two per
-   session maximum (DESIGN.md §6.1) -- the app is not in a hurry. */
+   New characters drip in through play rather than through a menu, one every
+   few casts (DESIGN.md §6.1). There is no ceiling: a child who plays a lot
+   meets a lot, and one who plays a little meets a little. */
 
 
 /** Run 初遇 for the next character the kid hasn't met. Returns false if there
     are none left. Used by both the automatic drip and the parent button. */
 /** Run 初遇 for a specific character. Re-showing one the kid already knows is a
     review: it must not touch arrival pacing. */
-async function introduce (def, { countsTowardSession = false, thenStory = false } = {}) {
+async function introduce (def, { natural = false, thenStory = false } = {}) {
   if (!def) return false;
   // A question and 初遇 must never be open together. They were: the big
   // character appeared over a live thought bubble, and because a prompt owns the
@@ -162,12 +163,12 @@ async function introduce (def, { countsTowardSession = false, thenStory = false 
   if (story.isOpen()) return false;
   const isNew = !get().owned.includes(def.id);
   if (isNew) {
-    update(applyArrival(get(), { countsTowardSession }));
+    update(applyArrival());
     setProgress(def.id, blankProgress(def.id, Date.now()));
     // The child has moved on under their own steam, so a room a parent parked
     // on an earlier unit should let go. Otherwise one visit to 第一关 pins the
-    // room there for good.
-    if (countsTowardSession) await clearUnitFocus();
+    // room there for good. A parent's own pick is not "under their own steam".
+    if (natural) await clearUnitFocus();
   }
   sfx('chime');
   await firstMeeting(def);
@@ -201,7 +202,7 @@ async function afterCast () {
   const hasUnowned = CHARS.some(c => !get().owned.includes(c.id));
   if (arrivalDecision(get(), { hasUnowned }).introduce) {
     await new Promise(r => setTimeout(r, TIMINGS.arrivalDelayMs));  // let the effect land
-    await introduceNext({ countsTowardSession: true, thenStory: true });
+    await introduceNext({ natural: true, thenStory: true });
     castsSincePrompt = 0;
     return;
   }
@@ -483,11 +484,12 @@ function setupParentGate () {
       stat('读过故事', `${(s.storiesRead || []).length} / ` +
            `${unlockedStories(STORIES, s.owned || []).length}`,
            s.pagesRead ? `${s.pagesRead} 页 / 看图 ${s.hintedPages || 0}` : '') +
-      stat('本次新字', `${Math.min(s.arrivalsThisSession || 0, MAX_ARRIVALS_PER_SESSION)}` +
-           ` / ${MAX_ARRIVALS_PER_SESSION}`,
-           remaining.length === 0 ? ''
-             : sessionBudgetLeft(s) <= 0 ? '已达上限，30 分钟后重置'
-             : `还差 ${castsUntilArrival(s)} 次施法`) +
+      // No cap any more, so the only honest thing to report is how close the
+      // next character is -- which is a count of the kid's OWN play (Rule 10:
+      // the panel still has to explain why nothing is arriving).
+      stat('下一个新字',
+           remaining.length === 0 ? '—' : `还差 ${castsUntilArrival(s)} 次`,
+           remaining.length === 0 ? '全部都认识了' : `还有 ${remaining.length} 个没见过`) +
       (spTries ? stat('念出来', `${Math.round(100 * spRight / spTries)}%`, `${spTries} 次`) : '') +
       stat('施法', s.castCount, s.seenGolden ? `稀有 ${s.seenGolden}` : '');
 

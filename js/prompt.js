@@ -25,6 +25,10 @@ let active = null;             // { targetId, cards, startedAt, attempts }
 let onCards = null;            // hand takes over the pouch while a prompt runs
 let onDone = null;
 let giveUpTimer = null;
+let replays = 0;               // audio is off under test, so this is its only trace
+
+/** How many times the kid asked to hear this question again. */
+export const replayCount = () => replays;
 
 export function initPrompt (characterDefs, { showCards, restoreCards }) {
   chars = characterDefs;
@@ -57,8 +61,56 @@ function bubble (text) {
   el.classList.add('on');
 }
 
+/**
+ * 再听一次 — replay the word 团团 asked for.
+ *
+ * Not a cheat, and worth being clear why: the question IS the sound, and the
+ * answer is which character it belongs to. Hearing it again reveals nothing
+ * the kid was not already given -- unlike the story's picture, which is why
+ * that one is a deliberate, counted hint and this is not.
+ */
+function showReplay () {
+  const host = document.getElementById('obj-tuantuan');
+  if (!host) return;
+  let el = host.querySelector('.say-again');
+  if (!el) {
+    el = document.createElement('button');
+    el.className = 'say-again';
+    el.type = 'button';
+    el.setAttribute('aria-label', '再听一次');
+    el.textContent = '🔊';
+    // pointerdown, not click: the pouch drives everything by pointer events,
+    // and a click waits for a full press-and-release a small finger often
+    // fails to deliver on the same spot.
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      e.stopPropagation();       // 团团 is also the drop target
+      replay();
+    });
+    host.appendChild(el);
+  }
+  el.classList.add('on');
+}
+
+function replay () {
+  if (!active) return;
+  const def = chars.find(c => c.id === active.targetId);
+  if (!def) return;
+  replays++;
+  const ms = say(def.id);
+  // Listening is not thinking. Latency feeds the memory engine -- a slow
+  // answer holds a character back instead of promoting it -- so the seconds
+  // spent replaying must not be charged to the kid as hesitation.
+  if (ms > 0 && active.startedAt) active.startedAt += ms;
+  // They are clearly still with us: don't let 团团 wander off mid-question.
+  clearTimeout(giveUpTimer);
+  giveUpTimer = setTimeout(giveUp, GIVE_UP_MS);
+}
+
+/** Take down the question furniture. Every path out of a prompt comes here. */
 function hideBubble () {
   document.querySelector('#obj-tuantuan .think')?.classList.remove('on');
+  document.querySelector('#obj-tuantuan .say-again')?.classList.remove('on');
 }
 
 /* The pouch narrowing to three cards reads as "my characters disappeared"
@@ -83,12 +135,14 @@ export async function startPrompt (now = Date.now()) {
   const built = buildPrompt(def, chars, s.owned || [], box, 2);
 
   active = { targetId: id, cards: built.cards, startedAt: 0, attempts: 0 };
+  replays = 0;
   update({ prompts: { ...(s.prompts || { asked: 0, right: 0 }),
                       asked: (s.prompts?.asked || 0) + 1 } });
 
   onCards?.(built.cards);
   setAsking(true);
   bubble('?');
+  showReplay();
   emote('surprised', 1200);
   sfx('chime');
 

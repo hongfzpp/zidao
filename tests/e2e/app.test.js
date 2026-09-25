@@ -13,7 +13,7 @@ const ALL = CHAR_DEFS.map(c => c.id);
 const CASTABLE = CHAR_DEFS.filter(c => c.castable !== false);
 const save = (o = {}) => ({
   owned: [], firstCast: [], castCount: 0, castsSinceArrival: 0,
-  arrivalsThisSession: 0, fizzles: 0, seenGolden: 0,
+  fizzles: 0, seenGolden: 0,
   lastPlayedAt: Date.now(), sceneState: null, firstRun: false, ...o
 });
 
@@ -558,15 +558,35 @@ describe('e2e · parent panel', () => {
     });
   });
 
-  it('REGRESSION: the button still works once the session cap is spent', async () => {
-    await withApp(save({ owned: ['da','xiao'], firstCast: ALL, arrivalsThisSession: 99 }),
+  it('REGRESSION: there is no cap to run into any more', async () => {
+    // This used to assert the opposite -- that the panel said 已达上限 after
+    // three characters and the button was the only way past it. The cap is
+    // gone: play is the only thing that paces arrivals now.
+    await withApp(save({ owned: ['da','xiao'], firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      expect(app.parentStats()).toContain('下一个新字');
+      const stats = app.parentStats();
+      expect(stats.includes('已达上限')).toBe(false);
+      expect(stats.includes('30 分钟')).toBe(false);
+      app.$('[data-act="next-char"]').click();
+      await app.completeFirstMeeting();
+      expect(app.save().owned).toContain('kai');
+    });
+  });
+
+  it('REGRESSION: a long sitting keeps delivering characters', async () => {
+    // The reported symptom, at the level the kid actually meets it: keep
+    // playing and keep meeting characters, with no ceiling at three.
+    // Stories are marked read so the run is not interrupted by one opening --
+    // this test is about arrivals, and a story mid-run is a different path.
+    const READ = ['mao-kai-men','ni-hao','gou-shui-le','wo-chi','re-le','ji-ge-dan'];
+    await withApp(save({ owned: ['da','xiao'], firstCast: ALL, storiesRead: READ }),
       async app => {
         await app.start();
-        await app.openParentPanel();
-        expect(app.parentStats()).toContain('已达上限');
-        app.$('[data-act="next-char"]').click();
-        await app.completeFirstMeeting();
-        expect(app.save().owned).toContain('kai');
+        const arrivals = await app.play(40);
+        expect(arrivals.length).toBeGreaterThan(3);   // the old ceiling was 3
+        expect(app.errors).toHaveLength(0);
       });
   });
 
@@ -802,6 +822,76 @@ describe('e2e · 团团 asks (retrieval)', () => {
 const STORY_INDEX = await fetch('../data/stories/index.json').then(r => r.json());
 const STORIES = await Promise.all(STORY_INDEX.stories.map(
   f => fetch('../data/stories/' + f).then(r => r.json())));
+
+describe('e2e · 再听一次 (hearing the question again)', () => {
+  // 团团 says a word and the kid finds the character. If the word was missed --
+  // a noisy room, a wandering mind -- there was no way to hear it again short
+  // of getting it wrong, which taught the wrong lesson entirely.
+
+  const openQuestion = async app => {
+    await app.start();
+    await app.win.__startPrompt();
+    await waitFor(() => app.promptOpen(), { label: 'question to open' });
+  };
+
+  it('the button is there while 团团 is asking', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await openQuestion(app);
+      const btn = app.$('#obj-tuantuan .say-again');
+      expect(Boolean(btn)).toBeTruthy();
+      expect(btn.classList.contains('on')).toBe(true);
+    });
+  });
+
+  it('tapping it says the word again', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await openQuestion(app);
+      const before = app.win.__promptReplays();
+      app.pd(app.$('#obj-tuantuan .say-again'));
+      expect(app.win.__promptReplays()).toBe(before + 1);
+      app.pd(app.$('#obj-tuantuan .say-again'));
+      expect(app.win.__promptReplays()).toBe(before + 2);
+    });
+  });
+
+  it('REGRESSION: tapping it is not an answer, right or wrong', async () => {
+    // 团团 is the drop target for the answer, and the button sits on top of
+    // 团团. A tap that counted as a wrong answer would punish the child for
+    // asking to hear the question.
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await openQuestion(app);
+      const asked = app.save().prompts?.asked || 0;
+      app.pd(app.$('#obj-tuantuan .say-again'));
+      await app.frameTick();
+
+      expect(app.promptOpen()).toBe(true);          // still asking
+      expect(app.save().prompts?.asked || 0).toBe(asked);
+      expect(app.save().prompts?.right || 0).toBe(0);
+      expect(app.errors).toHaveLength(0);
+    });
+  });
+
+  it('it goes away when the question does', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await openQuestion(app);
+      const on = () => app.$('#obj-tuantuan .say-again')?.classList.contains('on');
+      expect(on()).toBe(true);
+      await app.answerPrompt({ correct: true });
+      await waitFor(() => !on(), { label: 'the button to go' });
+      expect(on()).toBe(false);
+    });
+  });
+
+  it('the kid can still answer with the button sitting there', async () => {
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await openQuestion(app);
+      app.pd(app.$('#obj-tuantuan .say-again'));
+      await app.answerPrompt({ correct: true });
+      expect(app.save().prompts?.right || 0).toBe(1);
+      expect(app.errors).toHaveLength(0);
+    });
+  });
+});
 
 describe('e2e · 故事 (the payoff)', () => {
   const first = STORIES[0];

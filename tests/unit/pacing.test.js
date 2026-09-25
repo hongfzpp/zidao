@@ -1,11 +1,11 @@
 import { describe, it, expect } from '../runner.js';
 import {
-  DEFAULTS, castsUntilArrival, sessionBudgetLeft, arrivalDecision,
-  rollSession, applyCast, applyArrival
+  DEFAULTS, castsUntilArrival, arrivalDecision,
+  touchPlay, applyCast, applyArrival
 } from '../../js/core/pacing.js';
 
 const S = (o = {}) => ({
-  castCount: 0, castsSinceArrival: 0, arrivalsThisSession: 0, lastPlayedAt: 0, ...o
+  castCount: 0, castsSinceArrival: 0, lastPlayedAt: 0, ...o
 });
 
 describe('pacing · castsUntilArrival', () => {
@@ -48,11 +48,28 @@ describe('pacing · arrivalDecision', () => {
     }
   });
 
-  it('stops when the session budget is spent, and says why', () => {
-    const st = S({ castsSinceArrival: 50, arrivalsThisSession: DEFAULTS.maxArrivalsPerSession });
+  it('REGRESSION: no cap -- keep playing and characters keep arriving', () => {
+    // There used to be a ceiling of three new characters per half hour. It is
+    // gone: the child sets the pace by playing, and nothing else does.
+    let st = S();
+    let met = 0;
+    for (let cast = 1; cast <= 400; cast++) {
+      Object.assign(st, applyCast(st, cast));
+      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
+        Object.assign(st, applyArrival());
+        met++;
+      }
+    }
+    expect(met).toBe(50);                     // 400 casts / one per 8
+  });
+
+  it('REGRESSION: the clock is gone -- a long sitting is never cut off', () => {
+    // Playing for hours used to hit the ceiling and go quiet with no
+    // explanation. Time is not consulted at all now.
+    const st = S({ castsSinceArrival: DEFAULTS.arrivalEvery, lastPlayedAt: 1 });
     const d = arrivalDecision(st, { hasUnowned: true });
-    expect(d.introduce).toBeFalsy();
-    expect(d.reason).toBe('session-full');
+    expect(d.introduce).toBeTruthy();
+    expect(d.reason).toBe('due');
   });
 
   it('stops when every character is known', () => {
@@ -61,44 +78,27 @@ describe('pacing · arrivalDecision', () => {
     expect(d.reason).toBe('all-known');
   });
 
-  it('reports all-known ahead of session-full', () => {
-    const st = S({ castsSinceArrival: 99, arrivalsThisSession: 99 });
+  it('reports all-known ahead of everything else', () => {
+    const st = S({ castsSinceArrival: 99 });
     expect(arrivalDecision(st, { hasUnowned: false }).reason).toBe('all-known');
   });
 });
 
-describe('pacing · rollSession', () => {
+describe('pacing · touchPlay', () => {
   const NOW = 1_000_000_000;
 
-  it('starts a fresh session on first ever play', () => {
-    const p = rollSession(S({ lastPlayedAt: 0 }), NOW);
-    expect(p.arrivalsThisSession).toBe(0);
-    expect(p.sessionRolled).toBeTruthy();
+  it('records when play happened, and changes nothing else', () => {
+    expect(touchPlay(S(), NOW)).toEqual({ lastPlayedAt: NOW });
+    expect(touchPlay(S({ lastPlayedAt: NOW - 10 }), NOW)).toEqual({ lastPlayedAt: NOW });
   });
 
-  it('resets the budget after a long gap', () => {
-    const st = S({ arrivalsThisSession: 3, lastPlayedAt: NOW - DEFAULTS.sessionGapMs - 1 });
-    const p = rollSession(st, NOW);
-    expect(p.arrivalsThisSession).toBe(0);
-    expect(p.sessionRolled).toBeTruthy();
-  });
-
-  it('REGRESSION: a reload does NOT grant a fresh budget', () => {
-    // "session" used to mean "page load", so restarting farmed new characters.
-    const st = S({ arrivalsThisSession: 3, lastPlayedAt: NOW - 1000 });
-    const p = rollSession(st, NOW);
-    expect(p.sessionRolled).toBeFalsy();
-    expect(p.arrivalsThisSession).toBe(undefined);   // untouched
-  });
-
-  it('keeps the session alive right up to the gap boundary', () => {
-    const st = S({ arrivalsThisSession: 2, lastPlayedAt: NOW - DEFAULTS.sessionGapMs });
-    expect(rollSession(st, NOW).sessionRolled).toBeFalsy();
-  });
-
-  it('always records lastPlayedAt', () => {
-    expect(rollSession(S(), NOW).lastPlayedAt).toBe(NOW);
-    expect(rollSession(S({ lastPlayedAt: NOW - 10 }), NOW).lastPlayedAt).toBe(NOW);
+  it('REGRESSION: reopening the app grants nothing and costs nothing', () => {
+    // "session" once meant "page load", so restarting farmed new characters --
+    // and later, a long gap was needed to get any. Neither is true now: a
+    // reload cannot change how close the next character is.
+    const st = S({ castsSinceArrival: 5 });
+    const after = { ...st, ...touchPlay(st, NOW) };
+    expect(castsUntilArrival(after)).toBe(castsUntilArrival(st));
   });
 });
 
@@ -114,63 +114,64 @@ describe('pacing · applyCast / applyArrival', () => {
     expect(applyArrival(S({ castsSinceArrival: 8 })).castsSinceArrival).toBe(0);
   });
 
-  it('an arrival spends session budget by default', () => {
-    expect(applyArrival(S({ arrivalsThisSession: 1 })).arrivalsThisSession).toBe(2);
-  });
-
-  it('REGRESSION: a free arrival does not spend budget', () => {
-    // The opening character of a fresh install used to spend budget, which
-    // walled the first session at two characters, silently and forever.
-    const p = applyArrival(S({ arrivalsThisSession: 0 }), { countsTowardSession: false });
-    expect(p.arrivalsThisSession).toBe(0);
-    expect(p.castsSinceArrival).toBe(0);
+  it('an arrival costs nothing but the interval', () => {
+    // There is no budget left to spend. The opening character of a fresh
+    // install used to spend one, which walled the first session at two
+    // characters, silently and forever.
+    expect(applyArrival()).toEqual({ castsSinceArrival: 0 });
   });
 });
 
 describe('pacing · full first-session simulation', () => {
-  it('delivers 大 free, then one character every 8 casts, up to the cap', () => {
+  it('delivers 大 free, then one character every 8 casts, without end', () => {
     let st = S();
     const arrivals = [];
     const NOW = 1_000_000;
 
-    Object.assign(st, rollSession(st, NOW));
-    // opening character: free
-    Object.assign(st, applyArrival(st, { countsTowardSession: false }));
-    arrivals.push({ atCast: 0, free: true });
+    Object.assign(st, touchPlay(st, NOW));
+    Object.assign(st, applyArrival());          // opening character
+    arrivals.push(0);
 
     for (let cast = 1; cast <= 40; cast++) {
       Object.assign(st, applyCast(st, NOW + cast));
-      const d = arrivalDecision(st, { hasUnowned: true });
-      if (d.introduce) {
-        Object.assign(st, applyArrival(st, { countsTowardSession: true }));
-        arrivals.push({ atCast: cast, free: false });
+      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
+        Object.assign(st, applyArrival());
+        arrivals.push(cast);
       }
     }
-
-    expect(arrivals.map(a => a.atCast)).toEqual([0, 8, 16, 24]);
-    expect(st.arrivalsThisSession).toBe(DEFAULTS.maxArrivalsPerSession);
+    // It used to stop at 24, three characters in. It keeps going now.
+    expect(arrivals).toEqual([0, 8, 16, 24, 32, 40]);
   });
 
   it('REGRESSION: a long session does not wall up after two characters', () => {
     // The exact symptom reported: stuck on 小, casting forever, nothing arrives.
     let st = S();
-    Object.assign(st, rollSession(st, 1000));
-    Object.assign(st, applyArrival(st, { countsTowardSession: false }));  // 大
+    Object.assign(st, applyArrival());          // 大
     let count = 1;
     for (let cast = 1; cast <= 30; cast++) {
       Object.assign(st, applyCast(st, 1000 + cast));
       if (arrivalDecision(st, { hasUnowned: true }).introduce) {
-        Object.assign(st, applyArrival(st, { countsTowardSession: true }));
+        Object.assign(st, applyArrival());
         count++;
       }
     }
     expect(count).toBeGreaterThan(2);
   });
 
-  it('a new session after a break grants a fresh budget', () => {
-    let st = S({ arrivalsThisSession: 3, castsSinceArrival: 20, lastPlayedAt: 1000 });
-    expect(arrivalDecision(st, { hasUnowned: true }).reason).toBe('session-full');
-    Object.assign(st, rollSession(st, 1000 + DEFAULTS.sessionGapMs + 1));
-    expect(arrivalDecision(st, { hasUnowned: true }).introduce).toBeTruthy();
+  it('REGRESSION: playing straight through a half hour is never interrupted', () => {
+    // The old rule reset only after THIRTY IDLE MINUTES, so the one child who
+    // played longest was the one most likely to be cut off.
+    let st = S();
+    let met = 0;
+    const HALF_HOUR = 30 * 60 * 1000;
+    for (let cast = 1; cast <= 120; cast++) {
+      // casts spread across a solid hour of unbroken play
+      Object.assign(st, applyCast(st, cast * (HALF_HOUR / 60)));
+      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
+        Object.assign(st, applyArrival());
+        met++;
+      }
+    }
+    expect(met).toBe(15);
   });
 });

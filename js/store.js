@@ -9,8 +9,7 @@ const BLANK = {
   firstCast: [],      // character ids that have been cast at least once
   castCount: 0,       // total casts ever (display only)
   castsSinceArrival: 0, // drives the next arrival; persisted so app restarts don't skew pacing
-  arrivalsThisSession: 0,
-  lastPlayedAt: 0,      // a real session boundary is a gap in TIME, not a page load
+  lastPlayedAt: 0,      // display only -- nothing gates on the clock any more
   fizzles: 0,         // decoy picks -- the only real signal of guessing
   scenes: {},         // sceneId -> per-object scale/state overrides
   currentScene: 'house',
