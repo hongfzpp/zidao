@@ -17,7 +17,7 @@ Every one of them is now a named regression test.
 | Bug | Cause | Now guarded by |
 |---|---|---|
 | Character arrived after ONE cast | `castCount % 8` on a persisted total | `pacing · arrivalDecision` |
-| Stuck forever with no new characters | session budget keyed to page load | `pacing · rollSession`, `pacing · full first-session simulation` |
+| Stuck forever with no new characters | session budget keyed to page load | `pacing · simulated play`, `pacing · touchPlay` |
 | First 大 was a limp 2× nudge | hook left to a 5% roll | `rules · chooseSteps` |
 | 开/关 could be their own decoys | self-referencing confusables | `data · characters.json` |
 | Drag ghost stranded on screen | assumed `pointerup` always arrives | `e2e · drag robustness` |
@@ -39,6 +39,10 @@ Every one of them is now a named regression test.
 | A flaky test, seen once and then lost: `吃 eats one of them` asserted an exact count, but 吃 has a ~5% golden that eats the lot down to one | the same exact-value-on-a-random-variant trap as `多`, in a second place | `e2e · 厨房` asserts direction |
 | Pinning a whole unit pushed the just-learnt character out of the pouch | pins were an unordered set scored `Infinity`, so with more pins than slots the tie broke arbitrarily | `hand · pins are ranked, not equal` |
 | The child could only hear 团团's question again by answering it wrong | the question is a sound, and nothing replayed it | `e2e · 再听一次` |
+| The kid skipped every new character, played only the familiar ones, and was rewarded with a new character every eight casts anyway — meeting a stream of characters they never touched | arrivals were earned by casting *anything* | `pacing · arrivalDecision`, `e2e · pacing` — now the newest character must be played correctly 4 times |
+| A gate on "play the newest character" could freeze for good, three separate ways: glue (你) can never be cast; the newest character could rotate out of the capped pouch; and 鱼 met in the house can only ever be a dud there | each is a place the gate's precondition silently cannot be met | `pacing · learningId` looks past glue; `e2e · the newest character has to be played`; and the validator proves every castable character works in its own unit's room |
+| A test dragged 鱼 by name after a focused unit's cards were shuffled, so it failed whenever 鱼 was the one left out — about one run in six | the third exact-value-on-a-random-variant trap, after `多` and `吃` | `e2e · choosing a 关` now uses whichever was dealt |
+| A focused unit stopped being dealt after the app was reopened, though its room and light came back | which cards it deals lived only in memory | `e2e · the newest character has to be played` |
 | 团团's mood badge sat on the child's own face | the badge is positioned against `.tuan`, which was a full-width block — about twice the photo's width — so "just outside the right edge" landed back on top of him | `e2e · 团团 is a photograph` |
 
 ---

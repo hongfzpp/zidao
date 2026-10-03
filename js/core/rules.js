@@ -53,6 +53,10 @@ export function pickVariant (variants, lastIndex = -1, rng = Math.random) {
  * a decoy, or a noun cast on something it does not name. Those must not spend
  * the character's one spectacular first cast, or a kid who tries 猫 on the bed
  * before the cat would never get the moment at all.
+ *
+ * `effective` is the same judgement under the name that matters for pacing: a
+ * cast that worked. Only effective casts count as playing a character
+ * correctly, which is what lets the next character arrive (core/pacing.js).
  */
 export function chooseSteps (data, ctx) {
   const { rules = [], fallback, fizzle, firstCastFlourish } = data;
@@ -62,7 +66,7 @@ export function chooseSteps (data, ctx) {
     const picked = pickVariant(fizzle?.variants, lastIndex, rng);
     return {
       steps: picked?.variant.steps || [], kind: 'fizzle',
-      variantIndex: picked?.index ?? -1, consumedFirstCast: false
+      variantIndex: picked?.index ?? -1, consumedFirstCast: false, effective: false
     };
   }
 
@@ -73,7 +77,8 @@ export function chooseSteps (data, ctx) {
   const wantsSpectacular = isFirstCast || rng() < GOLDEN_CHANCE;
 
   if (rule?.golden && wantsSpectacular) {
-    return { steps: rule.golden.steps, kind: 'golden', variantIndex: -1, consumedFirstCast: true };
+    return { steps: rule.golden.steps, kind: 'golden', variantIndex: -1,
+             consumedFirstCast: true, effective: true };
   }
   if (rule) {
     // A rule flagged `noEffect` acknowledges the cast but changes nothing: no
@@ -84,12 +89,31 @@ export function chooseSteps (data, ctx) {
     if (isFirstCast && !inert) steps = [...steps, ...(firstCastFlourish?.steps || [])];
     return {
       steps, kind: 'normal', variantIndex: picked?.index ?? -1,
-      consumedFirstCast: !inert
+      consumedFirstCast: !inert, effective: !inert
     };
   }
 
   const picked = pickVariant(fallback?.variants, lastIndex, rng);
   let steps = picked?.variant.steps || [];
   if (isFirstCast) steps = [...steps, ...(firstCastFlourish?.steps || [])];
-  return { steps, kind: 'fallback', variantIndex: picked?.index ?? -1, consumedFirstCast: true };
+  return { steps, kind: 'fallback', variantIndex: picked?.index ?? -1,
+           consumedFirstCast: true, effective: true };
+}
+
+/**
+ * Would casting `charId` on `rec` actually do something?
+ * The same judgement chooseSteps makes, without choosing any steps: no rule at
+ * all means the generic fallback runs (that works); a matching rule works
+ * unless it is flagged `noEffect` -- a noun on something it does not name.
+ */
+export function worksOn (rules, charId, rec) {
+  if (!rec || isDistractor(charId)) return false;
+  const rule = findRule(rules || [], charId, rec);
+  return !rule || rule.noEffect !== true;
+}
+
+/** The objects in a room that `charId` can be played correctly on.
+    Empty means it can do nothing here -- 鱼 in a house with no fish. */
+export function effectiveTargets (rules, charId, objects) {
+  return (objects || []).filter(o => worksOn(rules, charId, o)).map(o => o.id);
 }

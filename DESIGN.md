@@ -219,9 +219,41 @@ meets a lot; a child who plays for five minutes meets one. That is a pace they
 set themselves, and it cannot go silently quiet, because the only thing that
 stops it is them stopping.
 
-What is kept: one character at a time, never two 初遇 back to back, and the
-eight-cast spacing itself — that one is not a budget but a rhythm, and it is
-still measured in the child's own actions rather than in minutes.
+What is kept: one character at a time, never two 初遇 back to back, and pace
+measured in the child's own actions rather than in minutes.
+
+### 6.1b What earns the next character: playing the newest one
+
+Removing the cap exposed the next problem within days. Arrivals were earned by
+casting *anything*, eight times. A child left to choose plays what they already
+know — so the kid skipped every new character, played 大 and 猫 over and over,
+and was handed a new character every eight casts regardless. They met a steady
+stream of characters they never once touched.
+
+Now **the newest character has to be played correctly four times** before
+another arrives. "Correctly" means the cast worked: 猫 on the cat counts, 猫 on
+the bed does not, because a noun does nothing on something it does not name.
+Playing the familiar ones is still allowed and still fun; it just no longer
+pays.
+
+A gate like this is only safe if its condition can always be met. Three ways it
+could not, each now closed:
+
+| Could freeze because | Closed by |
+|---|---|
+| 你 好 了 我 个 arrive through the drip but cannot be cast at all | the gate looks past them to the newest *castable* character; a four-cast floor between arrivals stops glue chaining 你→好→上 on consecutive casts |
+| The pouch holds six real cards, so the newest could rotate out — and with it the only way to progress | it is pinned while it is holding the next one back, ahead of a focused unit's cards |
+| 鱼 蛋 米 肉 菜 do nothing in the house; 猫 狗 灯 床 nothing in the kitchen | meeting one where it cannot work moves the room to where it can — and the validator proves every castable character works in its own unit's room, so that room always will |
+
+The third is the one exception to "the child walks through the door by reading
+开". It is worth it: the alternative is a child casting 鱼 at a cat forever with
+nothing happening and no way to know why.
+
+The parent panel says what is holding things up — **先玩 小 · 用对 3 次就来新字**
+(Rule 10). The *child* is deliberately not told which card is the new one: a
+glow on it would make finding it free, and finding it among the others is the
+whole point. Instead 团团 asks about it (§6.3), which is the same nudge without
+giving the answer away.
 
 ### 6.2 施法 — Cast (the sandbox)
 
@@ -267,6 +299,14 @@ Design notes:
 ### 6.3 团团要… — Retrieval, disguised
 
 Interrupts free play. 团团 wants something and can't read.
+
+**Who gets asked.** Only characters that are due — the spacing still decides
+*when* one may be asked. Among those, the less a character has been tried
+(cast, answered, or read), the more 团团 wants it: weight `1 / (1 + tries)`. A
+never-tried character comes up about three times as often as one tried twice,
+and ten times as often as one tried nine times. Steeper would turn the question
+into a drill of the same character; flatter would let the avoided ones hide.
+This is where the characters a child skips in free play are made unavoidable.
 
 **再听一次.** A 🔊 button sits beside 团团 for as long as the question is open,
 and replays the word. The question *is* a sound, so missing it — a noisy room, a
@@ -431,7 +471,7 @@ Glue characters live in the unit whose story introduces them, since a story is t
 
 The split is: **the scene supplies the materials, the unit supplies the light.** A kitchen floor is tiled and a house floor is boards whichever unit you are in; the walls take their colour from the unit in both rooms. Before this the two rooms were pixel-identical apart from the objects standing in them, which is not a second room, it is the same room redressed.
 
-This is orthogonal to pacing. Grouping is six; arrival is one character per eight casts with no ceiling, so how long a unit takes is up to the child.
+This is orthogonal to pacing. Grouping is six; each character arrives once the one before it has been played correctly four times (§6.1b), with no ceiling, so how long a unit takes is up to the child.
 
 ## 9x. Curriculum — the v1 sixty
 
@@ -756,13 +796,13 @@ for good.
 - Cast sandbox, memory engine with 团团's questions, six decodable stories, speech practice
 - PWA: installable, offline, live at the URL in README
 - 团团 is a photograph of the child himself (§7); his moods are a badge plus body motion
-- 441 tests (unit + data + end-to-end), all headless
+- 477 tests (unit + data + end-to-end), all headless
 
 **Not built:** the outside scene and the remaining ~23 characters toward the planned sixty; Find mode (§6.4); a real parent dashboard beyond the current panel.
 
 **Where knowledge lives, in order of reliability:**
 
-1. **The tests.** 441 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
+1. **The tests.** 477 of them, and every bug that ever reached the child is a named `REGRESSION:` test. They are the only record that cannot quietly go stale.
 2. **CLAUDE.md.** How to work here, and a table of every bug shipped with its root cause.
 3. **This document.** Why the product is shaped the way it is, including the decisions that were reversed and why.
 4. **README.md.** How to run, test, and deploy it.

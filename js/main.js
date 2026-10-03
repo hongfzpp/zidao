@@ -26,10 +26,11 @@ import { isUnlocked, missingFor } from './core/stories.js';
 import { currentUnit, roomUnit, themeFor, cssVars } from './core/theme.js';
 import { unitScene, unitOf, unitCards } from './core/units.js';
 import {
-  DEFAULTS as PACING, arrivalDecision, touchPlay, applyArrival, castsUntilArrival
+  DEFAULTS as PACING, arrivalDecision, touchPlay, applyArrival, castsUntilArrival,
+  learningId, playsStillNeeded
 } from './core/pacing.js';
+import { effectiveTargets } from './core/rules.js';
 
-const ARRIVAL_EVERY = PACING.arrivalEvery;
 const CASTS_BETWEEN_PROMPTS = 3;   // 团团 asks between bouts of free play, never constantly
 
 // There is no cap on how many characters a session may bring any more, and no
@@ -88,6 +89,12 @@ async function boot () {
     interceptDrop: (cardId, rec) =>
       prompt.isActive() && rec.id === 'tuantuan' && prompt.answer(cardId)
   });
+  // A focused unit is saved, and so are its room and light -- but which cards
+  // it deals lived only in memory, so a reopened app kept the kitchen and
+  // stopped dealing 鱼. Restore it with everything else.
+  if (get().focusUnit != null) {
+    handMod.setUnitCards(unitCards(CHARS, UNITS, get().focusUnit, get().owned || []));
+  }
   attachPouchInput();
   attachSceneTaps();
   story.initStory(CHARS);
@@ -95,6 +102,7 @@ async function boot () {
   // read-only hook so the E2E harness can answer 团团 deliberately right or wrong
   window.__promptTarget = () => prompt.targetId();
   window.__startPrompt = () => prompt.startPrompt();
+  window.__cancelPrompt = () => prompt.cancel();
   // test hook: the replay button's only observable effect is the audio it
   // plays, and audio is off under test
   window.__promptReplays = () => prompt.replayCount();
@@ -172,6 +180,7 @@ async function introduce (def, { natural = false, thenStory = false } = {}) {
   }
   sfx('chime');
   await firstMeeting(def);
+  if (isNew) await goWhereItWorks(def);
   onNewCharacter(def.id);
   applyTheme();
   // Fire and forget: the story is the session's high note, but introduce()
@@ -179,6 +188,25 @@ async function introduce (def, { natural = false, thenStory = false } = {}) {
   // would stall behind the overlay.
   if (thenStory) offerStory();
   return true;
+}
+
+/**
+ * A newly met character has to be playable where the kid is standing.
+ *
+ * The next character only arrives once this one has been played correctly
+ * four times, and nine characters are nouns that do nothing outside one room:
+ * 鱼 蛋 米 肉 菜 need the kitchen, 猫 狗 灯 床 need the house. Meeting 鱼 in the
+ * house would make every cast of it a dud, so nothing would ever count and no
+ * character would ever come again -- the "stuck on 小" bug wearing new clothes.
+ * So the room goes to where the character works. The validator proves every
+ * castable character works in its own unit's room, so that room always will.
+ */
+async function goWhereItWorks (def) {
+  if (def.castable === false) return;
+  const here = scene.allObjects().map(o => ({ id: o.id, tags: o.tags }));
+  if (effectiveTargets(RULES.rules, def.id, here).length) return;
+  const want = unitScene(UNITS, def.unit, scene.currentSceneId());
+  if (want && want !== scene.currentSceneId()) await scene.goToScene(want);
 }
 
 /** A story is the high note a session ends on (DESIGN.md §3.7). */
@@ -200,7 +228,7 @@ let castsSincePrompt = 0;
 
 async function afterCast () {
   const hasUnowned = CHARS.some(c => !get().owned.includes(c.id));
-  if (arrivalDecision(get(), { hasUnowned }).introduce) {
+  if (arrivalDecision(get(), { hasUnowned, chars: CHARS }).introduce) {
     await new Promise(r => setTimeout(r, TIMINGS.arrivalDelayMs));  // let the effect land
     await introduceNext({ natural: true, thenStory: true });
     castsSincePrompt = 0;
@@ -487,9 +515,10 @@ function setupParentGate () {
       // No cap any more, so the only honest thing to report is how close the
       // next character is -- which is a count of the kid's OWN play (Rule 10:
       // the panel still has to explain why nothing is arriving).
-      stat('下一个新字',
-           remaining.length === 0 ? '—' : `还差 ${castsUntilArrival(s)} 次`,
-           remaining.length === 0 ? '全部都认识了' : `还有 ${remaining.length} 个没见过`) +
+      // Rule 10: the next character is held back until the newest is played,
+      // and a parent watching nothing arrive needs to see which one and how
+      // many more -- that is something they can actually help with.
+      stat('下一个新字', nextCharValue(s, remaining), nextCharNote(s, remaining)) +
       (spTries ? stat('念出来', `${Math.round(100 * spRight / spTries)}%`, `${spTries} 次`) : '') +
       stat('施法', s.castCount, s.seenGolden ? `稀有 ${s.seenGolden}` : '');
 
@@ -547,6 +576,23 @@ function setupParentGate () {
       : '全部字都认识了';
     panel.classList.remove('hidden');
   }
+}
+
+/** What the panel says about the next character. */
+function nextCharValue (s, remaining) {
+  if (remaining.length === 0) return '—';
+  const need = playsStillNeeded(s, CHARS);
+  if (need > 0) {
+    const g = CHARS.find(c => c.id === learningId(CHARS, s.owned))?.char || '';
+    return `先玩 ${g}`;
+  }
+  return `还差 ${castsUntilArrival(s)} 次`;
+}
+
+function nextCharNote (s, remaining) {
+  if (remaining.length === 0) return '全部都认识了';
+  const need = playsStillNeeded(s, CHARS);
+  return need > 0 ? `用对 ${need} 次就来新字` : `还有 ${remaining.length} 个没见过`;
 }
 
 /* ---------- iOS housekeeping ---------- */

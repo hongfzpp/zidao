@@ -119,33 +119,35 @@ No build step, no `npm install`, no dependencies. Just static files and `python3
    - Anything on anything else → *always* a response. Never a dead tap.
 4. **Tap a card without dragging** → it just says its word. Zero-pressure review,
    always available. (Decoys stay silent — we aren't teaching them.)
-5. A new character arrives every 8 casts **counted from the previous arrival**
-   (`castsSinceArrival`, persisted), **one at a time**. Casting a decoy does not
-   advance the count — only real characters do.
+5. A new character arrives once the **newest one has been played correctly 4
+   times**, **one at a time**. Playing the familiar ones, casting a decoy, or a
+   dud (猫 on the bed) does not count.
 
-### Pacing knobs (`js/main.js`)
+### Pacing knobs (`js/core/pacing.js`)
 
 | Constant | Default | What it does |
 |---|---|---|
-| `ARRIVAL_EVERY` | 8 | Casts between arrivals, counted from the last arrival |
+| `playsToPass` | 4 | Correct plays of the newest character before the next may arrive — and the minimum casts between any two arrivals |
 
-That is the whole of it. **There is no cap and no clock.** How fast characters
-arrive is decided by one thing only: how much the child actually plays. Keep
-casting and they keep coming; stop and nothing happens.
+That is the whole of it. **There is no cap and no clock**, and playing the
+familiar characters no longer earns anything: the next character arrives only
+once the newest has been *played correctly* four times. "Correctly" means the
+cast worked — 猫 on the cat counts, 猫 on the bed does not.
 
-There used to be a second and third knob — at most three new characters per
-half hour, the clock resetting after thirty idle minutes — and they are gone
-deliberately. Every version of that budget produced the same complaint: a child
-who kept playing, kept being given nothing, and had no way to see why. The app
-does not get to decide when a four-year-old has had enough.
+Two earlier rules are gone on purpose (DESIGN.md §6.1a–b): a cap of three per
+half hour, which produced "stuck on 小" no matter how it was keyed; and "any
+eight casts", which let a child skip every new character and still be handed
+the next one.
 
-The opening character of a brand-new install arrives before any playing has
-happened — it's the hook — so a first sitting delivers 大 immediately and then
-one more every 8 casts, without end.
+Three things keep the gate from freezing — see the table in DESIGN.md §6.1b:
+glue (你 好 我) is looked past, the newest character is pinned in the pouch while
+it is holding the next one back, and meeting a character in a room where it can
+do nothing moves the room to where it can. `scripts/validate.py` refuses any
+castable character that cannot be played correctly in its own unit's room.
 
-The parent panel shows `下一个新字：还差 N 次`, which is a count of the kid's own
-play rather than a limit being enforced, and **认识下一个字** still introduces one
-on demand.
+The parent panel shows `下一个新字：先玩 小 · 用对 3 次就来新字`, and
+**认识下一个字** still introduces one on demand, past the gate.
+
    Opposite pairs like 大/小 and 开/关 are deliberately *not* introduced
    together: the pairing makes them useful but also makes them confusable, so
    each gets its own moment.
@@ -251,10 +253,10 @@ in, in both rooms.
 a character from a later unit — enforced by `scripts/validate.py` and by a data
 test, the same guarantee as the page-level one but at curriculum level.
 
-This is about how the material is *grouped*, not how fast it arrives. The drip
-is unchanged: one character per 8 casts, with no ceiling, so how long a unit
-takes is up to the child. The only pacing knob is `ARRIVAL_EVERY` in
-`js/main.js`.
+This is about how the material is *grouped*, not how fast it arrives. Each
+character arrives once the one before it has been played correctly four times,
+with no ceiling, so how long a unit takes is up to the child. The only pacing
+knob is `playsToPass` in `js/core/pacing.js`.
 
 The parent panel shows each unit with its progress and its story
 (`第二关 2/6 《你好》`).
@@ -459,8 +461,9 @@ the hand is full.
 - **认识下一个字：X** — introduces the next character on demand, naming it on the
   button so you know what's coming. Runs the same 初遇 the automatic drip uses,
   so there is one code path (`introduceNext()` in `js/main.js`). Use this to
-  pace a session yourself instead of waiting 8 casts, or to move fast while
-  testing. Disabled once all characters are known.
+  pace a session yourself instead of waiting for the newest to be played four
+  times, or to move fast while testing. It is a parent's override and skips that
+  gate. Disabled once all characters are known.
 - 解锁全部字 — skip the drip entirely.
 - 重置房间 — put the room back, keep the characters.
 - 全部重来 — wipe everything.

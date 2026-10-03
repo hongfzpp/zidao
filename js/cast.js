@@ -12,7 +12,7 @@ import { emote } from './tuantuan.js';
 import { get, update } from './store.js';
 import { isDistractor } from './core/hand.js';
 import { applyCast } from './core/pacing.js';
-import { getProgress, recordExposure } from './core/memory.js';
+import { getProgress, recordExposure, recordPlay } from './core/memory.js';
 import { chooseSteps } from './core/rules.js';
 
 let ruleData = null;
@@ -129,7 +129,7 @@ export async function cast (charId, rec, point) {
   const firstCast = get().firstCast || [];
   const isFirstCast = !isDistractor(charId) && !firstCast.includes(charId);
 
-  const { steps, kind, variantIndex, consumedFirstCast } = chooseSteps(ruleData, {
+  const { steps, kind, variantIndex, consumedFirstCast, effective } = chooseSteps(ruleData, {
     charId, rec, isFirstCast, lastIndex: lastVariant.get(key) ?? -1
   });
   if (variantIndex >= 0) lastVariant.set(key, variantIndex);
@@ -139,11 +139,14 @@ export async function cast (charId, rec, point) {
   } else {
     const patch = applyCast(get());
     if (isFirstCast && consumedFirstCast) patch.firstCast = [...firstCast, charId];
-    // free play counts as seeing the character, but it is not a test
+    // Free play counts as seeing the character, but it is not a test. Only a
+    // cast that WORKED counts as playing it correctly -- 猫 dropped on the bed
+    // has been seen, not played -- and correct plays earn the next character.
     const now = Date.now();
+    const p = getProgress(get().progress || {}, charId, now);
     patch.progress = {
       ...(get().progress || {}),
-      [charId]: recordExposure(getProgress(get().progress || {}, charId, now), now)
+      [charId]: effective ? recordPlay(p, now) : recordExposure(p, now)
     };
     if (kind === 'golden' && !isFirstCast) patch.seenGolden = (get().seenGolden || 0) + 1;
     update(patch);

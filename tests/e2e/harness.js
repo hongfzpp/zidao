@@ -3,7 +3,8 @@
    does -- pointer events on real elements -- so it exercises the wiring the
    unit tests deliberately skip. */
 
-import { arrivalDecision } from '../../js/core/pacing.js';
+import { arrivalDecision, learningId } from '../../js/core/pacing.js';
+import { effectiveTargets } from '../../js/core/rules.js';
 import * as POUCH from '../../js/core/hand.js';
 
 const APP_URL = '../index.html?test=1';   // see js/timings.js
@@ -12,13 +13,19 @@ const SAVE_KEY = 'zidao.v1';
 // The character list, fetched once, so the harness can ask the SAME pure pacing
 // core the app uses whether an arrival is due. That turns "wait and see" into a
 // decision -- no speculative polling after casts that cannot produce one.
-let CHAR_IDS = null;
-async function charIds () {
-  if (!CHAR_IDS) {
+let CHAR_DEFS = null;
+let RULE_LIST = null;
+async function charDefs () {
+  if (!CHAR_DEFS) {
     const d = await fetch('../data/characters.json').then(r => r.json());
-    CHAR_IDS = d.characters.map(c => c.id);
+    CHAR_DEFS = d.characters;
   }
-  return CHAR_IDS;
+  return CHAR_DEFS;
+}
+async function charIds () { return (await charDefs()).map(c => c.id); }
+async function ruleList () {
+  if (!RULE_LIST) RULE_LIST = (await fetch('../data/cast-rules.json').then(r => r.json())).rules;
+  return RULE_LIST;
 }
 
 export function sleep (ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -320,9 +327,10 @@ export class App {
    */
   async arrived (timeout = 2000) {
     if (this.fmOpen()) return true;
-    const ids = await charIds();
+    const chars = await charDefs();
     const owned = this.save().owned || [];
-    const due = arrivalDecision(this.save(), { hasUnowned: ids.some(id => !owned.includes(id)) });
+    const due = arrivalDecision(this.save(), {
+      hasUnowned: chars.some(c => !owned.includes(c.id)), chars });
     if (!due.introduce) {
       await this.frameTick();          // it may have opened in the last tick
       return this.fmOpen();
@@ -335,6 +343,42 @@ export class App {
     const arrivals = [];
     for (let i = 1; i <= n; i++) {
       await this.castAny(i);
+      if (await this.arrived()) {
+        arrivals.push({ atCast: i, char: await this.completeFirstMeeting() });
+      }
+    }
+    return arrivals;
+  }
+
+  /** Reload the page the way a parent closing and reopening the app would.
+      Call start() afterwards, as after launch. */
+  async reload () {
+    const loaded = new Promise(res => this.frame.addEventListener('load', res, { once: true }));
+    this.win.location.reload();
+    await loaded;
+    await waitFor(() => this.doc.getElementById('unlock-btn'), { label: 'reboot' });
+  }
+
+  /** The character the kid is meant to be practising right now. */
+  async learning () { return learningId(await charDefs(), this.save().owned || []); }
+
+  /**
+   * Play the newest character correctly, n times, the way a kid would: onto
+   * something in this room it actually works on. Completes any 初遇 that
+   * appears and returns the arrivals, like play().
+   */
+  async practise (n = 1) {
+    const arrivals = [];
+    for (let i = 1; i <= n; i++) {
+      await this.settlePrompt();
+      const id = await this.learning();
+      const glyph = (await charDefs()).find(c => c.id === id)?.char;
+      const here = this.$$('.obj').map(el => ({
+        id: el.dataset.id, tags: (el.dataset.tags || '').split(' ').filter(Boolean) }));
+      const targets = effectiveTargets(await ruleList(), id, here)
+        .filter(t => t !== 'tuantuan');
+      if (!glyph || !targets.length) throw new Error(`nothing to practise ${id} on here`);
+      await this.drag(glyph, targets[i % targets.length]);
       if (await this.arrived()) {
         arrivals.push({ atCast: i, char: await this.completeFirstMeeting() });
       }

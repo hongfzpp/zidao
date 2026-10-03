@@ -63,6 +63,7 @@ function addObject (o, saved) {
   el.className = 'obj';
   el.id = 'obj-' + o.id;
   el.dataset.id = o.id;
+  el.dataset.tags = (o.tags || []).join(' ');   // what a cast can match on
 
   const x = saved?.x ?? o.x;
   const y = saved?.y ?? o.y;

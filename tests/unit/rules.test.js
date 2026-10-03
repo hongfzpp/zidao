@@ -1,5 +1,5 @@
 import { describe, it, expect } from '../runner.js';
-import { specificity, findRule, pickVariant, chooseSteps } from '../../js/core/rules.js';
+import { specificity, findRule, pickVariant, chooseSteps, worksOn, effectiveTargets } from '../../js/core/rules.js';
 import { mulberry32 } from '../../js/core/rng.js';
 import { toDistractorId } from '../../js/core/hand.js';
 
@@ -204,5 +204,64 @@ describe('rules · nouns act only on what they name', () => {
   it('a decoy never spends the first-cast moment either', () => {
     const r = chooseSteps(NOUN_DATA, { charId: 'x:太', rec: CAT, isFirstCast: true, rng: always });
     expect(r.consumedFirstCast).toBeFalsy();
+  });
+});
+
+describe('rules · did the cast work? (what counts as playing correctly)', () => {
+  const ctx = (charId, rec) => ({ charId, rec, rng: mulberry32(3) });
+
+  it('a noun on the thing it names worked', () => {
+    expect(chooseSteps(NOUN_DATA, ctx('mao', CAT)).effective).toBe(true);
+  });
+  it('REGRESSION: a noun on something it does not name did not', () => {
+    // Only a cast that worked counts toward earning the next character, so a
+    // kid cannot pass 猫 by dropping it on the bed four times.
+    expect(chooseSteps(NOUN_DATA, ctx('mao', BED)).effective).toBe(false);
+  });
+  it('a decoy never worked', () => {
+    expect(chooseSteps(NOUN_DATA, ctx(toDistractorId('木'), CAT)).effective).toBe(false);
+  });
+  it('the generic fallback worked: no rule is not the same as a dud', () => {
+    expect(chooseSteps(DATA, ctx('kai', CAT)).effective).toBe(true);
+  });
+  it('a golden cast worked', () => {
+    const r = chooseSteps(DATA, { charId: 'da', rec: CAT, isFirstCast: true, rng: mulberry32(1) });
+    expect(r.kind).toBe('golden');
+    expect(r.effective).toBe(true);
+  });
+  it('always agrees with whether the first-cast moment was spent', () => {
+    for (const [c, rec] of [['mao', CAT], ['mao', BED], ['da', LAMP], ['kai', LAMP], ['kai', BED]]) {
+      const r = chooseSteps({ ...DATA, rules: [...RULES, ...NOUN_RULES] }, ctx(c, rec));
+      expect(r.effective).toBe(r.consumedFirstCast);
+    }
+  });
+});
+
+describe('rules · worksOn / effectiveTargets', () => {
+  it('agrees with chooseSteps about every pairing', () => {
+    const all = [...RULES, ...NOUN_RULES];
+    for (const c of ['mao', 'da', 'kai']) {
+      for (const rec of [CAT, BED, LAMP]) {
+        const r = chooseSteps({ ...DATA, rules: all }, { charId: c, rec, rng: mulberry32(5) });
+        expect(worksOn(all, c, rec)).toBe(r.effective);
+      }
+    }
+  });
+  it('REGRESSION: finds a room where a noun can do nothing at all', () => {
+    // 鱼 in a house with no fish: every cast a dud, so the gate could never
+    // open. The app moves the room when this comes back empty.
+    expect(effectiveTargets(NOUN_RULES, 'mao', [BED, LAMP])).toEqual([]);
+    expect(effectiveTargets(NOUN_RULES, 'mao', [BED, CAT, LAMP])).toEqual(['cat']);
+  });
+  it('a character with no rules works on anything, through the fallback', () => {
+    expect(effectiveTargets(RULES, 'nobody', [CAT, BED])).toEqual(['cat', 'bed']);
+  });
+  it('a decoy works on nothing', () => {
+    expect(worksOn(RULES, toDistractorId('木'), CAT)).toBe(false);
+  });
+  it('survives malformed input', () => {
+    expect(worksOn(null, 'mao', CAT)).toBe(true);
+    expect(worksOn(RULES, 'mao', null)).toBe(false);
+    expect(effectiveTargets(RULES, 'mao', null)).toEqual([]);
   });
 });

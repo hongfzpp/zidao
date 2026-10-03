@@ -259,6 +259,42 @@ for u in UNITS:
             err.append(f"unit {u['n']} ({u['name']}) is played in {sc_id}, but "
                        f"{r['char']} targets tag '{t['tag']}', which nothing there has")
 
+# 10c. every castable character can be PLAYED CORRECTLY in its own unit's room
+# The next character only arrives once the newest has been played correctly four
+# times. A character with nothing to work on in its own room could never be
+# played correctly there, so the gate would never open and no character would
+# ever arrive again -- a permanent stall, from data alone. This proves it cannot
+# happen. "Works" means what the app means: no rule (the fallback runs), or a
+# matching rule that is not flagged noEffect.
+def _spec(t, o):
+    if t.get('id'):  return 3 if t['id'] == o['id'] else 0
+    if t.get('tag'): return 2 if t['tag'] in o.get('tags', []) else 0
+    if t.get('any'): return 1
+    return 0
+
+def _works(cid, o):
+    best, bs = None, 0
+    for r in rules['rules']:
+        if r['char'] != cid:
+            continue
+        sp = _spec(r.get('target', {}), o)
+        if sp > bs:
+            best, bs = r, sp
+    return best is None or best.get('noEffect') is not True
+
+for u in UNITS:
+    sc_id = u.get('scene')
+    if sc_id not in SCENES:
+        continue                                   # reported by 10b
+    objs = SCENES[sc_id]['objects']
+    for cid in u['chars']:
+        c = next((c for c in chars if c['id'] == cid), None)
+        if not c or c.get('castable') is False:
+            continue
+        if not any(_works(cid, o) for o in objs):
+            err.append(f"{c['char']} can never be played correctly in {sc_id} "
+                       f"(unit {u['n']}'s room) -- the arrival gate would stall on it")
+
 # 11. the offline manifest must match what is on disk, or the app breaks offline
 sw_path = root / 'sw-assets.json'
 if not sw_path.exists():

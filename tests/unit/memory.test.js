@@ -2,7 +2,7 @@ import { describe, it, expect } from '../runner.js';
 import {
   BOX_INTERVAL_MS, MAX_BOX, DEFAULTS, blankProgress, getProgress, recordExposure,
   recordAnswer, median, isDue, isRetired, urgency, dueCharacters, pickReviewTarget,
-  mastery, status
+  mastery, status, recordPlay, playsOf, triesOf, reviewWeight, weightedPick
 } from '../../js/core/memory.js';
 import { mulberry32 } from '../../js/core/rng.js';
 
@@ -173,6 +173,95 @@ describe('memory · pickReviewTarget', () => {
     const seen = new Set();
     for (let s = 0; s < 40; s++) seen.add(pickReviewTarget(map, ['da','xiao','kai'], NOW, mulberry32(s)));
     expect(seen.size).toBeGreaterThan(1);
+  });
+});
+
+describe('memory · correct plays', () => {
+  it('a new record has played nothing', () => {
+    expect(playsOf(blankProgress('da', NOW))).toBe(0);
+  });
+  it('a correct play is also an exposure', () => {
+    const p = recordPlay(P({ exposures: 3, plays: 1 }), NOW + 5);
+    expect(p.plays).toBe(2);
+    expect(p.exposures).toBe(4);
+    expect(p.lastSeen).toBe(NOW + 5);
+  });
+  it('REGRESSION: a dud cast is seen, not played', () => {
+    // 猫 dropped on the bed: the kid saw 猫, but did not play it correctly,
+    // and only correct plays earn the next character.
+    const p = recordExposure(P({ plays: 1 }), NOW);
+    expect(p.plays).toBe(1);
+    expect(p.exposures).toBe(1);
+  });
+  it('reads a save from before plays existed as zero', () => {
+    expect(playsOf({ exposures: 9 })).toBe(0);
+    expect(playsOf(undefined)).toBe(0);
+    expect(recordPlay({}, NOW).plays).toBe(1);
+  });
+});
+
+describe('memory · weighting the question toward the less tried', () => {
+  it('counts every kind of try', () => {
+    expect(triesOf(P({ exposures: 7 }))).toBe(7);
+    expect(triesOf(undefined)).toBe(0);
+  });
+  it('weighs the never-tried heaviest, and falls away smoothly', () => {
+    expect(reviewWeight(P({ exposures: 0 }))).toBe(1);
+    expect(reviewWeight(P({ exposures: 1 }))).toBe(0.5);
+    expect(reviewWeight(P({ exposures: 9 }))).toBe(0.1);
+    expect(reviewWeight(undefined)).toBe(1);            // owned, no record: untried
+  });
+
+  it('REGRESSION: the characters the kid avoids are the ones 团团 asks about', () => {
+    // The kid plays what they know and skips the rest. The question is where
+    // the skipped ones get made unavoidable.
+    const map = {
+      da:   P({ charId: 'da',   dueAt: NOW - DAY, exposures: 60 }),   // a favourite
+      xiao: P({ charId: 'xiao', dueAt: NOW - DAY, exposures: 30 }),
+      yu:   P({ charId: 'yu',   dueAt: NOW - DAY, exposures: 1 })     // barely touched
+    };
+    const count = { da: 0, xiao: 0, yu: 0 };
+    for (let s = 0; s < 400; s++) count[pickReviewTarget(map, ['da','xiao','yu'], NOW, mulberry32(s))]++;
+    expect(count.yu).toBeGreaterThan(count.da + count.xiao);   // the majority
+    expect(count.yu).toBeGreaterThan(count.da * 10);
+  });
+
+  it('still never asks about something that is not due', () => {
+    // Weighting decides WHICH due character, never WHETHER one may be asked.
+    const map = {
+      da: P({ charId: 'da', dueAt: NOW - DAY, exposures: 99 }),
+      yu: P({ charId: 'yu', dueAt: NOW + DAY, exposures: 0 })      // untried but not due
+    };
+    for (let s = 0; s < 50; s++) {
+      expect(pickReviewTarget(map, ['da', 'yu'], NOW, mulberry32(s))).toBe('da');
+    }
+  });
+
+  it('is not a drill: the well-tried still come up sometimes', () => {
+    const map = {
+      da: P({ charId: 'da', dueAt: NOW - DAY, exposures: 5 }),
+      yu: P({ charId: 'yu', dueAt: NOW - DAY, exposures: 0 })
+    };
+    const seen = new Set();
+    for (let s = 0; s < 100; s++) seen.add(pickReviewTarget(map, ['da', 'yu'], NOW, mulberry32(s)));
+    expect(seen.size).toBe(2);
+  });
+});
+
+describe('memory · weightedPick', () => {
+  it('follows the weights', () => {
+    const c = { a: 0, b: 0 };
+    for (let s = 0; s < 500; s++) c[weightedPick(['a', 'b'], [3, 1], mulberry32(s))]++;
+    expect(c.a).toBeGreaterThan(c.b * 2);
+  });
+  it('never picks a zero weight while anything else has weight', () => {
+    for (let s = 0; s < 100; s++) expect(weightedPick(['a', 'b'], [0, 1], mulberry32(s))).toBe('b');
+  });
+  it('survives nothing to pick, and weights that are all zero or nonsense', () => {
+    expect(weightedPick([], [], mulberry32(1))).toBe(null);
+    expect(weightedPick(null, null, mulberry32(1))).toBe(null);
+    expect(['a', 'b']).toContain(weightedPick(['a', 'b'], [0, 0], mulberry32(1)));
+    expect(['a', 'b']).toContain(weightedPick(['a', 'b'], ['x', -3], mulberry32(1)));
   });
 });
 

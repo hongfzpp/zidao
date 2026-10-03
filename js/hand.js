@@ -4,6 +4,7 @@
 import { get } from './store.js';
 import * as core from './core/hand.js';
 import { requiredChars } from './scene.js';
+import { learningId, playsStillNeeded } from './core/pacing.js';
 
 export const { isDistractor, distractorGlyph, toDistractorId } = core;
 export const DISTRACTOR_PREFIX = core.DISTRACTOR_PREFIX;
@@ -32,6 +33,15 @@ export function setPromptCards (ids) { promptCards = ids; hand = [...ids]; retur
 export function clearPromptCards () { promptCards = null; return rebuild(); }
 export const inPrompt = () => promptCards !== null;
 
+/** The character whose practice is holding the next one back, or null.
+    Only then does it need a guaranteed place: once it has been played enough,
+    or when there is nothing left to arrive, it rotates like everything else. */
+function gatingId (state) {
+  const hasUnowned = chars.some(c => !(state.owned || []).includes(c.id));
+  if (!hasUnowned || playsStillNeeded(state, chars) <= 0) return null;
+  return learningId(chars, state.owned);
+}
+
 export function rebuild ({ redraw = false } = {}) {
   if (promptCards) return hand;             // a prompt owns the pouch
   const state = get();
@@ -46,11 +56,17 @@ export function rebuild ({ redraw = false } = {}) {
     currentSelection = core.selectPouch(chars, state.owned, {
       max: core.realSlots(currentDecoys.length),
       progress: state.progress || {},
-      // pin the last-shown character, anything needed to leave this room, and
-      // -- when a parent has sent the room to a particular unit -- that unit's
-      // own characters. Choosing 第五关 and not being dealt 鱼 makes the choice
-      // meaningless. Six fit: the pouch holds a whole unit by design.
-      pinned: [pinnedId, ...requiredChars(), ...unitCardIds].filter(Boolean)
+      // Pinned, in order of precedence:
+      //  - the character last shown, because it is the one they want to try
+      //  - the character being LEARNED. The next one only arrives once this is
+      //    played correctly, so if the capped pouch ever rotated it out the kid
+      //    could not play it and nothing would ever arrive again. After a
+      //    reload nothing else pins it -- pinnedId is gone with the page.
+      //  - anything needed to leave this room
+      //  - a unit a parent has focused, which makes choosing 第五关 mean
+      //    something. Six fit: the pouch holds a whole unit by design.
+      pinned: [pinnedId, gatingId(state), ...requiredChars(),
+               ...unitCardIds].filter(Boolean)
     });
     castsSinceRedraw = 0;
   } else {

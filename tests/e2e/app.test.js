@@ -2,12 +2,14 @@
    Each test launches its own instance so nothing leaks between them. */
 import { describe, it, expect } from '../runner.js';
 import { App, waitFor } from './harness.js';
+import { learningId } from '../../js/core/pacing.js';
 
 // derived from the data, so adding a character does not break the suite
 const CHAR_DATA = await fetch('../data/characters.json').then(r => r.json());
 const CHAR_DEFS = CHAR_DATA.characters;
 const CHAR_DATA_UNITS = CHAR_DATA.units || [];
 const ALL = CHAR_DEFS.map(c => c.id);
+const learningIdOf = owned => learningId(CHAR_DEFS, owned);
 // glue characters (你 好 我) are owned but never appear in the pouch and are
 // never cast -- DESIGN.md §9.1
 const CASTABLE = CHAR_DEFS.filter(c => c.castable !== false);
@@ -423,23 +425,55 @@ describe('e2e · pacing', () => {
       });
   });
 
-  it('introduces one character after the interval, not before', async () => {
-    await withApp(save({ owned: ['da','xiao'], firstCast: ALL, castsSinceArrival: 6 }),
-      async app => {
-        await app.start();
-        const arrivals = await app.play(4);
-        expect(arrivals).toHaveLength(1);
-        expect(arrivals[0].atCast).toBe(2);
-      });
+  it('introduces the next character once the newest is played correctly four times', async () => {
+    await withApp(save({ owned: ['da','xiao'], firstCast: ALL }), async app => {
+      await app.start();
+      const arrivals = await app.practise(4);
+      expect(arrivals).toHaveLength(1);
+      expect(arrivals[0].atCast).toBe(4);           // not before
+    });
+  });
+
+  it('REGRESSION: playing only the familiar characters brings nobody new', async () => {
+    // The report: the kid skipped every new character and played the ones they
+    // already knew -- and used to be rewarded with a new one every eight casts.
+    await withApp(save({ owned: ['da','xiao'], firstCast: ALL }), async app => {
+      await app.start();
+      for (let i = 0; i < 12; i++) {
+        await app.settlePrompt();
+        await app.drag('大', ['cat', 'dog', 'plant'][i % 3]);
+        expect(await app.arrived()).toBe(false);
+      }
+      expect(app.save().owned).toHaveLength(2);
+    });
+  });
+
+  it('REGRESSION: a dud cast is not a correct play', async () => {
+    // 猫 does nothing on the bed. Four of those must not pass 猫.
+    await withApp(save({ owned: ['da','xiao','kai','men','mao'], firstCast: ALL }), async app => {
+      await app.start();
+      for (let i = 0; i < 4; i++) {
+        await app.settlePrompt();
+        await app.drag('猫', 'bed');
+        expect(await app.arrived()).toBe(false);
+      }
+      const arrivals = await app.practise(4);        // now on the cat
+      expect(arrivals).toHaveLength(1);
+    });
   });
 
   it('REGRESSION: a long session does not wall up after two characters', async () => {
+    // A kid who plays along -- the newest character, correctly -- keeps meeting
+    // new ones. This used to cast cards picked at random from a reshuffled hand,
+    // which was a fine stand-in for "a long session" when any eight casts earned
+    // a character. It is not now: picking at random is exactly what should NOT
+    // reliably progress, and it fell short about one run in thirty.
     await withApp(null, async app => {
       await app.start();
       await app.completeFirstMeeting();              // 大, free
-      const arrivals = await app.play(18);
-      expect(arrivals.length).toBeGreaterThan(1);
-      expect(app.save().owned.length).toBeGreaterThan(2);
+      const arrivals = await app.practise(18);
+      expect(arrivals.length).toBeGreaterThanOrEqual(4);
+      expect(app.save().owned.length).toBeGreaterThan(4);
     });
   });
 
@@ -584,7 +618,7 @@ describe('e2e · parent panel', () => {
     await withApp(save({ owned: ['da','xiao'], firstCast: ALL, storiesRead: READ }),
       async app => {
         await app.start();
-        const arrivals = await app.play(40);
+        const arrivals = await app.practise(40);
         expect(arrivals.length).toBeGreaterThan(3);   // the old ceiling was 3
         expect(app.errors).toHaveLength(0);
       });
@@ -822,6 +856,119 @@ describe('e2e · 团团 asks (retrieval)', () => {
 const STORY_INDEX = await fetch('../data/stories/index.json').then(r => r.json());
 const STORIES = await Promise.all(STORY_INDEX.stories.map(
   f => fetch('../data/stories/' + f).then(r => r.json())));
+
+describe('e2e · the newest character has to be played', () => {
+  // Earning the next character means playing the newest one correctly four
+  // times. Each guard below exists because without it that gate would freeze:
+  // the kid could not reach the character, or could not use it where they are.
+
+  const castableBefore = id => {
+    const order = CHAR_DEFS.find(c => c.id === id).order;
+    return CHAR_DEFS.filter(c => c.order < order).map(c => c.id);
+  };
+
+  it('REGRESSION: the newest character keeps its place even when a focused unit fills the pouch', async () => {
+    // The pouch has six real places. Focusing 第五关 asks for all six of its
+    // characters, and 开 takes one too. The character being learned used to be
+    // kept only at the very bottom of that ranking -- so it was the one pushed
+    // out, the kid could not play it, and nothing would arrive while the room
+    // stayed focused. Without an explicit pin this test fails.
+    const unit5 = CHAR_DATA_UNITS.find(u => u.n === 5).chars;
+    const owned = [...castableBefore('shang').filter(id => !unit5.includes(id)), ...unit5, 'shang'];
+    await withApp(save({ owned, firstCast: ALL }), async app => {
+      await app.start();
+      expect(learningIdOf(owned)).toBe('shang');
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="5"]').click();
+      await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
+      expect(app.handGlyphs().join('')).toContain('上');
+
+      // and it is still there after the app is closed and reopened
+      await app.reload();
+      await app.start();
+      expect(app.handGlyphs().join('')).toContain('上');
+    });
+  });
+
+  it('REGRESSION: a focused unit is still dealt after the app is reopened', async () => {
+    // The room and its light came back focused after a reload, but the pouch
+    // quietly stopped favouring that unit -- its cards were held only in memory.
+    await withApp(save({ owned: ALL, firstCast: ALL }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      app.$('[data-act="go-unit"][data-unit="5"]').click();
+      await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
+      await app.reload();
+      await app.start();
+      const glyphs = app.handGlyphs().join('');
+      const dealt = ['鱼', '蛋', '米', '肉', '菜', '热'].filter(g => glyphs.includes(g));
+      expect(dealt.length).toBeGreaterThanOrEqual(5);
+    });
+  });
+
+  it('REGRESSION: meeting a kitchen character in the house moves you to the kitchen', async () => {
+    // 鱼 does nothing in a house with no fish. Met there, every cast would be a
+    // dud, nothing would count, and the next character would never come.
+    const owned = castableBefore('yu');
+    const learning = learningIdOf(owned);
+    await withApp(save({ owned, firstCast: ALL, currentScene: 'house', castsSinceArrival: 4,
+                         progress: { [learning]: { plays: 4, dueAt: Date.now() + 1e9 } } }),
+      async app => {
+        await app.start();
+        expect(app.sceneId()).toBe('house');
+        await app.castAny(0);
+        expect(await app.arrived()).toBe(true);
+        expect(await app.completeFirstMeeting()).toBe('鱼');
+        await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
+        expect(Boolean(app.obj('fish'))).toBeTruthy();
+        expect(app.errors).toHaveLength(0);
+      });
+  });
+
+  it('a character that works here does not move the room', async () => {
+    await withApp(save({ owned: ['da'], firstCast: ALL, currentScene: 'house' }), async app => {
+      await app.start();
+      await app.practise(4);                               // 小 arrives
+      expect(app.sceneId()).toBe('house');
+    });
+  });
+
+  it('tells the parent which character to play, and how many more times', async () => {
+    // Rule 10. Nothing arriving looks broken unless someone can see why.
+    await withApp(save({ owned: ['da','xiao'], firstCast: ALL,
+                         progress: { xiao: { plays: 1 } } }), async app => {
+      await app.start();
+      await app.openParentPanel();
+      const stats = app.parentStats();
+      expect(stats).toContain('先玩 小');
+      expect(stats).toContain('用对 3 次');
+    });
+  });
+});
+
+describe('e2e · 团团 asks about what the kid avoids', () => {
+  it('REGRESSION: the barely-tried character is the one 团团 keeps asking for', async () => {
+    // Weights are 1/61, 1/61 and 1, so 开 should come up ~97% of the time.
+    // Asserting "most" of 30 rather than an exact count: the pick is random,
+    // and the margin is wide enough that this cannot flake in practice.
+    const past = Date.now() - 86_400_000;
+    const rec = (id, exposures) => ({ charId: id, box: 1, exposures, correct: 0, incorrect: 0,
+                                      dueAt: past, firstSeen: past, lastSeen: past, latencies: [] });
+    await withApp(save({ owned: ['da', 'xiao', 'kai'], firstCast: ALL,
+                         progress: { da: rec('da', 60), xiao: rec('xiao', 60), kai: rec('kai', 0) } }),
+      async app => {
+        await app.start();
+        const asked = { da: 0, xiao: 0, kai: 0 };
+        for (let i = 0; i < 30; i++) {
+          await app.win.__startPrompt();
+          asked[app.win.__promptTarget()]++;
+          app.win.__cancelPrompt();          // walk away without answering: nothing recorded
+        }
+        expect(asked.kai).toBeGreaterThan(20);
+        expect(app.errors).toHaveLength(0);
+      });
+  });
+});
 
 describe('e2e · 再听一次 (hearing the question again)', () => {
   // 团团 says a word and the kid finds the character. If the word was missed --
@@ -1785,7 +1932,13 @@ describe('e2e · choosing a 关 moves the room', () => {
       await app.openParentPanel();
       app.$('[data-act="go-unit"][data-unit="5"]').click();
       await waitFor(() => app.sceneId() === 'kitchen', { label: 'the kitchen' });
-      await app.drag('鱼', 'fish');
+      // Whichever of the unit was dealt -- one of six always misses out, and
+      // which one is shuffled. This test used to drag 鱼 by name and so failed
+      // whenever 鱼 was the one left out: about one run in six.
+      const NOUN = { 鱼: 'fish', 蛋: 'egg', 米: 'rice', 肉: 'meat', 菜: 'veg' };
+      const dealt = Object.keys(NOUN).filter(g => app.handGlyphs().includes(g));
+      expect(dealt.length).toBeGreaterThanOrEqual(4);
+      await app.drag(dealt[0], NOUN[dealt[0]]);
       expect(app.errors).toHaveLength(0);
     });
   });
@@ -1819,7 +1972,7 @@ describe('e2e · choosing a 关 moves the room', () => {
       app.$('[data-act="go-unit"][data-unit="1"]').click();
       await waitFor(() => app.save().focusUnit === 1, { label: 'focus set' });
 
-      const arrivals = await app.play(12);
+      const arrivals = await app.practise(4);        // play 小 correctly: earns the next
       expect(arrivals.length).toBeGreaterThan(0);
       expect(app.save().focusUnit == null).toBe(true);
     });

@@ -34,6 +34,7 @@ export function blankProgress (charId, now = Date.now()) {
     exposures: 0,
     correct: 0,
     incorrect: 0,
+    plays: 0,          // casts that WORKED -- what the arrival gate counts
     firstSeen: now,
     lastSeen: now,
     dueAt: now + BOX_INTERVAL_MS[0],
@@ -48,6 +49,19 @@ export const getProgress = (map, charId, now = Date.now()) =>
 export function recordExposure (p, now = Date.now()) {
   return { ...p, exposures: (p.exposures || 0) + 1, lastSeen: now };
 }
+
+/**
+ * A cast that actually worked: an exposure, AND a correct play.
+ * Kept apart from exposures because a kid dropping 猫 on the bed has still SEEN
+ * 猫, but has not played it correctly -- and correct plays are what earn the
+ * next character (core/pacing.js).
+ */
+export function recordPlay (p, now = Date.now()) {
+  return { ...recordExposure(p, now), plays: (p.plays || 0) + 1 };
+}
+
+/** Correct plays of a character. Saves from before plays were counted read 0. */
+export const playsOf = p => p?.plays || 0;
 
 export function median (xs) {
   if (!xs || !xs.length) return null;
@@ -124,15 +138,49 @@ export function dueCharacters (map, owned, now = Date.now()) {
 }
 
 /**
+ * How much the kid has tried a character: every time it was cast (worked or
+ * not), answered, or read in a story. Older saves already carry this, so the
+ * weighting below is right from the first question rather than after a warm-up.
+ */
+export const triesOf = p => p?.exposures || 0;
+
+/**
+ * How strongly 团团 should want to ask about a character: the less it has been
+ * tried, the more. A child left to free play reaches for what they already know
+ * and skips what they do not -- so the question is where the unfamiliar ones
+ * get made unavoidable.
+ *
+ * 1 / (1 + tries), not something steeper. A never-tried character is asked
+ * about roughly three times as often as one tried twice, and ten times as often
+ * as one tried nine times -- a strong pull, but not so strong that the same
+ * character comes up every time and the question turns into a drill.
+ */
+export const reviewWeight = p => 1 / (1 + triesOf(p));
+
+/** Weighted pick. Pure: the randomness is passed in. */
+export function weightedPick (items, weights, rng = Math.random) {
+  if (!items?.length) return null;
+  const ws = items.map((_, i) => Math.max(0, Number(weights?.[i]) || 0));
+  const total = ws.reduce((a, b) => a + b, 0);
+  if (total <= 0) return items[Math.floor(rng() * items.length)];
+  let r = rng() * total;
+  for (let i = 0; i < items.length; i++) {
+    r -= ws[i];
+    if (r < 0) return items[i];
+  }
+  return items[items.length - 1];
+}
+
+/**
  * Which character should 团团 ask for?
- * The most overdue one, with a little jitter among the top few so the app does
- * not feel like it is working through a list.
+ * Only characters that are due -- the spacing still decides WHEN a character
+ * may be asked. Among those, the less-tried are weighted heavily, so the
+ * characters the kid avoids in free play are the ones the questions find.
  */
 export function pickReviewTarget (map, owned, now = Date.now(), rng = Math.random) {
   const due = dueCharacters(map, owned, now);
   if (!due.length) return null;
-  const top = due.slice(0, Math.min(3, due.length));
-  return top[Math.floor(rng() * top.length)];
+  return weightedPick(due, due.map(id => reviewWeight(map?.[id])), rng);
 }
 
 /** 0 = brand new, 1 = solid. Drives distractor similarity and the parent panel. */

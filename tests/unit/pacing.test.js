@@ -1,104 +1,140 @@
 import { describe, it, expect } from '../runner.js';
 import {
-  DEFAULTS, castsUntilArrival, arrivalDecision,
+  DEFAULTS, castsUntilArrival, arrivalDecision, learningId, playsStillNeeded,
   touchPlay, applyCast, applyArrival
 } from '../../js/core/pacing.js';
 
+const N = DEFAULTS.playsToPass;
+
+// 你 is glue: it arrives through the same drip but cannot be cast.
+const CHARS = [
+  { id: 'da' }, { id: 'xiao' }, { id: 'shui' },
+  { id: 'ni', castable: false }, { id: 'hao', castable: false },
+  { id: 'shang' }
+];
 const S = (o = {}) => ({
-  castCount: 0, castsSinceArrival: 0, lastPlayedAt: 0, ...o
+  castCount: 0, castsSinceArrival: 0, lastPlayedAt: 0, owned: [], progress: {}, ...o
+});
+const played = (id, n) => ({ [id]: { plays: n } });
+const decide = (st, hasUnowned = true) => arrivalDecision(st, { hasUnowned, chars: CHARS });
+
+describe('pacing · learningId', () => {
+  it('is the newest character the kid owns', () => {
+    expect(learningId(CHARS, ['da', 'xiao'])).toBe('xiao');
+    expect(learningId(CHARS, ['xiao', 'da'])).toBe('da');       // arrival order, not curriculum
+  });
+  it('REGRESSION: looks past glue, which can never be played', () => {
+    // 你 cannot be cast -- there is nothing to drop it on -- so a gate waiting
+    // on it would wait forever and no character would ever arrive again.
+    expect(learningId(CHARS, ['da', 'shui', 'ni'])).toBe('shui');
+    expect(learningId(CHARS, ['da', 'shui', 'ni', 'hao'])).toBe('shui');
+  });
+  it('is nothing before anything castable is owned', () => {
+    expect(learningId(CHARS, [])).toBe(null);
+    expect(learningId(CHARS, ['ni'])).toBe(null);
+    expect(learningId(CHARS, undefined)).toBe(null);
+    expect(learningId(undefined, ['da'])).toBe(null);
+  });
 });
 
-describe('pacing · castsUntilArrival', () => {
-  it('counts down from arrivalEvery', () => {
-    expect(castsUntilArrival(S({ castsSinceArrival: 0 }))).toBe(8);
-    expect(castsUntilArrival(S({ castsSinceArrival: 3 }))).toBe(5);
-    expect(castsUntilArrival(S({ castsSinceArrival: 8 }))).toBe(0);
+describe('pacing · playsStillNeeded', () => {
+  it('counts down the correct plays of the newest character', () => {
+    expect(playsStillNeeded(S({ owned: ['da'] }), CHARS)).toBe(N);
+    expect(playsStillNeeded(S({ owned: ['da'], progress: played('da', 1) }), CHARS)).toBe(N - 1);
+    expect(playsStillNeeded(S({ owned: ['da'], progress: played('da', N) }), CHARS)).toBe(0);
+    expect(playsStillNeeded(S({ owned: ['da'], progress: played('da', 99) }), CHARS)).toBe(0);
   });
-  it('never goes negative when overshooting', () => {
+  it('REGRESSION: playing the familiar ones does not count', () => {
+    // The reported symptom: the kid skipped every new character and played the
+    // ones they already knew. Those plays must not earn the next character.
+    const st = S({ owned: ['da', 'xiao'], progress: { ...played('da', 500) } });
+    expect(playsStillNeeded(st, CHARS)).toBe(N);
+  });
+  it('reads a save from before plays were counted as zero plays', () => {
+    const st = S({ owned: ['da'], progress: { da: { exposures: 40 } } });
+    expect(playsStillNeeded(st, CHARS)).toBe(N);
+  });
+  it('is nothing when there is nothing to learn yet', () => {
+    expect(playsStillNeeded(S(), CHARS)).toBe(0);
+  });
+});
+
+describe('pacing · castsUntilArrival (the floor)', () => {
+  it('counts down from the same number as the plays', () => {
+    expect(castsUntilArrival(S({ castsSinceArrival: 0 }))).toBe(N);
+    expect(castsUntilArrival(S({ castsSinceArrival: N }))).toBe(0);
+  });
+  it('never goes negative, and treats a missing counter as zero', () => {
     expect(castsUntilArrival(S({ castsSinceArrival: 99 }))).toBe(0);
-  });
-  it('treats a missing counter as zero casts done', () => {
-    expect(castsUntilArrival({})).toBe(8);
+    expect(castsUntilArrival({})).toBe(N);
   });
 });
 
 describe('pacing · arrivalDecision', () => {
-  it('does not introduce before the interval elapses', () => {
-    const d = arrivalDecision(S({ castsSinceArrival: 7 }), { hasUnowned: true });
+  it('waits until the newest character is played correctly, and says which', () => {
+    const d = decide(S({ owned: ['da', 'xiao'], castsSinceArrival: 50,
+                         progress: played('xiao', N - 1) }));
     expect(d.introduce).toBeFalsy();
-    expect(d.reason).toBe('too-soon');
+    expect(d.reason).toBe('practise');
+    expect(d.learning).toBe('xiao');
+    expect(d.need).toBe(1);
   });
 
-  it('introduces exactly at the interval', () => {
-    const d = arrivalDecision(S({ castsSinceArrival: 8 }), { hasUnowned: true });
-    expect(d.introduce).toBeTruthy();
-  });
-
-  it('REGRESSION: does not fire on the first cast of a session resuming near a multiple of N', () => {
-    // The old code tested `castCount % 8 === 0`. castCount persists across app
-    // restarts, so reopening at 15 and casting once made it 16 -> ambush.
-    const resumed = S({ castCount: 16, castsSinceArrival: 1 });
-    expect(arrivalDecision(resumed, { hasUnowned: true }).introduce).toBeFalsy();
-  });
-
-  it('REGRESSION: pacing ignores castCount entirely', () => {
-    for (const castCount of [0, 7, 8, 15, 16, 23, 24, 999]) {
-      const st = S({ castCount, castsSinceArrival: 8 });
-      expect(arrivalDecision(st, { hasUnowned: true }).introduce).toBeTruthy();
-    }
-  });
-
-  it('REGRESSION: no cap -- keep playing and characters keep arriving', () => {
-    // There used to be a ceiling of three new characters per half hour. It is
-    // gone: the child sets the pace by playing, and nothing else does.
-    let st = S();
-    let met = 0;
-    for (let cast = 1; cast <= 400; cast++) {
-      Object.assign(st, applyCast(st, cast));
-      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
-        Object.assign(st, applyArrival());
-        met++;
-      }
-    }
-    expect(met).toBe(50);                     // 400 casts / one per 8
-  });
-
-  it('REGRESSION: the clock is gone -- a long sitting is never cut off', () => {
-    // Playing for hours used to hit the ceiling and go quiet with no
-    // explanation. Time is not consulted at all now.
-    const st = S({ castsSinceArrival: DEFAULTS.arrivalEvery, lastPlayedAt: 1 });
-    const d = arrivalDecision(st, { hasUnowned: true });
+  it('introduces once it has been', () => {
+    const d = decide(S({ owned: ['da', 'xiao'], castsSinceArrival: N,
+                         progress: played('xiao', N) }));
     expect(d.introduce).toBeTruthy();
     expect(d.reason).toBe('due');
   });
 
-  it('stops when every character is known', () => {
-    const d = arrivalDecision(S({ castsSinceArrival: 99 }), { hasUnowned: false });
+  it('REGRESSION: endless casts of old characters never bring a new one', () => {
+    const d = decide(S({ owned: ['da', 'xiao'], castsSinceArrival: 1000, castCount: 1000,
+                         progress: played('da', 1000) }));
+    expect(d.introduce).toBeFalsy();
+    expect(d.reason).toBe('practise');
+  });
+
+  it('REGRESSION: glue arriving never chains straight into the next one', () => {
+    // 你 arrives; the gate looks past it to 水, already passed. Without the
+    // floor, 好 and then 上 would arrive on the very next casts.
+    const justGotNi = S({ owned: ['da', 'shui', 'ni'], castsSinceArrival: 0,
+                          progress: played('shui', N) });
+    expect(decide(justGotNi).reason).toBe('too-soon');
+    expect(decide({ ...justGotNi, castsSinceArrival: N }).introduce).toBeTruthy();
+  });
+
+  it('REGRESSION: does not fire on the first cast of a session resuming near a multiple', () => {
+    // The old code tested `castCount % 8 === 0` on a persisted total.
+    const st = S({ owned: ['da'], castCount: 16, castsSinceArrival: 1, progress: played('da', N) });
+    expect(decide(st).introduce).toBeFalsy();
+  });
+
+  it('REGRESSION: no cap and no clock -- passing is the only thing that matters', () => {
+    const st = S({ owned: ['da'], castsSinceArrival: N, lastPlayedAt: 1, progress: played('da', N) });
+    expect(decide(st).introduce).toBeTruthy();
+  });
+
+  it('stops when every character is known, ahead of everything else', () => {
+    const d = decide(S({ owned: ['da'] }), false);
     expect(d.introduce).toBeFalsy();
     expect(d.reason).toBe('all-known');
   });
 
-  it('reports all-known ahead of everything else', () => {
-    const st = S({ castsSinceArrival: 99 });
-    expect(arrivalDecision(st, { hasUnowned: false }).reason).toBe('all-known');
+  it('skips the practice gate rather than guess, when it cannot tell what is castable', () => {
+    // Guessing wrong means waiting on 你 forever. Every real caller passes chars.
+    const st = S({ owned: ['da'], castsSinceArrival: N });
+    expect(arrivalDecision(st, { hasUnowned: true }).introduce).toBeTruthy();
   });
 });
 
 describe('pacing · touchPlay', () => {
-  const NOW = 1_000_000_000;
-
   it('records when play happened, and changes nothing else', () => {
-    expect(touchPlay(S(), NOW)).toEqual({ lastPlayedAt: NOW });
-    expect(touchPlay(S({ lastPlayedAt: NOW - 10 }), NOW)).toEqual({ lastPlayedAt: NOW });
+    expect(touchPlay(S(), 1000)).toEqual({ lastPlayedAt: 1000 });
   });
-
   it('REGRESSION: reopening the app grants nothing and costs nothing', () => {
-    // "session" once meant "page load", so restarting farmed new characters --
-    // and later, a long gap was needed to get any. Neither is true now: a
-    // reload cannot change how close the next character is.
-    const st = S({ castsSinceArrival: 5 });
-    const after = { ...st, ...touchPlay(st, NOW) };
-    expect(castsUntilArrival(after)).toBe(castsUntilArrival(st));
+    const st = S({ owned: ['da'], castsSinceArrival: 2, progress: played('da', 1) });
+    const after = { ...st, ...touchPlay(st, 9e12) };
+    expect(decide(after)).toEqual(decide(st));
   });
 });
 
@@ -109,69 +145,43 @@ describe('pacing · applyCast / applyArrival', () => {
     expect(p.castsSinceArrival).toBe(3);
     expect(p.lastPlayedAt).toBe(123);
   });
-
-  it('an arrival resets the interval clock', () => {
-    expect(applyArrival(S({ castsSinceArrival: 8 })).castsSinceArrival).toBe(0);
-  });
-
-  it('an arrival costs nothing but the interval', () => {
-    // There is no budget left to spend. The opening character of a fresh
-    // install used to spend one, which walled the first session at two
-    // characters, silently and forever.
+  it('an arrival costs nothing but the floor', () => {
     expect(applyArrival()).toEqual({ castsSinceArrival: 0 });
   });
 });
 
-describe('pacing · full first-session simulation', () => {
-  it('delivers 大 free, then one character every 8 casts, without end', () => {
-    let st = S();
-    const arrivals = [];
-    const NOW = 1_000_000;
-
-    Object.assign(st, touchPlay(st, NOW));
-    Object.assign(st, applyArrival());          // opening character
-    arrivals.push(0);
-
-    for (let cast = 1; cast <= 40; cast++) {
-      Object.assign(st, applyCast(st, NOW + cast));
-      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
-        Object.assign(st, applyArrival());
-        arrivals.push(cast);
+describe('pacing · simulated play', () => {
+  // A tiny model of the app: each cast either plays the newest character or an
+  // old one, and an arrival hands over the next character in curriculum order.
+  function run (casts, choose) {
+    let st = S({ owned: ['da'], progress: {} });
+    const met = ['da'];
+    for (let i = 1; i <= casts; i++) {
+      const id = choose(st, i);
+      Object.assign(st, applyCast(st, i));
+      const p = st.progress[id] || {};
+      st.progress = { ...st.progress, [id]: { ...p, plays: (p.plays || 0) + 1 } };
+      const next = CHARS.find(c => !st.owned.includes(c.id));
+      if (decide(st, !!next).introduce) {
+        st = { ...st, ...applyArrival(), owned: [...st.owned, next.id] };
+        met.push(next.id);
       }
     }
-    // It used to stop at 24, three characters in. It keeps going now.
-    expect(arrivals).toEqual([0, 8, 16, 24, 32, 40]);
+    return met;
+  }
+
+  it('REGRESSION: a kid who only plays old characters meets nobody new', () => {
+    expect(run(200, () => 'da')).toEqual(['da', 'xiao']);   // xiao arrived; then stuck on it
   });
 
-  it('REGRESSION: a long session does not wall up after two characters', () => {
-    // The exact symptom reported: stuck on 小, casting forever, nothing arrives.
-    let st = S();
-    Object.assign(st, applyArrival());          // 大
-    let count = 1;
-    for (let cast = 1; cast <= 30; cast++) {
-      Object.assign(st, applyCast(st, 1000 + cast));
-      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
-        Object.assign(st, applyArrival());
-        count++;
-      }
-    }
-    expect(count).toBeGreaterThan(2);
+  it('a kid who plays each new character four times meets one every four casts', () => {
+    const met = run(12, st => learningId(CHARS, st.owned));
+    expect(met).toEqual(['da', 'xiao', 'shui', 'ni']);
   });
 
-  it('REGRESSION: playing straight through a half hour is never interrupted', () => {
-    // The old rule reset only after THIRTY IDLE MINUTES, so the one child who
-    // played longest was the one most likely to be cut off.
-    let st = S();
-    let met = 0;
-    const HALF_HOUR = 30 * 60 * 1000;
-    for (let cast = 1; cast <= 120; cast++) {
-      // casts spread across a solid hour of unbroken play
-      Object.assign(st, applyCast(st, cast * (HALF_HOUR / 60)));
-      if (arrivalDecision(st, { hasUnowned: true }).introduce) {
-        Object.assign(st, applyArrival());
-        met++;
-      }
-    }
-    expect(met).toBe(15);
+  it('REGRESSION: glue never deadlocks the drip', () => {
+    // Playing the newest CASTABLE character carries the kid past 你 and 好.
+    const met = run(40, st => learningId(CHARS, st.owned));
+    expect(met).toEqual(['da', 'xiao', 'shui', 'ni', 'hao', 'shang']);
   });
 });
